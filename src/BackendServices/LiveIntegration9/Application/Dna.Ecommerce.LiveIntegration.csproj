@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{61E84A2C-3B35-466B-8B46-9AFF24D84FE9}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dna.Ecommerce.LiveIntegration</RootNamespace>
+    <AssemblyName>Dna.Ecommerce.LiveIntegration</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\Dna.Ecommerce.LiveIntegration.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Dynamicweb, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\Dynamicweb.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Configuration">
+      <HintPath>..\References\Dynamicweb.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Controls, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\Dynamicweb.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Core">
+      <HintPath>..\References\Dynamicweb.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Data, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\Dynamicweb.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.DataIntegration">
+      <HintPath>..\References\Dynamicweb.DataIntegration.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Ecommerce">
+      <HintPath>..\References\Dynamicweb.Ecommerce.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Environment">
+      <HintPath>..\References\Dynamicweb.Environment.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Extensibility">
+      <HintPath>..\References\Dynamicweb.Extensibility.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Logging">
+      <HintPath>..\References\Dynamicweb.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Mailing">
+      <HintPath>..\References\Dynamicweb.Mailing.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Scheduling">
+      <HintPath>..\References\Dynamicweb.Scheduling.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamicweb.Security">
+      <HintPath>..\References\Dynamicweb.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Addin\ISettings.cs" />
+    <Compile Include="Addin\ISettingsExtensions.cs" />
+    <Compile Include="Addin\Serializer.cs" />
+    <Compile Include="Addin\Settings.cs" />
+    <Compile Include="Addin\RibbonBar\CreateXmlForOrderAddIn.cs" />
+    <Compile Include="Addin\RibbonBar\CreateXmlForUserOrGroupAddIn.cs" />
+    <Compile Include="Addin\LiveIntegrationAddIn.cs" />
+    <Compile Include="Addin\RibbonBar\RibbonBarAddInBase.cs" />
+    <Compile Include="Addin\SettingsSerializer.cs" />
+    <Compile Include="ProductPrice.cs" />
+    <Compile Include="Exceptions\LiveIntegrationException.cs" />
+    <Compile Include="Extensions\IntegrationExtensions.cs" />
+    <Compile Include="Extensions\ProductExtensions.cs" />
+    <Compile Include="Notifications\LiveIntegration.cs" />
+    <Compile Include="XmlParsing\OrderXmlParser.cs" />
+    <Compile Include="XmlParsing\XmlParser.cs" />
+    <Compile Include="XmlRendering\RenderSettings\IRenderSettings.cs" />
+    <Compile Include="XmlRendering\LiveIntegrationSubmitType.cs" />
+    <Compile Include="XmlRendering\Renderers\OrderXmlRenderer.cs" />
+    <Compile Include="XmlRendering\Renderers\ProductInfoXmlRenderer.cs" />
+    <Compile Include="XmlRendering\RenderSettings\RenderOrderSettings.cs" />
+    <Compile Include="XmlRendering\RenderSettings\RenderProductInfoSettings.cs" />
+    <Compile Include="XmlRendering\RenderSettings\RenderUserSettings.cs" />
+    <Compile Include="XmlRendering\UserSyncMode.cs" />
+    <Compile Include="XmlRendering\Renderers\UserXmlRenderer.cs" />
+    <Compile Include="XmlRendering\Renderers\XmlRenderer.cs" />
+    <Compile Include="ScheduledTasks\LiveIntegrationCaptureOrders.cs" />
+    <Compile Include="ScheduledTasks\LiveIntegrationQueuedOrdersSync.cs" />
+    <Compile Include="ScheduledTasks\LiveIntegrationUpdateOrders.cs" />
+    <Compile Include="Addin\RibbonBar\ResendOrderAddIn.cs" />
+    <Compile Include="Addin\RibbonBar\SendUserOrGroup.cs" />
+    <Compile Include="Configuration\ConfigurationHandler.cs" />
+    <Compile Include="Configuration\Constants.cs" />
+    <Compile Include="Configuration\Global.cs" />
+    <Compile Include="Connector.cs" />
+    <Compile Include="Logging\ErrorLevel.cs" />
+    <Compile Include="ExtensionsMethods\StringWriterWithEncoding.cs" />
+    <Compile Include="ExtensionsMethods\XmlDocumentExtensions.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="IntegrationCustomerCenterHandler.cs" />
+    <Compile Include="LiveSalesDiscountProvider.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\NotificationFrequency.cs" />
+    <Compile Include="NotificationSubscribers\CartLoaded.cs" />
+    <Compile Include="NotificationSubscribers\ExtranetLogin.cs" />
+    <Compile Include="NotificationSubscribers\IntegrationBaseNotificationSubscriber.cs" />
+    <Compile Include="NotificationSubscribers\LiveIntegrationCartOrderIsPassedToCheckoutHandlerObserver.cs" />
+    <Compile Include="NotificationSubscribers\OrderComplete.cs" />
+    <Compile Include="Extenders\LiveIntegrationOrderLineTemplateExtender.cs" />
+    <Compile Include="NotificationSubscribers\OrderLineDecreased.cs" />
+    <Compile Include="NotificationSubscribers\OrderLineIncreased.cs" />
+    <Compile Include="NotificationSubscribers\ProductBeforeRender.cs" />
+    <Compile Include="NotificationSubscribers\ProductListBeforeSort.cs" />
+    <Compile Include="NotificationSubscribers\UserSavedObserver.cs" />
+    <Compile Include="OrderHandler.cs" />
+    <Compile Include="Extensions\OrderLineExtensions.cs" />
+    <Compile Include="PrepareProductInfoProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TemplatesHelper.cs" />
+    <Compile Include="UrlHandler.cs" />
+    <Compile Include="Extensions\UserExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="web.config" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>62846</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://integration.local.dynamicweb.pt/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+</Project>

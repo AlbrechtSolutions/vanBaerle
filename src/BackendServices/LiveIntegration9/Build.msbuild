@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="C:\Program Files\MSBuild\ExtensionPack\4.0\MSBuild.ExtensionPack.tasks"/>
+
+  <PropertyGroup>
+    <ApplicationRoot>.\Application</ApplicationRoot>
+    <CustomModulesDir>$(ApplicationRoot)\CustomModules</CustomModulesDir>
+    <PublicDir>$(ApplicationRoot)\Public</PublicDir>
+    <UserSyncDir>.\DQCRMUserSync</UserSyncDir>
+    <SapIntegrationDir>.\SapIntegrationWs</SapIntegrationDir>
+
+    <InstallationRoot>.\Installation</InstallationRoot>
+    <InstallationApplicationDir>$(InstallationRoot)\Application</InstallationApplicationDir>
+    <InstallationBinDir>$(InstallationApplicationDir)\bin</InstallationBinDir>
+    <InstallationModulesDir>$(InstallationApplicationDir)\CustomModules</InstallationModulesDir>
+    <InstallationPublicDir>$(InstallationApplicationDir)\Public</InstallationPublicDir>
+
+    <WebServiceInstallationDir>$(InstallationRoot)\WebServices</WebServiceInstallationDir>
+    <UserSyncInstallationDir>$(WebServiceInstallationDir)\UserSync</UserSyncInstallationDir>
+    <SapIntegrationInstallationDir>$(WebServiceInstallationDir)\SapIntegration</SapIntegrationInstallationDir>
+
+    <ProjectName>LiveIntegration</ProjectName>
+  </PropertyGroup>
+
+  <Target Name="Zip" DependsOnTargets="Package">
+    <Message Text="Zipping installation package for $(ProjectName)."/>
+
+    <MSBuild.ExtensionPack.Compression.DNZip
+          TaskAction="Create"
+          CompressPath="$(InstallationRoot)\"
+           ZipFileName="$(InstallationRoot)\LiveIntegration.zip"
+      />
+  </Target>
+
+  <Target Name="Package" DependsOnTargets="Build">
+    <Message Text="Creating installation package for $(ProjectName)."/>
+
+    <RemoveDir Directories="$(InstallationRoot)" />
+
+    <MakeDir Directories="$(InstallationRoot)"/>
+    <MakeDir Directories="$(InstallationApplicationDir)"/>
+
+    <Exec Command="xcopy $(ApplicationRoot)\obj\bin\LiveIntegration.dll $(InstallationBinDir)\ /Y /S" />
+
+  </Target>
+
+  <Target Name="Build">
+    <Message Text="Building $(ProjectName)."/>
+
+    <MSBuild Projects="$(ProjectName).sln" Targets="Clean" Properties="Configuration=Release" BuildInParallel="true" />
+    <MSBuild Projects="$(ProjectName).sln" Targets="Build" Properties="Configuration=Release" BuildInParallel="true" />
+  </Target>
+
+</Project>
