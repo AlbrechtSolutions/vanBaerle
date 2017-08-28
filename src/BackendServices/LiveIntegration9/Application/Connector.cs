@@ -108,7 +108,7 @@ namespace Dna.Ecommerce.LiveIntegration
       return result;
     }
 
-    public static XmlDocument RetrieveDataFromRequestString(string request)
+    public static XmlDocument RetrieveDataFromRequestString(string request, bool throwException = false)
     {
       XmlDocument result = null;
       if (IsWebServiceConnectionAvailable())
@@ -136,6 +136,11 @@ namespace Dna.Ecommerce.LiveIntegration
         {
           _lastErpCommunication = null;
           Logger.Instance.Log(ErrorLevel.ConnectionError, string.Format("Error in RetrieveDataFromRequestString: '{0}'. Request: '{1}'.", ex.Message, request));
+
+            if (throwException)
+            {
+                throw;
+            }
         }
       }
       return result;

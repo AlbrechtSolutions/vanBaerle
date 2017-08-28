@@ -93,6 +93,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -115,6 +116,13 @@
     <Compile Include="Extensions\IntegrationExtensions.cs" />
     <Compile Include="Extensions\ProductExtensions.cs" />
     <Compile Include="Notifications\LiveIntegration.cs" />
+    <Compile Include="Utilities\ErpCallsTesting.aspx.cs">
+      <DependentUpon>ErpCallsTesting.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Utilities\ErpCallsTesting.aspx.designer.cs">
+      <DependentUpon>ErpCallsTesting.aspx</DependentUpon>
+    </Compile>
     <Compile Include="XmlParsing\OrderXmlParser.cs" />
     <Compile Include="XmlParsing\XmlParser.cs" />
     <Compile Include="XmlRendering\RenderSettings\IRenderSettings.cs" />
@@ -164,6 +172,7 @@
     <Compile Include="Extensions\UserExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Utilities\ErpCallsTesting.aspx" />
     <Content Include="web.config" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
