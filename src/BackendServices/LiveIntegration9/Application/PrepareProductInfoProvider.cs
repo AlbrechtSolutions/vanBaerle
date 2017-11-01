@@ -70,7 +70,7 @@ namespace Dna.Ecommerce.LiveIntegration
                 {
                     List<Product> products = new List<Product>();
                     products.Add(requestProduct);
-                    if (FetchProductInfos(products, User.GetCurrentUser()))
+                    if (FetchProductInfos(products, User.GetCurrentExtranetUser()))
                     {
                         //Check if requested product was not received from response
                         if (!ErpResponseCache.IsProductInCache(ProductCacheLevel, Helpers.ProductIdentifier(requestProduct)))
@@ -102,10 +102,10 @@ namespace Dna.Ecommerce.LiveIntegration
                 var price = priceValue == null
                     ? null
                     : new PriceRaw
-                    {
-                        Price = priceValue.Value,
-                        Currency = currency
-                    };
+                        {
+                            Price = priceValue.Value * product.GetUnitPriceMultiplier().GetValueOrDefault(1),
+                            Currency = currency
+                        };
 
                 return price;
             }
@@ -115,6 +115,17 @@ namespace Dna.Ecommerce.LiveIntegration
                 return null;
             }
         }
+
+
+        //protected virtual PriceRaw GetDefaultPrice(Product product, Currency currency)
+        //{
+        //    return new PriceRaw
+        //    {
+        //        Price = product.DefaultPrice * product.GetUnitPriceMultiplier().GetValueOrDefault(1),
+        //        Currency = currency
+        //    };
+        //}
+
 
         public override void PreparePrices(Dictionary<Product, double> products)
         {
@@ -137,10 +148,12 @@ namespace Dna.Ecommerce.LiveIntegration
 
         internal static bool FetchProductInfos(List<Product> products, User user)
         {
-            if (LastResponseValid())
-                // no need to read cache
-                return false;
-            SaveLastResponse(false);
+            // disable because if causes troubles if the product list fails (missing product) and then we enter to a product, as
+            // it won't fetch its price...
+            //if (LastResponseValid())
+            //    // no need to read cache
+            //    return false;
+            //SaveLastResponse(false);
 
             if (products == null || products.Count == 0)
                 return false;
@@ -159,7 +172,7 @@ namespace Dna.Ecommerce.LiveIntegration
 
             if (user == null)
             {
-                user = User.GetCurrentUser();
+                user = User.GetCurrentExtranetUser();
             }
             if (!Settings.Instance.LiveProductInfoForAnonymousUsers && user == null)
             {
@@ -281,7 +294,7 @@ namespace Dna.Ecommerce.LiveIntegration
 
                     FillProductPrices(product, productInfo);
 
-                    double? priceValue = SelectPrice(productInfo, quantity);
+                    double? priceValue = SelectPrice(productInfo, quantity) * product.GetUnitPriceMultiplier().GetValueOrDefault(1);
 
                     product.Price.PriceWithoutVAT = priceValue.GetValueOrDefault(); // NOTE accessing the Price property, will trigger the price provider to kick in
                     product.Price.PriceWithVAT = priceValue.GetValueOrDefault();
@@ -308,7 +321,7 @@ namespace Dna.Ecommerce.LiveIntegration
                 product.Prices.Add(new Price
                 {
                     Id = price.Id,
-                    Amount = price.Amount.GetValueOrDefault(),
+                    Amount = price.Amount.GetValueOrDefault() * product.GetUnitPriceMultiplier().GetValueOrDefault(1),
                     Quantity = price.Quantity.GetValueOrDefault(),
                     ProductId = price.ProductId,
                     VariantId = price.ProductVariantId,
@@ -335,7 +348,7 @@ namespace Dna.Ecommerce.LiveIntegration
 
         private static string SessionCacheKey()
         {
-            var user = User.GetCurrentUser();
+            var user = User.GetCurrentExtranetUser();
             var sSessionCache = Constants.CacheConfiguration.FetchProductInfoResult;
 
             if (user != null)

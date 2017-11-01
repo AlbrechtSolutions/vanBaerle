@@ -33,5 +33,23 @@ namespace Dna.Ecommerce.LiveIntegration.Extensions
 			}
 			return builder.ToString();
 		}
-	}
+
+
+        public static double? GetUnitPriceMultiplier(this Product product)
+        {
+            double? multiplier = null;
+            // WARNING: don't use the following method because the product won't have everytime that field populated and it may throw an exception
+            // multiplier = (double)product.GetProductFieldValue("UnitPriceMultiplier");
+
+            var fieldValues = product.ProductFieldValues;
+            if (fieldValues != null)
+            {
+                ProductFieldValue value = fieldValues.GetProductFieldValue("UnitPriceMultiplier");
+
+                multiplier = value?.Value != null && value?.Value != DBNull.Value ? (double)value.Value : (double?)null;
+            }
+
+            return multiplier;
+        }
+    }
 }

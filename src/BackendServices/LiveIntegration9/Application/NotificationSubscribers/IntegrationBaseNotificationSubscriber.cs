@@ -45,9 +45,9 @@ namespace Dna.Ecommerce.LiveIntegration.NotificationSubscribers
 			{
 				return (!Settings.Instance.EnableLivePrices
 					|| !Global.IsIntegrationActive
-					|| !Settings.Instance.LiveProductInfoForAnonymousUsers && User.GetCurrentUser() == null
+					|| !Settings.Instance.LiveProductInfoForAnonymousUsers && User.GetCurrentExtranetUser() == null
 					|| !Global.IsIntegrationEnabledForShop
-					|| User.GetCurrentUser() != null && User.GetCurrentUser().IsLivePricesDisabled
+					|| User.GetCurrentExtranetUser() != null && User.GetCurrentExtranetUser().IsLivePricesDisabled
 					|| !Connector.IsWebServiceConnectionAvailable()
 					|| Global.IsProductLazyLoad);
 			}

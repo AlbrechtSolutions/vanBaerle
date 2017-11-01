@@ -67,7 +67,7 @@ namespace Dna.Ecommerce.LiveIntegration
         catch (Exception ex)
         {
           _lastErpCommunication = null;
-          var errorMessage = string.Format("An error occurred while calling CalculateOrder from Web Service: '{0}'.", ex.Message);
+          var errorMessage = string.Format("An error occurred while calling CalculateOrder from Web Service: '{0}'.", ex);
           throw new LiveIntegrationException(errorMessage, ex);
         }
       }

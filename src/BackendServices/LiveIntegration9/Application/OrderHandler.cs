@@ -63,10 +63,10 @@ namespace Dna.Ecommerce.LiveIntegration
       }
 
       var orderId = order.Id ?? "ID is null";
-      Logger.Instance.Log(ErrorLevel.DebugInfo, string.Format("Updating order with ID: {0}. Complete: {1}. Order submitted from the backend: {2}", orderId, order.Complete, ExecutingContext.IsBackEnd()));
+      Logger.Instance.Log(ErrorLevel.DebugInfo, string.Format("Updating order with ID: {0}. Complete: {1}. Order submitted from the backend: {2}. Stack trace: {3}", orderId, order.Complete, ExecutingContext.IsBackEnd(), Environment.StackTrace));
 
       // use current user if is not backend running or if the cart is Anonymous
-      var user = User.GetUserByID(order.CustomerAccessUserId) ?? (!ExecutingContext.IsBackEnd() ? User.GetCurrentUser() : null);
+      var user = User.GetUserByID(order.CustomerAccessUserId) ?? (!ExecutingContext.IsBackEnd() ? User.GetCurrentExtranetUser() : null);
 
       /* create order: if it is false, you will get a calculate order from the ERP with the total prices */
       /* if it is true, then a new order will be created in the ERP */
@@ -243,6 +243,9 @@ namespace Dna.Ecommerce.LiveIntegration
     {
       //        var orderParser = new OrderXmlParser(response);
 
+     Logger.Instance.Log(ErrorLevel.DebugInfo, "Process response..."); // TODO: removeee
+     
+
       var orderId = order == null ? "is null" : order.Id ?? "ID is null";
 
       if (response == null || order == null)
@@ -264,10 +267,10 @@ namespace Dna.Ecommerce.LiveIntegration
         if (Global.EnableCartCommunication(order.Complete))
         {
           // Set Order prices
-          order.AllowOverridePrices = true;
+          //order.AllowOverridePrices = true;
           try
           {
-            SetPrices(order, orderNode);
+            //SetPrices(order, orderNode);
 
             SetCustomerNumber(order, orderNode);
           }
@@ -284,7 +287,7 @@ namespace Dna.Ecommerce.LiveIntegration
         if (Global.EnableCartCommunication(order.Complete))
         {
           ProcessOrderLines(response, order, discountOrderLines);
-          order.OrderLines.Add(discountOrderLines);
+          //order.OrderLines.Add(discountOrderLines);
         }
 
         if (createOrder)
@@ -300,6 +303,10 @@ namespace Dna.Ecommerce.LiveIntegration
             HandleIntegrationSuccess(order, successState);
           }
         }
+        //else
+        //{
+        //    order.Save();
+        //}
 
         if (Global.EnableCartCommunication(order.Complete))
         {
@@ -309,7 +316,7 @@ namespace Dna.Ecommerce.LiveIntegration
       }
       catch (Exception e)
       {
-        Logger.Instance.Log(ErrorLevel.Error, string.Format("Error processing response. Error: '{0}' Order = {1}.", e.Message, orderId));
+        Logger.Instance.Log(ErrorLevel.Error, string.Format("Error processing response. Error: '{0}' Order = {1}.", e, orderId));
         return false;
       }
 
@@ -382,6 +389,11 @@ namespace Dna.Ecommerce.LiveIntegration
 
     private static void ProcessOrderLines(XmlDocument response, Order order, OrderLineCollection discountOrderLines)
     {
+      Logger.Instance.Log(ErrorLevel.DebugInfo, "ProcessOrderLines..."); // TODO: removeee
+
+      XmlNode orderNode = response.SelectSingleNode("//item [@table='EcomOrders']");
+      var orderCreated = bool.Parse(orderNode.SelectSingleNode("column [@columnName='OrderCreated']").InnerText);
+
       XmlNodeList orderLinesNodes = response.SelectNodes("//item [@table='EcomOrderLines']");
       if (orderLinesNodes != null && orderLinesNodes.Count > 0)//Process OrderLines
       {
@@ -400,18 +412,27 @@ namespace Dna.Ecommerce.LiveIntegration
           string orderLineType = xnOrderLineType.InnerText;
           if (orderLineType == "0" || string.IsNullOrWhiteSpace(orderLineType))
           {
-            ProcessProductOrderLines(order, orderlineIDs, orderLines, orderLineNode);
+            Logger.Instance.Log(ErrorLevel.DebugInfo, "ProcessOrderLines 0 type..."); // TODO: removeee
+
+            ProcessProductOrderLines(order, orderlineIDs, orderLines, orderLineNode, orderCreated);
           }
           if (orderLineType == "1" || orderLineType == "3") //1=order discount, 3=Product Discount
           {
-            ProcessDiscountOrderLines(order, discountOrderLines, orderLineNode, orderLineType);
+            Logger.Instance.Log(ErrorLevel.DebugInfo, "ProcessOrderLines 1, 3 type..."); // TODO: removeee
+
+            ProcessDiscountOrderLines(order, discountOrderLines, orderLineNode, orderLineType, orderCreated);
           }
         }
+
         // Remove deleted OrderLines
         for (int i = order.OrderLines.Count - 1; i >= 0; i--)
         {
           var orderLine = order.OrderLines[i];
           if (string.IsNullOrWhiteSpace(orderLine.Id))
+          {
+            continue;
+          }
+          if (orderLine.Type == "1" || orderLine.Type == "3") //1=order discount, 3=Product Discount
           {
             continue;
           }
@@ -459,7 +480,7 @@ namespace Dna.Ecommerce.LiveIntegration
       // otherwise use the traditional OrderID
       if (string.IsNullOrEmpty(integrationIdNode?.InnerText))
       {
-        integrationIdNode = orderNode.SelectSingleNode("column [@columnName='OrderId']");
+        integrationIdNode = orderNode.SelectSingleNode("column [@columnName='OrderID']");
       }
       if (!string.IsNullOrWhiteSpace(integrationIdNode?.InnerText))
       {
@@ -480,8 +501,10 @@ namespace Dna.Ecommerce.LiveIntegration
       return Helpers.ReadDouble(xValue.InnerText);
     }
 
-    private static void ProcessProductOrderLines(Order order, List<string> orderlineIDs, List<OrderLine> orderLines, XmlNode orderLineNode)
+    private static void ProcessProductOrderLines(Order order, List<string> orderlineIDs, List<OrderLine> orderLines, XmlNode orderLineNode, bool orderCreated)
     {
+      Logger.Instance.Log(ErrorLevel.DebugInfo, "ProcessProductOrderLines..."); // TODO: removeee
+
       string productNumber = orderLineNode.SelectSingleNode("column [@columnName='OrderLineProductNumber']").InnerText;
 
       try
@@ -494,11 +517,15 @@ namespace Dna.Ecommerce.LiveIntegration
           if (orderLine != null)
           {
             orderLines.Remove(orderLine);
+            Logger.Instance.Log(ErrorLevel.DebugInfo, "ProcessProductOrderLines removing..."); // TODO: removeee
+
             //Remove found line for getting next line with same ProductNumber
           }
           else // Create an OrderLine if it doesn't exist
           {
             orderLine = CreateOrderLine(order, productNumber);
+            Logger.Instance.Log(ErrorLevel.DebugInfo, "ProcessProductOrderLines creating..."); // TODO: removeee
+
             if (orderLine == null)
             {
               return;
@@ -510,6 +537,9 @@ namespace Dna.Ecommerce.LiveIntegration
           }
           // Set standard values on OrderLines
           orderLine.AllowOverridePrices = true;
+          orderLine.Type = Convert.ToString(Convert.ToInt32(OrderLineType.Fixed));
+
+          var multiplier = orderCreated ? 1 : orderLine.Product?.GetUnitPriceMultiplier() ?? 1.0; // if the order is created in NAV, the price the comes back already has the multiplier in it
 
           dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLineQuantity']");
           if (dAux.HasValue)
@@ -519,53 +549,71 @@ namespace Dna.Ecommerce.LiveIntegration
 
           // order line unit price
           PriceInfo unitPrice = new PriceInfo();
+
           dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLineUnitPrice']");
           if (!dAux.HasValue)
           {
-            dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLineUnitPriceWithVat']");
+            dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLineUnitPriceWithVAT']");
           }
 
           if (dAux.HasValue)
           {
-            unitPrice.PriceWithVAT = dAux.Value;
-            unitPrice.PriceWithoutVAT = unitPrice.PriceWithVAT - unitPrice.VAT;
+            unitPrice.PriceWithVAT = dAux.Value * multiplier;
+            dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLineUnitPriceWithoutVAT']");
+            if (dAux.HasValue)
+            {
+                unitPrice.PriceWithoutVAT = dAux.Value * multiplier;
+            }
+            else
+            {
+                unitPrice.PriceWithoutVAT = unitPrice.PriceWithVAT - unitPrice.VAT;
+            }
           }
           else
           {
-            dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLineUnitPriceWithoutVat']");
+            dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLineUnitPriceWithoutVAT']");
             if (dAux.HasValue)
             {
-              unitPrice.PriceWithoutVAT = dAux.Value;
+              unitPrice.PriceWithoutVAT = dAux.Value * multiplier;
               unitPrice.PriceWithVAT = unitPrice.PriceWithoutVAT + unitPrice.VAT;
             }
           }
 
           orderLine.SetUnitPrice(unitPrice, false);
-          orderLine.Type = Convert.ToString(Convert.ToInt32(OrderLineType.Fixed));
-
+          
           // order line price
           dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLinePrice']");
           if (!dAux.HasValue)
           {
-            dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLinePriceWithVat']");
+            dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLinePriceWithVAT']");
           }
 
           if (dAux.HasValue)
           {
             // order line price with vat
-            orderLine.Price.PriceWithVAT = dAux.Value;
-            orderLine.Price.PriceWithoutVAT = orderLine.Price.PriceWithVAT - orderLine.Price.VAT;
+            orderLine.Price.PriceWithVAT = dAux.Value * multiplier;
+            dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLinePriceWithoutVAT']");
+            if (dAux.HasValue)
+            {
+                orderLine.Price.PriceWithoutVAT = dAux.Value * multiplier;
+            }
+            else
+            {
+                orderLine.Price.PriceWithoutVAT = orderLine.Price.PriceWithVAT - orderLine.Price.VAT;
+            }
           }
           else
           {
             // check if order line has price without vat
-            dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLinePriceWithoutVat']");
+            dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLinePriceWithoutVAT']");
             if (dAux.HasValue)
             {
-              orderLine.Price.PriceWithoutVAT = dAux.Value;
+              orderLine.Price.PriceWithoutVAT = dAux.Value * multiplier;
               orderLine.Price.PriceWithVAT = orderLine.Price.PriceWithoutVAT + orderLine.Price.VAT;
             }
           }
+
+          //orderLine.Type = Convert.ToString(Convert.ToInt32(OrderLineType.Product));
 
           //Set OrderLineCustomFields values
           if (AddOrderLineFieldsToRequest && orderLine.OrderLineFieldValues.Count > 0)
@@ -584,13 +632,16 @@ namespace Dna.Ecommerce.LiveIntegration
       catch (Exception anyError)
       {
         Logger.Instance.Log(ErrorLevel.Error, string.Format("Error processing order line. Error: '{0}' productNumber = {1}.", anyError.Message, productNumber));
-        throw ;
+        throw;
       }
     }
 
-    private static void ProcessDiscountOrderLines(Order order, OrderLineCollection discountOrderLines, XmlNode orderLineNode, string orderLineType)
+    private static void ProcessDiscountOrderLines(Order order, OrderLineCollection discountOrderLines, XmlNode orderLineNode, string orderLineType, bool orderCreated)
     {
-      string orderLineId = orderLineNode.SelectSingleNode("column [@columnName='OrderLineId']").InnerText;
+        Logger.Instance.Log(ErrorLevel.DebugInfo, "ProcessDiscountOrderLines..."); // TODO: removeee
+
+        string orderLineId = orderLineNode.SelectSingleNode("column [@columnName='OrderLineId']")?.InnerText;
+        string orderLineParentId = orderLineNode.SelectSingleNode("column [@columnName='OrderLineParentLineID']")?.InnerText;
 
       try
       {
@@ -603,52 +654,70 @@ namespace Dna.Ecommerce.LiveIntegration
         var orderLine = new OrderLine
         {
           Order = order,
-          DiscountId = orderLineId,
+          OrderId = order.Id,
+          Modified = DateTime.Now,
+          DiscountId = (string.IsNullOrEmpty(orderLineId) ? orderLineParentId : orderLineId),
           Quantity = 1,
           Type = orderLineType,
-          ProductName = Settings.Instance.TextForDiscounts
+          ProductName =  Settings.Instance.TextForDiscounts
         };
+
+        double multiplier = 1;
 
         if (orderLineType == "3") //1=order discount, 3=Product Discount
         {
-          string parentProductId = orderLineNode.SelectSingleNode("column [@columnName='OrderLineProductNumber']").InnerText;
-          foreach (var productOrderLine in order.OrderLines)
-          {
-            if (productOrderLine.ProductId == parentProductId)
-            {
-              orderLine.ParentLineId = productOrderLine.Id;
-            }
-          }
+                //string parentProductId = orderLineNode.SelectSingleNode("column [@columnName='OrderLineProductNumber']").InnerText;
+                //foreach (var prod  uctOrderLine in order.OrderLines)
+                //{
+                //  if (productOrderLine.ProductId == parentProductId)
+                //  {
+                //    orderLine.ParentLineId = productOrderLine.Id;
+                //  }
+                //}
+                string parentProductNumber = orderLineNode.SelectSingleNode("column [@columnName='OrderLineProductNumber']").InnerText;
+                foreach (var productOrderLine in order.OrderLines)
+                {
+                    if (string.Equals(productOrderLine.ProductNumber, parentProductNumber, StringComparison.OrdinalIgnoreCase))
+                    {
+                        orderLine.ParentLineId = productOrderLine.Id;
+                        //orderLine.ProductId = productOrderLine.ProductId;
+                        //orderLine.ProductVariantId = productOrderLine.ProductVariantId;
+                        //orderLine.ProductNumber = productOrderLine.ProductNumber;
+
+                        // if the order is created in NAV, the price the comes back already has the multiplier in it
+                        if (!orderCreated)
+                        {
+                            multiplier = productOrderLine.Product?.GetUnitPriceMultiplier() ?? 1;
+                        }
+                    }
+                }
         }
 
         dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLineQuantity']");
-        if (dAux.HasValue)
+        if (dAux.HasValue) 
         {
           orderLine.Quantity = dAux.Value;
         }
 
-        dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLinePriceWithoutVat']");
-        if (dAux.HasValue)
-        {
-          // discounts in DW must be in negative
-          dAux = dAux.Value > 0 ? -dAux.Value : dAux.Value;
-          orderLine.UnitPrice.PriceWithVAT = dAux.Value;
-          orderLine.UnitPrice.PriceWithoutVAT = dAux.Value;
-        }
+        double priceWithoutVAT = ReadDouble(orderLineNode, "column [@columnName='OrderLinePriceWithoutVAT']").Value * multiplier;
+        double priceWithVAT = ReadDouble(orderLineNode, "column [@columnName='OrderLinePriceWithVAT']").Value * multiplier;
 
-        orderLine.Price.PriceWithVAT = orderLine.UnitPrice.PriceWithVAT * orderLine.Quantity;
-        orderLine.Price.PriceWithoutVAT = orderLine.UnitPrice.PriceWithoutVAT * orderLine.Quantity;
+        orderLine.UnitPrice.PriceWithoutVAT = -Math.Abs(priceWithoutVAT / Math.Max(1, orderLine.Quantity));
+        orderLine.UnitPrice.PriceWithVAT = -Math.Abs(priceWithVAT / Math.Max(1, orderLine.Quantity));
+
+        orderLine.Price.PriceWithoutVAT = -Math.Abs(priceWithoutVAT);
+        orderLine.Price.PriceWithVAT = -Math.Abs(priceWithVAT);
+
         //orderLine.Price.PriceWithVAT =
         //    -Helpers.ParseDouble(
         //        orderLineNode.SelectSingleNode("column [@columnName='OrderLineUnitPriceWithVAT']").
         //            InnerText);
 
-        orderLine.Type = Converter.ToString(Converter.ToInt32(OrderLineType.ProductDiscount));
         discountOrderLines.Add(orderLine);
       }
       catch (Exception anyError)
       {
-        Logger.Instance.Log(ErrorLevel.Error, string.Format("Error processing order line. Error: '{0}' OrderLineId = {1}.", anyError.Message, orderLineId));
+        Logger.Instance.Log(ErrorLevel.Error, string.Format("Error processing order line. Error: '{0}' OrderLineId = {1}.", anyError, orderLineId));
         throw;
       }
     }
@@ -697,23 +766,35 @@ namespace Dna.Ecommerce.LiveIntegration
       }
     }
 
-    private static OrderLine CreateOrderLine(Order order, string productId)
+    private static OrderLine CreateOrderLine(Order order, string productNumber)
     {
-      var orderId = order == null ? "is null" : order.Id ?? "ID is null";
+      //var orderId = order == null ? "is null" : order.Id ?? "ID is null";
 
-      var scalar = Database.ExecuteScalar(string.Format("SELECT TOP 1 ProductID FROM EcomProducts WHERE ProductNumber = '{0}'", productId));
-      if (scalar == null || string.IsNullOrWhiteSpace(scalar.ToString()))
+      //var scalar = Database.ExecuteScalar(string.Format("SELECT TOP 1 ProductID FROM EcomProducts WHERE ProductNumber = '{0}'", productNumber));
+      //if (scalar == null || string.IsNullOrWhiteSpace(scalar.ToString()))
+      //{
+      //  Logger.Instance.Log(ErrorLevel.Error, string.Format("Cannot CreateOrderLine: No product found with ProductNumber = '{0}' Order = {1}", productNumber, orderId));
+      //  return null;
+      //}
+      //var product = Dynamicweb.Ecommerce.Products.Product.GetProductById(scalar.ToString());
+      //if (product == null)
+      //{
+      //      Logger.Instance.Log(ErrorLevel.Error, $"The product with id {scalar} could not be extracted. Order = {order.Id}");
+      //      return null;
+      //}
+      //if (product.Number != productNumber)
+      //{
+      //  Logger.Instance.Log(ErrorLevel.Error,
+      //    string.Format("Cannot CreateOrderLine: ProductNumber is different from the response ProductNumber = '{0}' Order = {1}", productNumber, orderId));
+      //  return null;
+      //}
+
+      var product = Dynamicweb.Ecommerce.Products.Product.GetProductByNumber(productNumber);
+      if (product == null)
       {
-        Logger.Instance.Log(ErrorLevel.Error, string.Format("Cannot CreateOrderLine: No product found with ProductID = '{0}' Order = {1}", productId, orderId));
-        return null;
+          Logger.Instance.Log(ErrorLevel.Error, $"The product with number {productNumber} could not be found. Order = {order.Id}");
       }
-      var product = Dynamicweb.Ecommerce.Products.Product.GetProductById(scalar.ToString());
-      if (product == null || product.Id != productId)
-      {
-        Logger.Instance.Log(ErrorLevel.Error,
-          string.Format("Cannot CreateOrderLine: No product found or ProductNumber is different from the response ProductID = '{0}' Order = {1}", productId, orderId));
-        return null;
-      }
+
       OrderLine orderLine = new OrderLine();
       orderLine.SetProductInformation(product);
       orderLine.Type = ((int)OrderLineType.Product).ToString();
@@ -744,7 +825,7 @@ namespace Dna.Ecommerce.LiveIntegration
 
     private static string GetSessionCacheKey()
     {
-      var user = User.GetCurrentUser();
+      var user = User.GetCurrentExtranetUser();
       string sessionCache = Constants.CacheConfiguration.OrderCommunicationHash;
 
       if (user != null)

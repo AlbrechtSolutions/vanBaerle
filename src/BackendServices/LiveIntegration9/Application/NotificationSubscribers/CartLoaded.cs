@@ -23,7 +23,7 @@ namespace Dna.Ecommerce.LiveIntegration.NotificationSubscribers
             {
                 // load cart when "Keep cart in context after checkout step" is on
                 // if order is completed and exported to the ERP no need to update again
-                if (myArgs.Cart.Complete && myArgs.Cart.IsExported)
+                if (myArgs.Cart.Complete && (myArgs.Cart.IsExported || !string.IsNullOrEmpty(myArgs.Cart.IntegrationOrderId)))
                 {
                     return;
                 }

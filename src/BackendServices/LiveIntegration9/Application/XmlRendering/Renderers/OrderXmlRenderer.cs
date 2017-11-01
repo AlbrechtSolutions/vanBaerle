@@ -30,7 +30,7 @@ namespace Dna.Ecommerce.LiveIntegration.XmlRendering.Renderers
             var xmlDocument = BuildXmlDocument();
             var tablesNode = CreateAndAppendTablesNode(xmlDocument, settings);
             tablesNode.AppendChild(BuildOrderXml(xmlDocument, order, settings));
-            tablesNode.AppendChild(BuildOrderLinesXml(xmlDocument, order));
+            tablesNode.AppendChild(BuildOrderLinesXml(xmlDocument, order, settings.CreateOrder));
             if (settings.AddOrderLineFieldsToRequest)
             {
                 tablesNode.AppendChild(BuildOrderLineFieldsXml(xmlDocument, order));
@@ -48,11 +48,15 @@ namespace Dna.Ecommerce.LiveIntegration.XmlRendering.Renderers
             var tableNode = CreateTableNode(xmlDocument, "EcomOrders");
             var itemNode = CreateAndAppendItemNode(tableNode, "EcomOrders");
 
-            var user = User.GetUserByID(order.CustomerAccessUserId) ?? (!ExecutingContext.IsBackEnd() ? User.GetCurrentUser() : null);
+            var user = User.GetUserByID(order.CustomerAccessUserId) ?? (!ExecutingContext.IsBackEnd() ? User.GetCurrentExtranetUser() : null);
 
             // do not use order.Modified in XML unless the field can be ignored for hash calculation
 
-            AddChildXmlNode(itemNode, "OrderCustomerAccessUserExternalId", !string.IsNullOrWhiteSpace(user?.ExternalID) ? user.ExternalID : Settings.Instance.AnonymousUserKey);
+            // in the current version of NAV for vanBaerle, the calculation is made using the ExternalId field name but the logic corresonds to the customer number in DynamicWeb
+            //AddChildXmlNode(itemNode, "OrderCustomerAccessUserExternalId", !string.IsNullOrWhiteSpace(user?.ExternalID) ? user.ExternalID : Settings.Instance.AnonymousUserKey);
+            AddChildXmlNode(itemNode, "OrderCustomerAccessUserExternalId", !string.IsNullOrWhiteSpace(user?.CustomerNumber) ? user.CustomerNumber : Settings.Instance.AnonymousUserKey);
+
+
             AddChildXmlNode(itemNode, "OrderCustomerNumber", !string.IsNullOrWhiteSpace(user?.CustomerNumber) ? user.CustomerNumber : Settings.Instance.AnonymousUserKey);
             AddChildXmlNode(itemNode, "CreateOrder", settings.CreateOrder.ToString());
             AddChildXmlNode(itemNode, "OrderId", order.Id);
@@ -135,7 +139,7 @@ namespace Dna.Ecommerce.LiveIntegration.XmlRendering.Renderers
             return paymentInformation;
         }
 
-        private XmlNode BuildOrderLinesXml(XmlDocument xmlDocument, Order order)
+        private XmlNode BuildOrderLinesXml(XmlDocument xmlDocument, Order order, bool createOrder)
         {
             var tableNode = CreateTableNode(xmlDocument, "EcomOrderLines");
 
@@ -145,11 +149,15 @@ namespace Dna.Ecommerce.LiveIntegration.XmlRendering.Renderers
                 CreateOrderLineXml(tableNode, orderLine);
             }
 
-            // Order lines (order discounts, and product discounts)
-            foreach (var orderLine in order.OrderLines.Where(ol => ol.IsDiscount()))
+            if (createOrder)
             {
-                CreateOrderLineXml(tableNode, orderLine);
+                // Order lines (order discounts, and product discounts)
+                foreach (var orderLine in order.OrderLines.Where(ol => ol.IsDiscount()))
+                {
+                    CreateOrderLineXml(tableNode, orderLine);
+                }
             }
+
             return tableNode;
         }
 

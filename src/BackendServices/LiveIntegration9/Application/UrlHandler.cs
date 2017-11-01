@@ -127,7 +127,7 @@ namespace Dna.Ecommerce.LiveIntegration
 
 		private bool TreatUserFields(string fieldName, string fieldValue)
 		{
-			User user = User.GetCurrentUser();
+			User user = User.GetCurrentExtranetUser();
 
 			if (user == null)
 				return false;

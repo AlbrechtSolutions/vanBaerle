@@ -34,7 +34,7 @@ namespace Dna.Ecommerce.LiveIntegration.XmlRendering.Renderers
       }
       var currencyCode = Dynamicweb.Ecommerce.Common.Context.Currency.Code;
 
-      var user = User.GetCurrentUser();
+      var user = User.GetCurrentExtranetUser();
       tablesNode.SetAttribute("ExternalUserId", !string.IsNullOrWhiteSpace(user?.ExternalID) ? user.ExternalID : Settings.Instance.AnonymousUserKey);
       tablesNode.SetAttribute("AccessUserCustomerNumber", !string.IsNullOrWhiteSpace(user?.CustomerNumber) ? user.CustomerNumber : Settings.Instance.AnonymousUserKey);
       tablesNode.SetAttribute("type", "filter");
@@ -45,7 +45,7 @@ namespace Dna.Ecommerce.LiveIntegration.XmlRendering.Renderers
         if (product != null)
         {
           AddChildXmlNode(itemNode, "ProductId", product.Id);
-          AddChildXmlNode(itemNode, "ProductVariantId", product.VariantId);
+          AddChildXmlNode(itemNode, "ProductVariantId", "" /* we deactivated the variant id for this implementation because NAV throws errors and we must ignore the variants: product.VariantId*/);
           AddChildXmlNode(itemNode, "ProductNumber", product.Number);
           AddChildXmlNode(itemNode, "CurrencyCode", currencyCode);
 

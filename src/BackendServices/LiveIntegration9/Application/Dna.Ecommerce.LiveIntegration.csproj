@@ -111,6 +111,7 @@
     <Compile Include="Addin\LiveIntegrationAddIn.cs" />
     <Compile Include="Addin\RibbonBar\RibbonBarAddInBase.cs" />
     <Compile Include="Addin\SettingsSerializer.cs" />
+    <Compile Include="Facade\PriceFacade.cs" />
     <Compile Include="ProductPrice.cs" />
     <Compile Include="Exceptions\LiveIntegrationException.cs" />
     <Compile Include="Extensions\IntegrationExtensions.cs" />

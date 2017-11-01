@@ -292,7 +292,7 @@ namespace Dna.Ecommerce.LiveIntegration.Addin
       bool forceDownload = Converter.ToBoolean(request["forceDownload"]);
 
       string requestString = string.Format("<GetPDFForItem type=\"{0}\" id=\"{1}\"", type, id);
-      var user = User.GetCurrentUser();
+      var user = User.GetCurrentExtranetUser();
       if (user?.ExternalID != null) requestString += $" externalUserID=\"{user.ExternalID}\"";
       requestString += "></GetPDFForItem>";
       string base64EncodedPdf = ErpServiceCaller.GetDataFromRequestString(UrlHandler.Instance.GetWebServiceUrl(), SecurityKey, requestString);
