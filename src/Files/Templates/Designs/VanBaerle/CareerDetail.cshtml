@@ -1,0 +1,52 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@MasterPageFile("Master.cshtml")
+@Title("Detail Page 2")
+@Description("Model for detail page")
+@Include("includes/PageTemplates/ItemDetailHelpers.cshtml")
+@{
+    string jobDate = @GetDate("DwPageCreatedDate").ToString("MMMM") + " " + @GetDate("DwPageCreatedDate").Day.ToString() + ", " + @GetDate("DwPageCreatedDate").Year.ToString();
+    bool jobsForm = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["jobform"]);
+}
+<section class="jobsForm_@jobsForm.ToString()">
+  <div class="col-xs-12 noPadding careerDetail">
+    <div class="col-xs-12 noPadding">
+      <div class="col-xs-12 noPadding">
+        @RenderHeading()
+        @RenderImage()
+
+        <div class="@GetItemClass() headerCareer">
+          @propertyValue(Translate("Date Posted"), "jobDatePosted", jobDate)
+          @if (!string.IsNullOrEmpty(GetString("Item.Title.Value")))
+          {
+            @propertyValue(Translate("jobTitle", "Job Title"), "jobTitle", @GetString("Item.Title.Value"))
+          }
+          @if (!string.IsNullOrEmpty(GetString("Item.Subtitle.Value")))
+          {
+            @propertyValue(Translate("location", "Location"), "jobLocation", @GetString("Item.Subtitle.Value"))
+          }
+          @RenderModule()
+        </div>
+        @if(!string.IsNullOrEmpty(GetString("DwContent(detailContainer)")) ){
+          string link = (!string.IsNullOrEmpty(GetString("Item.ExternalLink.Value"))) ? GetString("Item.ExternalLink.Value") : "",
+                 file = (!string.IsNullOrEmpty(GetString("Item.File.Value"))) ? GetString("Item.File.Value") : "",
+                 formDetailUrl = string.Format("Default.aspx?ID={0}&jobform=true",Pageview.Page.ID);
+
+          <section data-id="@(GetString("Item.Id"))" data-name="@(GetString("Item.Title.Value"))" class="col-xs-12 noPadding" id="detailContainerSection">
+            <div id="detailContainer" class="dwcontent row" title="Main content" settings="id:detailContainer"></div>
+            @if(!jobsForm) {
+              <div class="paragraphButton">
+                <a href="@formDetailUrl" class="btn">@Translate("apply", "Apply")</a>
+              </div>
+            }
+          </section>
+        }
+    </div>
+  </div>
+</section>
+
+@helper propertyValue(string translate, string spanId, string value) {
+    <div class="generalMarginBottom">
+        <span class="bold text-right">@translate</span><span id="@spanId">@value</span>
+    </div>
+}

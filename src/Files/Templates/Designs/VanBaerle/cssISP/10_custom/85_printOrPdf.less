@@ -1,0 +1,68 @@
+/**
+ * Description: Alencastre Tools
+ * User: ShareIT
+ * Date: 12/Jan/2016
+**/
+
+@import url(configs.less);
+
+/* PrintOrPdf */
+
+.printOrPdf {
+    #centralContainer > div.row {
+        margin-top: 0;
+    }
+    #headerContainer {
+        margin-bottom: 0;
+    }
+    #topHeaderContainer {
+        margin: 20px 15px;
+
+        > figure {
+            padding-left: 0;
+        }
+    }
+    #orderDetails {
+        margin-top: 0 !important;
+
+        dt {
+            padding-left: 0;
+        }
+    }
+    .cartProductsList {
+        div.price,
+        div.discount,
+        div.totalPrice,
+        div.quantity {
+          margin-top: 0;
+        }
+
+        > li{
+            margin-top: 5px;
+            padding-bottom: 5px;
+        }
+        .priceForDiscounts  {
+            padding-left: 0;
+        }
+    }
+    #orderDetailContainer .blockContent {
+        margin: 20px 0 0 0;
+    }
+
+    #totalPriceContainer .price {
+        padding-left: 20px;
+    }
+    #centralContent {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    #productContent {
+        margin-top: 30px;
+        border-top: 1px solid @secondary;
+    }
+    .totalValues {
+        > div:first-child {
+            padding: 5px 0;
+        }
+    }
+}

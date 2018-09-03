@@ -1,0 +1,98 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+
+  string designFolder = GetString("Template:DesignBaseUrl");
+  System.Web.HttpContext.Current.Items["HideFooter"] = true;
+
+}
+
+<main class="landing">
+  <div class="landing__slides">
+    <div class="landing__slide landing__slide--home">
+      <div class="landing__gradient">
+        <h1 class="landing__headline">We dare to <strong>care</strong></h1>
+      </div>
+      <div class="landing__background"></div>
+      <div class="landing__foreground"></div>
+    </div>
+    <div class="landing__slide landing__slide--half" style="background-image:url(@designFolder/assets/images/dandelion.jpg)">
+      <div class="slide-half__content">
+        <div class="slide-half__inner">
+          <h1 class="slide-half__title">Hygiene</h1>
+          <div class="slide-half__content-wrapper">
+            <div class="slide-half__line"></div>
+            <div class="slide-half__content-right">
+              <h2 class="slide-half__subtitle">a pure necessity</h2>
+              <div class="slide-half__icons">
+                <div class="icon-wrapper">
+                  <img class="icon" src="@designFolder/assets/images/hands.svg">
+                </div>
+                <div class="icon-wrapper">
+                  <img class="icon" src="@designFolder/assets/images/restaurant.svg">
+                </div>
+                <div class="icon-wrapper">
+                  <img class="icon" src="@designFolder/assets/images/hotel.svg">
+                </div>
+                <div class="icon-wrapper">
+                  <img class="icon" src="@designFolder/assets/images/hospital.svg">
+                </div>
+                <div class="icon-wrapper">
+                  <img class="icon" src="@designFolder/assets/images/factory.svg">
+                </div>
+              </div>
+              <a class="slide-half__more" href="#">View more <i class="icon vb-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="landing__slide landing__slide--half" style="background-image:url(@designFolder/assets/images/silicates-bg.jpg)">
+      <div class="slide-half__content">
+        <div class="slide-half__inner">
+          <h1 class="slide-half__title">Silicates</h1>
+          <div class="slide-half__content-wrapper">
+            <div class="slide-half__line"></div>
+            <div class="slide-half__content-right">
+              <h2 class="slide-half__subtitle">Unique and manifold</h2>
+              <div class="slide-half__icons">
+                <div class="icon-wrapper">
+                  <img class="icon" src="@designFolder/assets/images/factory-2.svg">
+                </div>
+                <div class="icon-wrapper">
+                  <img class="icon" src="@designFolder/assets/images/paintbrush.svg">
+                </div>
+                <div class="icon-wrapper">
+                  <img class="icon" src="@designFolder/assets/images/fire-building.svg">
+                </div>
+                <div class="icon-wrapper">
+                  <img class="icon" src="@designFolder/assets/images/checklist.svg">
+                </div>
+              </div>
+              <a class="slide-half__more" href="#">View more <i class="icon vb-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    @*<div class="landing__slide landing__slide--last">
+      <div class="image-bar image-bar--top" style="background-image:url(@designFolder/assets/images/home-slide.jpg);"></div>
+      <div class="image-bar image-bar--bottom" style="background-image:url(@designFolder/assets/images/home-slide-2.jpg);"></div>
+    </div>*@
+  </div>
+  <div class="landing__bottom">
+    <div class="scroll-indicator">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <div class="progress landing-progress">
+      <div class="progress-bar landing-progress-bar"></div>
+    </div>
+  </div>
+</main>
+
+
+
+
+

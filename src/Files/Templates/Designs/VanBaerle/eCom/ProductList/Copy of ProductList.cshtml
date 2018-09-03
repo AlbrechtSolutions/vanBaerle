@@ -1,0 +1,189 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb;
+@using Dynamicweb.Frontend;
+@Include("../../includes/Razor/GetImage.cshtml")
+@Include("../../includes/Razor/VerifyImage.cshtml")
+@{
+  Dynamicweb.Content.Items.Item item = Pageview.Area.Item;
+  bool isLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+  bool isFrontEnd = Dynamicweb.Environment.ExecutingContext.IsFrontEnd();
+  var request = System.Web.HttpContext.Current.Request.Params;
+  List<LoopItem> prodLoop = GetLoop("Products");
+  List<LoopItem> prodGLoop = GetLoop("ProductGroups");
+  int totalPagesNum = GetInteger("Ecom:ProductList.TotalPages");
+  int curPage = !string.IsNullOrEmpty(request["PageNum"]) ? Convert.ToInt32(request["PageNum"].ToString()) : 1;
+  bool noResults = false;
+  bool showQuantity = item["ShowQuantityField"].ToString() == "True" ? true : false;
+  string currentPageId = Pageview.Page.ID.ToString();
+  string imagesFolder = "/Files/Files/" + designName + "/Products/";
+  string totalPages = GetString("Ecom:ProductList.TotalPages");
+  string nextPage = GetString("Ecom:ProductList.NextPage");
+  string pagingHref = "";
+  string sortBy = !string.IsNullOrEmpty(request["sortby"]) ? request["sortby"] : "";
+  string sortOrder = !string.IsNullOrEmpty(request["SortOrder"]) ? request["SortOrder"] : "";
+string minPrice = prodLoop.OrderBy(s => s.GetDouble("Ecom:Product.Price.Price")).First().GetString("Ecom:Product.Price.Price");
+string maxPrice = prodLoop.OrderByDescending(s => s.GetDouble("Ecom:Product.Price.Price")).First().GetString("Ecom:Product.Price.Price");
+  string qString = !string.IsNullOrEmpty(request["q"]) ? request["q"] : "";
+  string dataView = System.Web.HttpContext.Current.Request.Cookies["dataList"] != null ? System.Web.HttpContext.Current.Request.Cookies["dataList"].Value : "";
+}
+<div class="container hygiene-list-product">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="row header">Categories</div>
+            <div class="caterogy-collapse row">
+                <div class="panel-group" id="accordion">
+                   @foreach (LoopItem productG in prodGLoop)
+                      {
+              
+                      String productName = productG.GetString("Ecom:ProductGroup.Name");
+          
+                    <div class="panel panel-default category-panel">
+                     
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="accordion-toggle collapsed">
+                                    @productName</a>
+                            </h4>
+                        </div>                      
+                        <div id="collapse1" class="panel-collapse collapse">
+                            <ul class="list-group">
+                                <li class="list-group-item"><a href="#">Geschirr- und Universalreiniger</a></li>
+                                <li class="list-group-item"><a href="#">Allzweck-, Bodenreiniger und Entfetter</a></li>
+                                <li class="list-group-item"><a href="#">Grill- und Backofenreinigungsmittel</a></li>
+                                <li class="list-group-item"><a href="#">Geschirr- und Universalreiniger</a></li>
+                                <li class="list-group-item"><a href="#">Allzweck-, Bodenreiniger und Entfetter</a></li>
+                                <li class="list-group-item"><a href="#">Grill- und Backofenreinigungsmittel</a></li>
+                                <li class="list-group-item"><a href="#">Geschirr- und Universalreiniger</a></li>
+                                <li class="list-group-item"><a href="#">Allzweck-, Bodenreiniger und Entfetter</a></li>
+                                <li class="list-group-item"><a href="#">Grill- und Backofenreinigungsmittel</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                  }                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 header-small">
+                    Ecological rating
+                </div>
+                <div class="col-md-12">
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="">Classic</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="">Green</label>
+                    </div>
+                </div>
+                      @TemplateTags()
+            </div>
+        </div>
+        <div class="col-md-9 product-container">
+            <div class="row">
+                <div class="search-result col-md-2">Search Results: </div> <div class="col-md-4 text-left">15 products found</div>
+                <div class="col-md-6 text-right paging">
+                    Show: <a href="#" class="active">1</a> <a href="#">2</a> <a href="#">3</a>
+                </div>
+            </div>
+            <div class="row keyword">
+                <div class="col-md-3">
+                    <span class="badge badge-default badge-keyword">Keyword 1 <a href="#"><i class="fa fa-times-circle" aria-hidden="true"></i></a></span>
+                    <span class="badge badge-default badge-keyword">Keyword 2 <a href="#"><i class="fa fa-times-circle" aria-hidden="true"></i></a></span>
+                </div>
+
+                <div class="col-md-3 text-left remove-all">
+                    <a href="#">Remove all</a>
+                </div>
+
+            </div>
+            <div class="row list-product">
+                <div class="col-md-12">
+                  	@foreach (var product in prodLoop) {
+                    <div class="row product">
+                        <div class="col-md-3">
+                            <img src="img/product-1.png" class="img-responsive"/>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="product-header row">Relaclean® multi</div>
+                            <div class="product-description row">Ökologischer, unparfümierter, leicht alkalischer, schäumender Allzweckreiniger und Ent- fetter. Entfernt wirkungsvoll fettige Rückstände von allen abwaschbaren Ober ächen.</div>
+                            <div class="view-more row">
+                                <a href="@product.GetString("Ecom:Product.LinkGroup.Clean")">View more</a>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-left">
+                            <div class="row color">
+                                GREEN
+                            </div>
+                            <div class="row info-1">
+                                pH-Wert
+                            </div>
+                            <div class="row">
+                                <div class="point">
+                                    9.4
+                                </div>
+
+                            </div>
+                            <div class="row info-2">
+                                Anwendung
+                            </div>
+                            <div class="row">
+                                <img src="img/hygiene-list-product-1.png" class="pull-right img-responsive"/>
+                            </div>
+                        </div>
+                    </div>
+                  	}
+                  <!--
+                    <div class="row product">
+                        <div class="col-md-3">
+                            <img src="img/product-1.png" class="img-responsive"/>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="product-header row">Relaclean® multi</div>
+                            <div class="product-description row">Ökologischer, unparfümierter, leicht alkalischer, schäumender Allzweckreiniger und Ent- fetter. Entfernt wirkungsvoll fettige Rückstände von allen abwaschbaren Ober ächen.</div>
+                            <div class="view-more row">
+                                <a href="hygiene-product-detail.html">View more</a>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-left">
+                            <div class="row color">
+                                GREEN
+                            </div>
+                            <div class="row info-1">
+                                pH-Wert
+                            </div>
+                            <div class="row">
+                                <div class="point">
+                                    9.4
+                                </div>
+
+                            </div>
+                            <div class="row info-2">
+                                Anwendung
+                            </div>
+                            <div class="row">
+                                <img src="img/hygiene-list-product-1.png" class="pull-right img-responsive"/>
+                            </div>
+                        </div>
+                    </div>
+					-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Render this to see all available tags on the root fo the template (remove the {remove-me} when needed) *@
+      @*
+      @Template{remove-me}Tags()
+      *@
+      @{
+      
+      	foreach (var product in GetLoop("Products")) {
+      		@* Render this to see all available tags per product (remove the {remove-me} when needed *@
+      		@*
+      		@product.Template{remove-me}Tags()
+      		*@
+      	}
+      
+      }
+      

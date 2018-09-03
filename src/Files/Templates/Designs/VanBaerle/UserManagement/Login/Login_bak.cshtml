@@ -1,0 +1,57 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  bool userIsLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+  Dynamicweb.Content.Items.Item areaItem = Pageview.Area.Item;
+  
+  if(userIsLoggedIn) {
+    System.Web.HttpContext.Current.Response.Redirect(areaItem["MyProfile"].ToString());
+  }
+  
+}
+@if(!userIsLoggedIn) {
+ <div class="container login">
+    <div class="text-center header row">
+        <div class="col-md-12">
+            Login
+        </div>
+
+    </div>
+    <div class="text-center note row">
+        <div class="col-md-12">
+          Don't have an account? <a href="/register">Sign Up</a>
+        </div>
+
+    </div>
+    <div class="row form-login">
+        <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+            <form id="contact-form" action="/" name="ExtUserForm_Main" method="post">
+              <input type="hidden" name="redirect" value="@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl("Default.aspx?ID=" + Pageview.Page.ID.ToString())">
+              <input type="hidden" name="ID" value="@(GetGlobalValue("Global:Page.ID"))">
+                <div class="row">
+                    <div class="col-md-12 login-input">
+                        <input type="text" class="form-control" id="UserName" name="UserName" placeholder="Username or Email" required="required" >
+                        <input type="password" class="form-control" id="Password" name="Password" placeholder="Password" required="required" >
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="checkbox">
+                            <label><input type="checkbox"> Remember me</label>
+                        </div>
+                    </div>
+                    <div class="row login-button">
+                        <div class="col-md-6 col-sm-6 col-xs-6">
+                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        </div>
+                	</div>
+                    <div class="col-md-6 col-sm-6 forgot-password col-xs-6">
+                      <a href="/my-account?LoginAction=Recovery" class="pull-right">Forgot Password?</a>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+}

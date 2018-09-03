@@ -1,0 +1,565 @@
+/**
+ * Description: styles related forms.
+ * User: ShareIT
+ * Date: 12/Jan/2016
+**/
+
+@import url(configs.less);
+
+
+/* General */
+fieldset.mandatory > label:after
+{
+  content: " *";
+}
+
+[type="text"] {
+  -moz-appearance:    textfield;
+  -webkit-appearance: textfield;
+  appearance: textfield;
+}
+
+// DM Forms
+.fancybox-inner .ajaxContainer .DMForms
+{
+  padding-top:15px;
+}
+
+
+.DMForms  {
+    input[type=text],
+    input:not([type=submit]):not([type=checkbox]):not([type=radio]):not(.fakeInput):not([type=reset]),
+    input[type=password],
+    .fakefile > input,
+    textarea,
+    .bootstrap-select > .btn
+    {
+      text-indent: 10px;
+      width: 100%;
+      height: 40px;
+      border: 1px solid @formBorder;
+      border-radius: 0;
+      margin-top: 5px;
+      margin-bottom: @spacing;
+      .box-sizing(border-box);
+    }
+    .Radio, .CheckBoxList {
+        .input-group {
+            margin-top: 15px;
+
+            label {
+              margin-left: 10px;
+            }
+        }
+    }
+
+    .Text,
+    input[type=submit],
+    input[type=reset]  {
+      margin-left: 22%;
+    }
+    .selectpicker .Text {
+      margin-left: 0;
+    }
+    .largeText  {
+      margin: 30px 0;
+    }
+    .Select {
+      margin: 30px 0 0 0;
+    }
+    .bootstrap-select {
+      margin-bottom: @spacing;
+    }
+    textarea
+    {
+      height: 132px;
+      padding-top: 10px;
+    }
+    .bootstrap-select > .btn
+    {
+      margin: 0;
+    }
+    > div fieldset:first-child {
+        margin-top: 0;
+    }
+    .formButtonsWithReset {
+        margin-left: 22%;
+        
+        input{
+            margin-left: 0;
+        }
+        a {
+            margin-right:10px;
+        }
+    }
+
+    .Radio, .CheckBoxList {
+        .input-group label {
+            margin-bottom: 5px;
+            margin-left: 13px;
+        }
+    }
+    .fakefile button {
+        margin-left: 2%;
+    }
+}
+
+.topMargin20 {
+    margin-top: 20px;
+}
+
+/* File input */
+.fileinputs
+{
+  cursor: pointer;
+  position: relative;
+}
+
+.fileinputs .doneAlready
+{
+  position: absolute;
+  height: 45px;
+  opacity: 0;
+  width: 100%;
+}
+
+.fakefile > button
+{
+  .btn;
+  border: 0 none;
+  width: 25%;
+  height: 40px;
+  margin-top: -3px;
+}
+
+/* Radio / Check boxes */
+.radioBoxContainer
+{
+  margin-top: @spacing;
+  width: 100%;
+}
+
+.Radio .radioBoxContainer {
+  width: auto;
+  margin: 0 0 0 15px;
+}
+
+.radioBoxContainer span:before,
+.checkBoxContainer span:before
+{
+  content: "";
+  border: 1px solid @formBorder;
+  display: inline-block;
+  margin-left: 10px;
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  margin-top: -2px;
+  vertical-align: middle;
+  background-color: @primary;
+}
+
+.radioBoxContainer span:before
+{
+  border-radius: 15px;
+}
+
+.radioBoxContainer input[type=radio]:checked + span:before,
+.checkBoxContainer input[type=checkbox]:checked + span:before
+{
+  content: "\2713";
+  font-size: 13px;
+  color: @secondary;
+  text-align: center;
+  line-height: 12px;
+}
+
+/* Date Time / Date  */
+.DateTime,
+.Date
+{
+  font-size: 0;
+}
+
+.DateTime > label,
+.Date > label
+{
+  display: block;
+  font-size: 14px;
+}
+
+.DateTime > .bootstrap-select > .btn
+{
+  width: 30%;
+  margin-right: 5%;
+}
+
+.DateTime > .bootstrap-select > .btn.DateTime_year
+{
+  margin-right: 0;
+}
+
+.Date > .bootstrap-select > .btn
+{
+  width: 25%;
+  margin-right: 5%;
+}
+
+.bootstrap-select > .btn.DateTime_hour,
+.bootstrap-select > .btn.DateTime_minute
+{
+  width: 15%;
+  margin-top: 15px;
+}
+
+.bootstrap-select > .btn
+{
+  font-size: 14px;
+  border: 1px solid @formBorder;
+  text-indent: 10px;
+  padding: 0;
+  width: 100%;
+  height: 40px;
+  background-color: @primary;
+}
+
+.bootstrap-select.btn-group .btn .caret
+{
+  display: inline-block;
+  width: 30px;
+  height: 100%;
+  top: 0;
+  right: 10px;
+  margin: 0;
+  border: 0;
+  text-align: center;
+}
+
+.bootstrap-select.btn-group .btn .caret:before
+{
+  content: "\f0d7";
+  line-height: 35px;
+}
+
+#sortContent .bootstrap-select.btn-group .btn .caret:before
+{
+  content: "\f0dc";
+}
+
+.formButtons
+{
+  overflow: hidden;
+  padding-top: 20px;
+}
+
+.contactsForm .formButtons {
+  padding-top: 0;
+}
+
+.formButtons > span
+{
+  width: 100%;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.formButtons input
+{
+  border: 0 none;
+  height: 40px;
+  cursor: pointer;
+  float: left;
+  .box-sizing(border-box)
+}
+
+.formButtons input:nth-child(even),
+.DMForms.contactsForm input[type=submit]
+{
+  margin-left: 0;
+}
+
+.DMForms .fakefile > input.fakeInput {
+  width: 73%;
+}
+
+/* Form Errors */
+
+.formErrors
+{
+  margin-bottom: 10px;
+}
+
+.formErrors,
+fieldset
+{
+  margin-top: 10px;
+}
+
+fieldset.fieldError > input[type=text],
+fieldset.fieldError > input[type=email],
+fieldset.fieldError > input[type=password],
+fieldset.fieldError > textarea,
+fieldset.fieldError > .bootstrap-select > .btn,
+.DMForms .fieldError .bootstrap-select > .btn,
+fieldset.fieldError .fakefile > input
+{
+  border: 1px solid @red !important;
+  .box-sizing(border-box);
+}
+
+.contactsInForm {
+  padding-left: 60px;
+}
+
+.contactsInForm > ul {
+  margin-top: 20px;
+}
+
+/* Calendar */
+
+.calendar
+{
+  border: 0 none;
+  width: 210px;
+  padding: 10px;
+  height: 210px;
+  border: 1px solid blue;
+}
+
+.calendar tbody td,
+.calendar thead .hilite,
+.calendar tbody .rowhilite td,
+.calendar tbody td.hilite,
+.calendar > table,
+.calendar .button,
+.calendar thead .title,
+.calendar table .wn,
+.calendar thead .name,
+.calendar tbody .day,
+.calendar .daysrow > .weekend,
+.calendar tfoot .ttip,
+.calendar td.time,
+.calendar tbody td.selected,
+.calendar tbody td.day:hover
+{
+  border: 0 none;
+  padding: 0px;
+}
+
+
+/* calendar backgrounds */
+
+.calendar
+{
+  background: white;
+}
+
+.calendar tbody td.day.selected,
+.calendar tbody td.day:hover
+{
+  background: #fed22f;
+}
+
+.calendar > table,
+.calendar tbody td,
+.calendar thead .hilite,
+.calendar tbody .rowhilite td,
+.calendar .button,
+.calendar thead .title,
+.calendar table .wn,
+.calendar thead .name,
+.calendar tbody .day,
+.calendar .daysrow > .weekend,
+.calendar tfoot .ttip,
+.calendar td.time,
+.calendar tbody td.wn:hover,
+{
+  background: none;
+}
+
+.calendar .wn,
+.calendar .time,
+.calendar .button,
+.calendar tfoot
+{
+  display: none;
+}
+
+.calendar .headrow .nav
+{
+  display: table-cell;
+}
+
+
+/* calendar text */
+
+.calendar > table
+{
+  font-size: 12px;
+}
+
+.calendar thead .title,
+.calendar thead .headrow,
+.calendar thead .button,
+.calendar tbody td.today,
+.calendar tbody .rowhilite td,
+.calendar tbody .daysrow > *,
+.calendar tfoot .footrow > *,
+.calendar tbody td.weekend
+{
+  color: #a9a9a9;
+}
+
+.calendar thead .daynames > *,
+.calendar tbody td.selected,
+.calendar tbody .day:hover
+{
+  color: blue;
+}
+
+.calendar tbody .day
+{
+  text-align: center;
+}
+
+.calendar thead .headrow > *
+{
+  text-transform: none;
+}
+
+.calendar thead,
+footer #footerContent .footerMenuHolder ul > li
+{
+  line-height: 24px;
+}
+
+.calendar .daysrow,
+.calendar thead .daynames,
+{
+  line-height: 28px;
+}
+
+
+fieldset > label,
+.headerCareer .text-right {
+  width: 20%;
+  float: left;
+}
+
+.DMForms .checkboxes,
+.DMForms .CheckBox {
+  margin-left: 21%;
+}
+
+fieldset > label {
+  line-height: 45px;
+}
+
+.DMForms fieldset.Textarea > textarea,
+.DMForms fieldset.Password > input,
+.DMForms fieldset > input[type=text],
+.DMForms fieldset > input:not([type=submit]):not([type=checkbox]):not([type=radio]),
+.DMForms fieldset.File .fakefile,
+.DMForms fieldset.Select .bootstrap-select,
+.headerCareer > div > span:last-child  {
+  margin-left: 2%;
+  width: 50% !important;
+}
+
+.DMForms.contactsForm fieldset textarea,
+.DMForms.contactsForm fieldset > input:not([type=submit]):not([type=checkbox]):not([type=radio]),
+.DMForms.contactsForm .Submit {
+  width: 100% !important;
+  margin-left: 0;
+}
+
+.contactsForm fieldset.TextInput > label,
+.contactsForm fieldset.Select > label,
+.contactsForm fieldset.File > label,
+.DMForms.contactsForm label,
+.DMForms.contactsForm fieldset.Select .bootstrap-select {
+  width: 100% !important;
+}
+
+.DMForms.contactsForm fieldset.TextInput > input,
+.DMForms.contactsForm fieldset.File > .fakefile,
+.DMForms.contactsForm fieldset.Select .bootstrap-select,
+.DMForms.contactsForm textarea {
+  margin-left: 0;
+}
+
+.DMForms.contactsForm fieldset.Select .bootstrap-select {
+  margin-top: 5px;
+}
+
+.DMForms.contactsForm fieldset > label {
+  line-height: normal;
+}
+
+.selectpicker .selected a::after {
+  content : "\2713";
+  right: 20px;
+}
+
+.selectpicker li a span.text {
+  width: 80%;
+}
+
+
+/* ------------
+        MEDIA QUERIES
+        --------------- */
+
+
+@media (max-width: @screen-xs-max)
+{
+  fieldset > label {
+    line-height: normal;
+  }
+  .DMForms.contactsForm fieldset textarea,
+  .DMForms.contactsForm .Submit,
+  .DMForms fieldset.TextInput > input,
+  .DMForms fieldset > input[type=text],
+  .DMForms fieldset.File > .fakefile,
+  .DMForms fieldset.Select .bootstrap-select,
+  .headerCareer span {
+    margin-left: 0;
+    width: 100% !important;
+  }
+}
+
+@media (max-width: @screen-sm-max)
+{
+  .DMForms.contactsForm fieldset.TextInput > input,
+  .DMForms.contactsForm fieldset.File > .fakefile,
+  .DMForms.contactsForm fieldset textarea,
+  .DMForms.contactsForm .Submit,
+  fieldset > *,
+  #cartFormContainer .DMForms fieldset > *,
+  #ExtUserForm.DMForms fieldset > *,
+  #ExtUserForm.DMForms input[type=submit]
+   {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  .contactsInForm {
+    padding-left: 0;
+  }
+  #cartFormContainer .DMForms fieldset > label,
+  .DMForms fieldset > label {
+    line-height: normal;
+  }
+  #ExtUserForm.DMForms input[type=submit] {
+    margin-left: 0;
+  }
+}
+
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max)
+{
+
+}
+
+@media (min-width: @screen-lg-min)
+{
+
+}

@@ -1,0 +1,70 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+<script type="text/javascript">
+     function copyUserName(){    
+         $("#UserManagement_Form_UserName").val($("#UserManagement_Form_Email").val());
+      }  
+</script> 
+
+<div class="container sign-up">
+    <div class="text-center header row">
+        <div class="col-md-12">
+            Sign Up
+        </div>
+
+    </div>
+    <div class="text-center note row">
+        <div class="col-md-12">
+            Already have an account? <a href="#">Log In</a>
+        </div>
+
+    </div>
+    <div class="row form-login">
+      <div id="formValidations">
+          @foreach (LoopItem validationError in GetLoop("FormValidationErrors"))
+          {
+            <div class="col-md-12 text-center">@validationError.GetString("UserManagement:User.FormValidationError.Message")</div>
+          }
+        </div>    
+
+
+      <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+      @GetString("UserManagement:User.FormStart").Replace("<form", "<form id=\"signupForm\" onsubmit=\"copyUserName()\" class=\"form-white\"")
+                <div class="row">
+                    <div class="col-md-12 sign-up-input">                       
+                        <input type="email" class="form-control" id="UserManagement_Form_Email" data-error="That email address is invalid" name="UserManagement_Form_Email" value="@GetString("UserManagement:User.Email")" placeholder="Username or Email" />
+                        <input type="hidden" name="UserManagement_Form_UserName" id="UserManagement_Form_UserName" />
+                        <input type="password" class="form-control" id="inputPassword" required name="UserManagement_Form_NewPassword" />
+                        <input type="password" data-match="#inputPassword" data-match-error="These don't match" class="form-control" id="newPassword" required name="UserManagement_Form_NewPasswordConfirm" />     
+                    </div>
+                </div>
+
+                <div class="row sign-up-button">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 or-login-with text-center">
+                        <div class="text">Or Sign Up with</div>
+                    </div>
+                </div>
+                <div class="row social-button">
+                    <div class="col-md-6 col-md-offset-3">
+                        <button type="button" class="btn btn-block"><i class="fa fa-facebook" aria-hidden="true"></i> Facebook</button>
+                    </div>
+                    <div class="col-md-6 col-md-offset-3">
+                        <button type="button" class="btn btn-block"><i class="fa fa-twitter" aria-hidden="true"></i> Twitter</button>
+                    </div>
+                    <div class="col-md-6 col-md-offset-3">
+                        <button type="button" class="btn btn-block"><i class="fa fa-google-plus" aria-hidden="true"></i> Google+</button>
+                    </div>
+                </div>
+                <div class="row term-and-condition text-center">
+                    By creating your account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                </div>
+            </form>
+        </div>      
+    </div>
+</div>
+      

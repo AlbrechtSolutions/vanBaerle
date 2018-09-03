@@ -1,0 +1,69 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System;
+@using System.Web;
+@using System.Collections.Specialized;
+
+@{
+    string dealerGroups = generalSettings["DealerGroups"].ToString();
+    string storesGroupID = !string.IsNullOrWhiteSpace(dealerGroups) ? "%" + dealerGroups + "%" : "";
+    string accessDataSql = "SELECT AccessUserState, AccessUserCountry, AccessUserZip, AccessUserAddress, AccessUserName, AccessUserCity, AccessUserGeoLocationLat, AccessUserImage, AccessUserGeoLocationLng FROM accessUser WHERE AccessUserCountry is not NULL AND AccessUserCountry != '' AND AccessUserGeoLocationLat IS NOT NULL AND AccessUserGroups LIKE '" + storesGroupID + "'";
+    string accessRegionsDataSql = "SELECT CountryTextName, CountryTextCode2, CountryTextRegionCode FROM EcomCountryText";
+    string regionsString = "{";
+    string country = "";
+    string state = "";
+    string countryLogged = !string.IsNullOrEmpty(HttpContext.Current.Request.Params["country"]) ? HttpContext.Current.Request.Params["country"] : country;
+    string stateLogged = !string.IsNullOrEmpty(HttpContext.Current.Request.Params["state"])  ? HttpContext.Current.Request.Params["state"] : state;
+    System.Data.DataRow[] dataSet = Dynamicweb.Data.Database.CreateDataSet(accessDataSql).Tables[0].Select();
+    System.Data.DataRow[] dataRegionsSet = Dynamicweb.Data.Database.CreateDataSet(accessRegionsDataSql).Tables[0].Select();
+    bool userIsLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+    System.Collections.Generic.List<String> countriesList = dataSet.Select(r => ((string)r["AccessUserCountry"].ToString()).Trim() ).Distinct().ToList();
+    Dictionary<string, string> countriesNames = new Dictionary<string, string>();
+
+    foreach(System.Data.DataRow r in dataRegionsSet.Where(x => string.IsNullOrWhiteSpace(x["CountryTextRegionCode"].ToString())))
+    {
+        if(!countriesNames.ContainsKey(r["CountryTextCode2"].ToString())) {
+            countriesNames.Add(r["CountryTextCode2"].ToString(), r["CountryTextName"].ToString());
+        }
+    }
+
+    if(countryLogged != country)
+    {
+        stateLogged = "";
+    }
+
+    if (userIsLoggedIn)
+    {
+        var user = Pageview.User;
+        countryLogged = user.Country.ToString();
+        stateLogged = user.State.ToString();
+    }
+
+    foreach (string i in countriesList)
+    {
+        System.Collections.Generic.List<String> regions = dataSet.Where(r => (string)r["AccessUserCountry"] == i).Select(r => ((string)r["AccessUserState"]).Trim() ).Distinct().ToList();
+        int countNum = 0;
+        string countryStrip = i;
+
+        if(regionsString != "{") {
+            regionsString += ",";
+        }
+        regionsString += "\""+countryStrip+"\":[";
+        foreach (string region in regions){
+            var regionTextList = !string.IsNullOrEmpty(region) ? dataRegionsSet.First(r => r["CountryTextRegionCode"].ToString() == region.ToString()) : null;
+            string regionText = regionTextList != null ? regionTextList["CountryTextName"].ToString() : "";
+
+            if(!string.IsNullOrWhiteSpace(regionText))
+            {
+                if(countNum != 0) {
+                    regionsString += ",";
+                }
+                regionsString += "\""+@regionText+"\"";
+                countNum++;
+            }
+        }
+        regionsString += "]";
+
+    }
+    regionsString += "}";
+}

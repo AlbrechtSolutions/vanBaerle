@@ -1,0 +1,69 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  List<LoopItem> ordersLoop = GetLoop("Orders");
+  string path = "/Default.aspx?ID=" + GetGlobalValue("Global:Page.ID");
+  string paragraphId = Pageview.CurrentParagraph.ID.ToString();
+  string sort = !string.IsNullOrWhiteSpace(System.Web.HttpContext.Current.Request.QueryString["CCSortOrder" + paragraphId]) ? System.Web.HttpContext.Current.Request.QueryString["CCSortOrder" + paragraphId].ToString() : "Asc";
+}
+
+@if(ordersLoop.Any()){
+  <table id="myOrdersTable" name="UserManagementEditForm" class="col-md-7 col-sm-12 col-xs-12 noPadding text-left evenTable" >
+    <thead class="orderList">
+      <tr>
+      <th>
+        @Translate("orderID","Order ID")
+        <a href="@(path)&CCOrderByField@(paragraphId)=ID&CCSortOrder@(paragraphId)=@sort">
+          <i class="fa fa-sort"></i>
+        </a>
+      </th>
+      <th>
+        @Translate("price","Price")
+        <a href="@(path)&CCOrderByField@(paragraphId)=TotalPrice&CCSortOrder@(paragraphId)=@sort">
+          <i class="fa fa-sort"></i>
+        </a>
+      </th>
+      <th>
+        @Translate("date","Date")
+        <a href="@(path)&CCOrderByField@(paragraphId)=Date&CCSortOrder@(paragraphId)=@sort">
+          <i class="fa fa-sort"></i>
+        </a>
+      </th>
+      <th>
+        @Translate("status","Status")
+        <a href="@(path)&CCOrderByField@(paragraphId)=OrderState.Name&CCSortOrder@(paragraphId)=@sort">
+          <i class="fa fa-sort"></i>
+        </a>
+      </th>
+      <th>
+        @Translate("actions","Actions")
+      </th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach(LoopItem order in ordersLoop){
+        string pageId = GetGlobalValue("Global:Page.ID");
+        string detail = "/Default.aspx?ID="+ pageId + "&CC"+paragraphId+"=Order&OrderID="+order.GetString("Ecom:Order.ID");
+        string reorder = order.GetString("Ecom:Order.ReorderID");
+
+        <tr>
+          <td data-th='@Translate("orderID","Order ID")'><a href="@detail">@order.GetString("Ecom:Order.ID")</a></td>
+          <td data-th='@Translate("price","Price")'>@order.GetString("Ecom:Order.OrderLines.Total.Price")</td>
+          <td data-th='@Translate("date","Date")'>@order.GetDate("Ecom:Order.Date").ToString("dd/MM/yyyy")</td>
+          <td data-th='@Translate("status","Status")'>@order.GetString("Ecom:Order:Orderstate.Name")</td>
+          <td class="actions" data-th='@Translate("actions","Actions")'><a href="@reorder"><i class="fa fa-repeat"></i>&nbsp;@Translate("reorder", "Reorder")</a><a class="leftPadding" href="@detail"><i class="fa fa-print"></i>&nbsp;@Translate("print", "Print")</a></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+ }
+else
+{
+  <div>@Translate("noOrders", "No orders found.")</div>
+}
+
+@Include("includes/Pagination.cshtml")
+
+@SnippetStart("jsOnLoad")
+onLoadOrderList();
+@SnippetEnd("jsOnLoad")

@@ -1,0 +1,443 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Dynamicweb Forms Mail template</title>
+
+	<style type="text/css">
+		/* Client-specific Styles */
+		#outlook a {
+			padding: 0;
+		}
+		/* Force Outlook to provide a "view in browser" menu link. */
+		body {
+			width: 100% !important;
+			-webkit-text-size-adjust: 100%;
+			-ms-text-size-adjust: 100%;
+			margin: 0;
+			padding: 0;
+		}
+		/* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */
+		.ExternalClass {
+			width: 100%;
+		}
+			/* Force Hotmail to display emails at full width */
+			.ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {
+				line-height: 100%;
+			}
+		/* Force Hotmail to display normal line spacing.*/
+		#backgroundTable {
+			margin: 0;
+			padding: 0;
+			width: 100% !important;
+			line-height: 100% !important;
+		}
+
+		img {
+			outline: none;
+			text-decoration: none;
+			border: none;
+			-ms-interpolation-mode: bicubic;
+		}
+
+		a img {
+			border: none;
+		}
+
+		.image_fix {
+			display: block;
+		}
+
+		p {
+			margin: 0px 0px !important;
+		}
+
+		table td {
+			border-collapse: collapse;
+		}
+
+		table {
+			border-collapse: collapse;
+			mso-table-lspace: 0pt;
+			mso-table-rspace: 0pt;
+		}
+
+		a {
+			color: #0EB0B3;
+			text-decoration: none;
+			text-decoration: none !important;
+		}
+		/*STYLES*/
+		table[class=full] {
+			width: 100%;
+			clear: both;
+		}
+		/*IPAD STYLES*/
+		@@media only screen and (max-width: 640px) {
+			a[href^="tel"], a[href^="sms"] {
+				text-decoration: none;
+				color: #0EB0B3; /* or whatever your want */
+				pointer-events: none;
+				cursor: default;
+			}
+
+			.mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
+				text-decoration: default;
+				color: #0EB0B3 !important;
+				pointer-events: auto;
+				cursor: default;
+			}
+
+			table[class=devicewidth] {
+				width: 440px !important;
+				text-align: center !important;
+			}
+
+			table[class=devicewidthinner] {
+				width: 420px !important;
+				text-align: center !important;
+			}
+
+			img[class=banner] {
+				width: 440px !important;
+				height: 220px !important;
+			}
+
+			img[class=colimg2] {
+				width: 440px !important;
+				height: 220px !important;
+			}
+		}
+		/*IPHONE STYLES*/
+		@@media only screen and (max-width: 480px) {
+			a[href^="tel"], a[href^="sms"] {
+				text-decoration: none;
+				color: #0EB0B3; /* or whatever your want */
+				pointer-events: none;
+				cursor: default;
+			}
+
+			.mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
+				text-decoration: default;
+				color: #0EB0B3 !important;
+				pointer-events: auto;
+				cursor: default;
+			}
+
+			table[class=devicewidth] {
+				width: 280px !important;
+				text-align: center !important;
+			}
+
+			table[class=devicewidthinner] {
+				width: 260px !important;
+				text-align: center !important;
+			}
+
+			img[class=banner] {
+				width: 280px !important;
+				height: 140px !important;
+			}
+
+			img[class=colimg2] {
+				width: 280px !important;
+				height: 140px !important;
+			}
+
+			td[class=mobile-hide] {
+				display: none !important;
+			}
+
+			td[class="padding-bottom25"] {
+				padding-bottom: 25px !important;
+			}
+		}
+	</style>
+</head>
+@Include("../../includes/razor/getimage.cshtml")
+@{
+  Dynamicweb.Content.Items.Item itemArea = Pageview.Area.Item;
+	DateTime submitDate = DateTime.Now;
+  string projectName = designName,
+         companyName = (itemArea["CompanyName"] != null) ? itemArea["CompanyName"].ToString() : "" ,
+         subject = Translate("hi","Hi ") + GetString("UserManagement:User.Name") + ",<br />",
+         email = GetString("UserManagement:User.Email"),
+	       text = "",
+	       receiptUrl = GetString("Submit.ReceiptUrl"),
+	       requestUrl = "http://" + GetGlobalValue("Global:Request.Host"),
+	       approvalUrl = GetString("UserManagement.ApprovalUrl"),
+	       templateBaseUrl = GetString("Template:BaseUrl"),
+	       emailFieldName = GetString("Submit.EmailFieldValue"),
+	       bgColor = "#e5e5e5",
+	       bgColor2 = "#ffffff",
+	       fontFamily = "font-family: Helvetica, arial, sans-serif;",
+	       fontSize = "font-size: 12px;",
+	       fontSize2 = "font-size: 16px;",
+	       fontSize3 = "font-size: 14px;",
+	       textColor = "color: #b7b7b7;",
+	       textColor2 = "color: #333333;",
+	       textColor3 = "color: #999999;";
+	       
+	if (!string.IsNullOrEmpty(emailFieldName))
+	{
+		emailFieldName = "by " + emailFieldName;
+	}
+}
+<body bgcolor="@bgColor">
+	<!-- Start of seperator -->
+	<table width="100%" bgcolor="@bgColor" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="seperator">
+		<tbody>
+			<tr>
+				<td>
+					<table width="600" align="center" cellspacing="0" cellpadding="0" border="0" class="devicewidth">
+						<tbody>
+							<tr>
+								<td align="center" height="15" style="font-size:1px; line-height:1px;">&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<!-- End of seperator -->
+	<!-- Start of preheader -->
+	<table width="100%" bgcolor="@bgColor" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="preheader">
+		<tbody>
+			<tr>
+				<td>
+					<table width="600" bgcolor="@bgColor2" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+						<tbody>
+							<tr>
+								<td width="100%">
+									<table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+										<tbody>
+											<tr>
+												<td width="100%" height="2" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+											</tr>
+											<tr>
+											    <td>
+                                                    <table width="100%" align="left" border="0" cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td style="@fontFamily @fontSize @textColor text-align:right; line-height: 16px;" st-content="fulltext-content">
+                                                                    &nbsp;&nbsp;@submitDate.ToString(Dynamicweb.Dates.DateFormatString)
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+											    </td>
+											</tr>
+											<tr>
+												<td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+											</tr>
+											<tr>
+												<td>
+													<table width="320" align="left" border="0" cellpadding="0" cellspacing="0">
+														<tbody>
+															<tr>
+																<td style="@fontFamily @fontSize @textColor text-align:left; line-height: 16px;" st-content="fulltext-content">
+																	
+																</td>
+															</tr>
+														</tbody>
+													</table>
+													<table width="346" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+														<tbody>
+															<tr>
+																<td width="346" height="98" align="center">
+																	<a target="_blank" href="@requestUrl">
+																		<img src="@requestUrl/Files/Templates/Designs/@projectName/Images/newsletter/newsletterLogo.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;" />
+																	</a>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<!-- End of preheader -->
+	<!-- Start of header -->
+	<table width="100%" bgcolor="@bgColor" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header">
+		<tbody>
+			<tr>
+				<td>
+					<table width="600" bgcolor="@bgColor2" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+						<tbody>
+							<tr>
+								<td width="100%">
+									<table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+										<tbody>
+											<!-- Spacing -->
+											<tr>
+												<td height="30" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+											</tr>
+											<!-- Spacing -->
+											<tr>
+												<td>
+													<!-- logo -->
+													<table width="560" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+														<tbody>
+															<tr>
+																<td style="font-family: Calibri Light, Helvetica, arial, sans-serif; font-size: 45px;font-weight:100; text-align:center; line-height: 30px;" st-title="fulltext-heading">
+																	@Translate("subscriptionConfirmation","Subscription Confirmation")
+																</td>
+															</tr>
+														</tbody>
+													</table>
+													<!-- end of logo -->
+												</td>
+											</tr>
+											<!-- Spacing -->
+											<tr>
+												<td height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+											</tr>
+											<!-- Spacing -->
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<!-- End of Header -->
+	<!-- Start Full Text -->
+	<table width="100%" bgcolor="@bgColor" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="full-text">
+		<tbody>
+			<tr>
+				<td>
+					<table width="600" bgcolor="@bgColor2" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+						<tbody>
+							<tr>
+								<td width="100%">
+									<table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+										<tbody>
+											<!-- Spacing -->
+											<tr>
+												<td height="20" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+											</tr>
+											<!-- Spacing -->
+											<tr>
+												<td>
+													<table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+														<tbody>
+															<!-- content -->
+															<tr>
+																	<td style="@fontFamily @fontSize2 @textColor2 text-align:left; line-height: 1.2em;" st-content="fulltext-content">
+																		<strong>@subject</strong> <br/>
+																		@Translate("emailCorrect","If this is the correct email you can approve the account by clicking 'Approve account'")<br/><br/>
+                                    <a href="@approvalUrl">@Translate("approveAccount","Approve account")</a>
+																	</td>
+																</tr>
+
+															<!-- End of content -->
+														</tbody>
+													</table>
+												</td>
+											</tr>
+											<!-- Spacing -->
+											<tr>
+												<td height="20" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+											</tr>
+											<!-- Spacing -->
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<!-- end of full text -->
+	<!-- Start of seperator -->
+	<table width="100%" bgcolor="@bgColor" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="seperator">
+		<tbody>
+			<tr>
+				<td>
+					<table width="600" bgcolor="@bgColor2" align="center" cellspacing="0" cellpadding="0" border="0" class="devicewidth">
+						<tbody>
+							<tr>
+								<td align="center" height="30" style="font-size:1px; line-height:1px;">&nbsp;</td>
+							</tr>
+							<tr>
+								<td width="550" align="center" height="1" bgcolor="#d1d1d1" style="font-size:1px; line-height:1px;">&nbsp;</td>
+							</tr>
+							<tr>
+								<td align="center" height="30" style="font-size:1px; line-height:1px;">&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<!-- End of seperator -->
+	<!-- Start of Postfooter -->
+	<table width="100%" bgcolor="@bgColor" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter">
+		<tbody>
+			<tr>
+				<td>
+					<table width="600" bgcolor="@bgColor2" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+						<tbody>
+							<tr>
+								<td width="100%">
+									<table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+										<tbody>
+											<tr>
+												<td align="center" valign="middle" style="@fontFamily @fontSize3 @textColor3" st-content="postfooter">
+													&copy; @DateTime.Now.Year.ToString() <a href="@requestUrl" style="text-decoration: none; color: #0EB0B3">@companyName</a>
+												</td>
+											</tr>
+											<!-- Spacing -->
+											<tr>
+												<td width="100%" height="20"></td>
+											</tr>
+											<!-- Spacing -->
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<!-- End of postfooter -->
+	<!-- Start of seperator -->
+	<table width="100%" bgcolor="@bgColor" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="seperator">
+		<tbody>
+			<tr>
+				<td>
+					<table width="600" align="center" cellspacing="0" cellpadding="0" border="0" class="devicewidth">
+						<tbody>
+							<tr>
+								<td align="center" height="15" style="font-size:1px; line-height:1px;">&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<!-- End of seperator -->
+</body>
+</html>

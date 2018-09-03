@@ -1,0 +1,70 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+    int totalPagesNum = GetInteger("ItemPublisher:Items.Paging.TotalPages"),
+        curPageNum = GetInteger("ItemPublisher:Items.Paging.CurrentPage"),
+        thisPage = 0,
+        prevPage = 0,
+        nextPage = 0;
+    string pagingHref = "",
+        pageText ="",
+        active = "";
+}
+
+@if (totalPagesNum > 1)
+{
+  <div class="col-xs-12 text-center paginationContainer">
+    <span>@Translate("showing", "Showing") @GetString("ItemPublisher:Items.Count") @Translate("of", "of") @GetString("ItemPublisher:Items.TotalCount") @Translate("items", "items")</span>
+    <ul class="pagination">
+      @if (GetString("ItemPublisher:Items.Paging.PrevPage") != "#")
+      {
+          prevPage = curPageNum - 1;
+          pagingHref = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Contains("page") ? Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Replace("page=" + curPageNum, "page=" + prevPage) : Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString() + "&page=" + prevPage;
+          pageText = "&laquo; " + Translate("previous", "Previous") + " ";
+          @PageItem("",pagingHref, pageText)
+      }
+      @if(curPageNum > 2 && totalPagesNum > 3){
+        for(int i=1;i <= 1;i++){
+          active = curPageNum == i ? "class=\"active\"" : "";
+          pagingHref = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Contains("page") ? Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Replace("page="+curPageNum, "page=" + i ) : Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString() + "&page=" + i;
+          @PageItem(active,pagingHref, i.ToString())
+        }
+        @Ellipsis()
+      }
+      @foreach (LoopItem page in GetLoop("ItemPublisher:Items.Paging.Pages3"))
+      {
+        thisPage = page.GetInteger("ItemPublisher:Items.Paging.Pages3.Page.Number");
+        pagingHref = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Contains("page") ? Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Replace("page="+curPageNum, "page=" + thisPage) : Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString() + "&page=" + thisPage;
+        active = page.GetBoolean("ItemPublisher:Items.Paging.Pages3.Page.IsCurrent") ? "class=\"active\"" : "";
+        
+        @PageItem(active, pagingHref, thisPage.ToString())
+      }
+      @if(curPageNum < totalPagesNum-1 && totalPagesNum > 3){
+        @Ellipsis()
+        for(int i=totalPagesNum;i <= totalPagesNum;i++){
+          active = curPageNum == i ? "class=\"active\"" : "";
+          pagingHref = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Contains("page") ? Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Replace("page="+curPageNum, "page="+i) : Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString() + "&page=" + i;
+
+          @PageItem(active,pagingHref, i.ToString())
+        }
+      }
+      @if (GetString("ItemPublisher:Items.Paging.NextPage") != "#")
+      {
+          nextPage = curPageNum + 1;
+          pagingHref = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Contains("page") ? Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Replace("page="+curPageNum, "page="+ nextPage) : Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString() + "&page=" + nextPage;
+          pageText = " " + Translate("next", "Next") + " &raquo;";
+
+          @PageItem("", pagingHref, pageText)
+      }
+    </ul>
+  </div>
+}
+
+@helper PageItem (string cssClass, string href, string text) { 
+    <li @cssClass>
+        <a href="@href">@text</a>
+    </li>
+}
+@helper Ellipsis () {
+    <li><span>...</span></li>
+}

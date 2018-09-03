@@ -1,0 +1,178 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+@Include("ItemDetailHelpersRenderButton.cshtml")
+@helper RenderHeading()
+{
+  if(GetBoolean("Item.ShowTitle") && GetString("Item.TitleOrder") == "title-first")
+  {
+	  @RenderHeadingHtml()
+	}
+}
+
+@helper RenderHeadingHtml() {
+	if (!string.IsNullOrEmpty(GetString("Item.Title")))
+	{
+	  string headingType = string.IsNullOrEmpty(GetString("Item.HeadingType")) ? "h1" : GetString("Item.HeadingType"),
+	         solidBg = GetBoolean("Item.Solid_Color_Background") ? "header-solid-bg" : "";
+
+	  <header class="paragraphHeader @solidBg">
+	    @string.Format("<{0}>{1}</{0}>", headingType, GetString("Item.Title"))
+	    @if(!string.IsNullOrEmpty(GetString("Item.Date.Value"))) {
+        DateTime date = GetDate("Item.Date.Value");
+
+        <h3 class="eventDate">@date.Day @date.ToString("MMMM")</h3>
+      }
+	  </header>
+	}
+}
+
+@helper RenderFontAwesomeIcon() {
+	string iconName = GetString("Item.Icon_Name");
+
+	if (!string.IsNullOrEmpty(iconName)){
+    <div class="icon-content-wrapper">
+      <div class="outer-border">
+        <div class="inner-border text-center">
+          <i class="fa fa-5x @iconName"></i>
+        </div>
+      </div>
+    </div>
+	}
+}
+
+@helper RenderText()
+{
+  if(GetString("Item.Order") == "image-left" || GetString("Item.Order") == "image-right"){
+    @RenderImageTag()
+  }
+  if (GetBoolean("Item.ShowTitle") && GetString("Item.TitleOrder") == "title-with-text"){
+    @RenderHeadingHtml()
+  }
+  if (!string.IsNullOrWhiteSpace(GetString("Item.Text"))){
+    <div class="paragraphText">
+      @GetString("Item.Text")
+    </div>
+  }
+}
+
+@helper RenderModule()
+{
+	@GetString("ParagraphModule")
+}
+
+@helper RenderImage()
+{
+  if(GetString("Item.Order") == "image-left-column" || GetString("Item.Order") == "image-right-column" || GetString("Item.Order") == "image-top"){
+    @RenderImageTag()
+  }
+}
+
+@helper RenderImageTag()
+{
+	if (!string.IsNullOrEmpty(GetString("Item.Image")))
+	{
+		if (string.IsNullOrEmpty(GetString("Item.Link")))
+		{
+			@RenderImageWrapper()
+		}
+		else
+		{
+		  string target = GetBoolean("Item.OpenInANewWindow") ? "target='_blank'" : "";
+			<a href="@GetString("Item.Link")" @target>
+				@RenderImageWrapper()
+			</a>
+		}
+	}
+}
+
+@helper RenderImageWrapper()
+{
+  string image = System.Web.HttpContext.Current.Server.UrlEncode(GetString("Item.Image")),
+         imageAlt = (!string.IsNullOrEmpty(GetString("Item.ImageTitle"))) ? GetString("Item.ImageTitle") : GetString("Item.Title"),
+         figureWidth = "col-xs-" + GetInteger("Item.ImageWidth"),
+         optimizedWidth = "1280";
+
+  switch (GetString("Item.Order")){
+    case "image-left":
+      figureWidth += " pull-left noPaddingLeft";
+      break;
+    case "image-left-column":
+      figureWidth += " pull-left noPaddingLeft";
+      break;
+    case "image-right":
+      figureWidth += " pull-right noPaddingRight";
+      break;
+    case "image-right-column":
+      figureWidth += " pull-right noPaddingRight";
+      break;
+    case "image-top":
+      figureWidth += " image-top";
+      if(GetInteger("Item.ImageWidth") < 12){
+        figureWidth += " col-xs-offset-" + ((12 - GetInteger("Item.ImageWidth")) / 2);
+      }
+      break;
+  }
+
+  if (Dynamicweb.Frontend.PageView.Current().Device.ToString() == Dynamicweb.Frontend.Devices.DeviceType.Mobile.ToString())
+  {
+    switch (GetString("Item.WidthMobile")){
+      case "12":
+        optimizedWidth = "480";
+        break;
+      case "6":
+        optimizedWidth = "240";
+        break;
+    }
+  }
+  else {
+    switch (GetString("Item.Width")){
+      case "3":
+        optimizedWidth = "722";
+        break;
+      case "4":
+        optimizedWidth = "722";
+        break;
+      case "6":
+        optimizedWidth = "722";
+        break;
+      case "8":
+        optimizedWidth = "960";
+        break;
+      case "9":
+        optimizedWidth = "960";
+        break;
+      default:
+        optimizedWidth = "1280";
+        break;
+    }
+  }
+
+  <figure class='@(GetString("Item.ImageStyle")) @figureWidth'>
+		<img class="img-responsive" src="/Admin/Public/GetImage.ashx?width=@optimizedWidth&crop=0&image=@image" title="@imageAlt" alt="@imageAlt" />
+	</figure>
+}
+
+@functions{
+  public string GetItemClass()
+	{
+	  string order = GetString("Item.Order"),
+           paragraphClass = GetInteger("Item.ImageWidth") < 12 && order != "image-top" ? "col-xs-" + ( 12 - GetInteger("Item.ImageWidth")) : "col-xs-12 noPadding";
+
+    if(order == "image-left" || order == "image-right"){
+      paragraphClass = "noPadding";
+    }else if(order != "image-top"){
+    }
+
+    switch (order){
+      case "image-left-column":
+        paragraphClass += " pull-right";
+        break;
+      case "image-right-column":
+        paragraphClass += " pull-left";
+        break;
+    }
+
+    return paragraphClass;
+	}
+}

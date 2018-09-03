@@ -1,0 +1,133 @@
+﻿/*! Filter grayscale */
+.section__refs .ref {
+  filter: grayscale(100%);
+}
+
+@media screen and (min-width: 992px) {
+  .section__refs .ref:hover {
+    filter: none;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .section__refs .ref.slick-current {
+    filter: none;
+  }
+}
+
+/*! calc() */
+.file .file__text {
+  width: calc(100% - 170px);
+}
+
+.section-desc__text {
+  width: calc(100% - 60px);
+}
+
+@media screen and (max-width: 480px) {
+  .event-display-list .event-display__inner {
+    width: calc(100% - 60px);
+  }
+}
+
+.event-display-list .event-display__content {
+  width: calc(100% - 220px);
+}
+
+@media screen and (max-width: 767px) {
+  .event-display-list .event-display__content {
+    width: auto;
+  }
+}
+
+.video__play-button-img {
+  transform: translate(calc(-50% + 3px), -50%);
+}
+
+.page-about .section--6 .card__text,
+.page-about .section--7 .card__text {
+  height: calc(100% - 15vw);
+}
+
+@media screen and (max-width: 991px) {
+  .page-about .section--6 .card__text,
+  .page-about .section--7 .card__text {
+    height: calc(100% - 220px);
+  }
+}
+
+.page-about .section--3 .card__text {
+  height: calc(100% - 10vw);
+}
+
+@media screen and (max-width: 767px) {
+  .page-about .section--3 .card__text {
+    height: calc(100% - 150px);
+  }
+}
+
+.page-about .section--4 .card__text {
+  height: calc(100% - 20vw);
+}
+
+.page-about .section--11 .file {
+  width: calc(33.333333% - 20px);
+}
+
+@media screen and (max-width: 991px) {
+  .page-about .section--11 .file {
+    width: calc(50% - 15px);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .page-about .section--11 .file {
+    width: 100%;
+  }
+}
+
+.page-careers .benefit {
+  width: calc(100% / 6);
+}
+
+@media screen and (max-width: 1199px) {
+  .page-careers .benefit {
+    width: 25%;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .page-careers .benefit {
+    width: 33.333333%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .page-careers .benefit {
+    width: 50%;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .slide-half__content-right {
+    width: calc(100% - 140px);
+  }
+}
+
+.page-media .media-list .file {
+  flex-basis: calc(50% - 15px);
+}
+
+.page-media .file-list .file {
+  flex-basis: calc(33.333333% - 20px);
+}
+
+@media screen and (max-width: 767px) {
+  .page-media .file-list .file {
+    flex-basis: calc(50% - 15px);
+  }
+}
+
+.page-media .image-list .card__text {
+  height: calc(100% - 220px);
+}

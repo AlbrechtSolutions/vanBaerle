@@ -1,0 +1,41 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@Include("../../includes/razor/getimage.cshtml")
+@{
+	List<LoopItem> itemsList = GetLoop("ItemPublisher:Items.List");
+}
+
+<div class="h2 galleryTitle">@Pageview.Page.MenuText</div>
+
+@if(itemsList.Any()) {
+  <ul class="gallery row" data-title='@Translate("galleries", "Galleries")'>
+    @foreach (LoopItem item in itemsList)
+    {
+      string productGetImage = GetImage(item.GetString("ItemPublisher:Item.Image.Value"), 0, 400, 0, 400, 0, 200),
+             title = item.GetString("ItemPublisher:Item.Title.Value"),
+             link = !string.IsNullOrEmpty(item.GetString("ItemPublisher:Item.Video.Value")) ? item.GetString("ItemPublisher:Item.Video.Value") : item.GetString("ItemPublisher:Item.Image.Value") ;
+
+      <li class="col-xs-12 col-sm-6 col-md-4">
+        <figure>
+          <a class="fancybox" href="@link">
+            @if(!string.IsNullOrEmpty(item.GetString("ItemPublisher:Item.Video.Value"))){
+              <i class="fa fa-play-circle-o"></i>
+            }
+            <img class="img-responsive" src="@productGetImage" title="@title" alt="@title" />
+          </a>
+        </figure>
+        @if(!string.IsNullOrEmpty(item.GetString("ItemPublisher:Item.Description.Value"))){
+          <div>
+            @item.GetString("ItemPublisher:Item.Description.Value")
+          </div>
+        }
+      </li>
+    }
+  </ul>
+}
+
+@Include("Includes/pagination.cshtml")
+
+@SnippetStart("jsOnLoad")
+  onLoadMedia();
+@SnippetEnd("jsOnLoad")

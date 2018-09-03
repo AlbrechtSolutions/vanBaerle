@@ -1,0 +1,137 @@
+﻿@Include("OrderType.cshtml")
+<div id="cartRightContent" class="col-xs-12 col-sm-4 col-md-3 noPaddingRight">
+  <h2>@Translate("orderSummary", "Order Summary")</h2>
+
+  @if(orderLines.Any()) {
+    string currency = GetString("Ecom:Order.Price.Currency.Symbol");
+
+    <ul class="col-xs-12 noPadding rightColProducts">
+      @if(!string.IsNullOrWhiteSpace(GetString("Ecom:Order.Delivery.Address"))) {
+        <li class="col-xs-12 noPadding longContainer">
+          @if(deliveryAddress == customerAddress) {
+            <h3 class="col-xs-12 rightTitle">
+              @Translate("billingShippingAddress","Billing & Shipping Address")
+            </h3>
+            <div class="col-xs-12">
+              @GetString("Ecom:Order.Delivery.Address") @GetString("Ecom:Order.Delivery.Address2") <br/>
+              @GetString("Ecom:Order.Delivery.City"), @GetString("Ecom:Order.Delivery.Region") @GetString("Ecom:Order.Delivery.Zip") <br/> @GetString("Ecom:Order.Delivery.Country")
+            </div>
+          }
+          else {
+            <h3 class="col-xs-12 rightTitle">
+              @Translate("billingAddress","Billing Address")
+            </h3>
+            <div class="col-xs-12">
+              @GetString("Ecom:Order.Customer.Address") @GetString("Ecom:Order.Customer.Address2") <br/>
+              @GetString("Ecom:Order.Customer.City"), @GetString("Ecom:Order.Customer.Region") @GetString("Ecom:Order.Customer.Zip") <br/> @GetString("Ecom:Order.Customer.Country")
+            </div>
+            <h3 class="col-xs-12 rightTitle">
+              @Translate("shippingAddress","Shipping Address")
+            </h3>
+            <div class="col-xs-12">
+              @GetString("Ecom:Order.Delivery.Address") @GetString("Ecom:Order.Delivery.Address2") <br/>
+              @GetString("Ecom:Order.Delivery.City"), @GetString("Ecom:Order.Delivery.Region") @GetString("Ecom:Order.Delivery.Zip"), @GetString("Ecom:Order.Delivery.Country")
+            </div>
+          }
+        </li>
+      }
+
+      @if(!string.IsNullOrWhiteSpace(GetString("Ecom:Order.PaymentMethod"))) {
+        <li class="col-xs-12 noPadding longContainer">
+          <h3 class="col-xs-12 borderBottom">@Translate("paymentMethod","Payment Method")</h3>
+          <div class="col-xs-12">@GetString("Ecom:Order.PaymentMethod")</div>
+        </li>
+      }
+      @if(!string.IsNullOrWhiteSpace(GetString("Ecom:Order.ShippingMethod"))) {
+        <li class="col-xs-12 noPadding longContainer">
+          <h3 class="col-xs-12 borderBottom">@Translate("shippingMethod","Shipping Method")</h3>
+          <div class="col-xs-12">@GetString("Ecom:Order.ShippingMethod")</div>
+        </li>
+      }
+      @if(!string.IsNullOrWhiteSpace(GetString("Ecom:Order.Delivery.Address"))) {
+        <li class="col-xs-12 noPadding longContainer">
+          <h3 class="col-xs-12">@Translate("orderDetails","Order Details")</h3>
+        </li>
+      }
+
+      @foreach (LoopItem orderLine in orderLines)
+      {
+        bool isProduct = orderLine.GetBoolean("Ecom:Order:OrderLine.IsProduct"),
+             productPriceIsZeroBool = orderLine.GetBoolean("Ecom:Order:OrderLine.Price.IsZero"),
+             isDiscount = false;
+        string parentLineId = orderLine.GetString("Ecom:Order:OrderLine.ParentLineID"),
+               orderType = orderLine.GetString("Ecom:Order:OrderLine.Type"),
+               discountType = "",
+               productPriceIsZero = orderLine.GetString("Ecom:Order.Price.PricePIP"),
+               productId = orderLine.GetString("Ecom:Order:OrderLine.ProductID"),
+               priceWithoutVATFormatted = orderLine.GetString("Ecom:Order:OrderLine.Price.PriceWithoutVATFormatted"),
+               totalPriceWithProductDiscounts = orderLine.GetString("Ecom:Order:OrderLine.TotalPriceWithProductDiscounts"),
+               variantText = orderLine.GetString("Ecom:Order:OrderLine.ProductVariantText");
+
+        discountType = OrderType(orderType, isProduct, productId, productPriceIsZeroBool, productPriceIsZero, discountType, parentLineId, voucherValue, false );
+
+        if(discountType == "" && isProduct) {
+          <li class="col-xs-12 noPadding">
+            <div>
+              <h3 class="col-xs-8">
+                @orderLine.GetString("Ecom:Order:OrderLine.ProductName")
+                @if(!string.IsNullOrEmpty(variantText)){
+                  <br/>
+                  <span>@variantText</span>
+                }
+              </h3>
+              @if( priceWithoutVATFormatted != totalPriceWithProductDiscounts ) {
+                <span class="col-xs-4 text-right">@orderLine.GetString("Ecom:Order:OrderLine.Price.PriceWithoutVATFormatted")</span>
+              }
+            </div>
+            <div>
+              <span class="col-xs-8">@Translate("qty", "Qty"): @orderLine.GetString("Ecom:Order:OrderLine.Quantity")</span>
+              <span class="col-xs-4 text-right bold">@orderLine.GetString("Ecom:Order:OrderLine.TotalPriceWithProductDiscounts")</span>
+            </div>
+          </li>
+        }
+      }
+      <li class="col-xs-12 noPadding">
+        @if(GetDouble("Ecom:Order.RewardTotalPoints") > 0)
+        {
+          <div class="col-xs-12">@Translate("loyaltyPointsEarned","Loyalty Points Earned") @GetString("Ecom:Order.RewardTotalPoints")</div>
+        }
+        <dl>
+          <dt class="col-xs-6"><b>@Translate("subTotal", "Subtotal")</b></dt>
+          <dd class="col-xs-6 text-right"><b>@GetString("Ecom:Order.PriceWithoutDiscounts.PriceWithVATFormatted")</b></dd>
+          @if (!GetBoolean("Ecom:Order.TotalDiscount.IsZero"))
+          {
+            <dt class="col-xs-6">@Translate("discount", "Discount")</dt>
+            <dd class="col-xs-6 text-right">@GetString("Ecom:Order.OrderLines.TotalDiscount").Replace(GetString("Ecom:Order.Price.Currency.Symbol")+"-","-"+GetString("Ecom:Order.Price.Currency.Symbol"))</dd>
+          }
+          @if(!GetBoolean("Ecom:Order.ShippingFee.IsZero"))
+          {
+            <dt class="col-xs-6">@Translate("shippingFee", "Shipping Fee")</dt>
+            <dd class="col-xs-6 text-right">@GetString("Ecom:Order.ShippingFee.PriceWithoutVATFormatted")</dd>
+          }
+          @if(GetString("Ecom:Order.Taxes.Total.Price") != "0.00")
+          {
+            <dt class="col-xs-6">@Translate("taxes", "Taxes")</dt>
+            <dd class="col-xs-6 text-right">@GetString("Ecom:Order.Taxes.Total")</dd>
+          }
+        </dl>
+        @if(GetDouble("Ecom:Order.TotalPoints") > 0)
+        {
+          <div class="col-xs-12">@GetString("Ecom:Order.TotalPoints") @Translate("LoyaltyPointsSpent","Loyalty Points Spent")</div>
+        }
+      </li>
+      <li class="col-xs-12 totalContainer">
+        <b class="col-xs-6">@Translate("total", "Total")</b>
+        <b class="col-xs-6 text-right">@GetString("Ecom:Order.OrderLines.Total.PriceWithoutVAT")</b>
+      </li>
+    </ul>
+    if(GetBoolean("Ecom:Order.ShippingFee.IsZero"))
+    {
+      <small class="col-xs-12 taxesAlert">*@Translate("taxesCalculatedCheckout", "Taxes and Shipping Calculated at Checkout")</small>
+    }
+    <div id="editOrderButton" class="col-xs-12 text-center">
+      <a class="btn btn-bg" href="@itemArea["ShowCart"]">@Translate("editOrder","Edit order")</a>
+    </div>
+
+  }
+</div>

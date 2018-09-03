@@ -1,0 +1,4 @@
+Dynamicweb.Content.Items.Item itemArea = Pageview.Area.Item;
+int generalSettingsPageId = Int32.Parse(itemArea["GeneralSettings"].ToString());
+var page = Dynamicweb.Extensibility.ServiceLocator.Current.GetPageService().GetPage(generalSettingsPageId);
+Dynamicweb.Content.Items.Item generalSettings = Dynamicweb.Content.Items.Item.GetItemById(page.ItemType, page.ItemId);

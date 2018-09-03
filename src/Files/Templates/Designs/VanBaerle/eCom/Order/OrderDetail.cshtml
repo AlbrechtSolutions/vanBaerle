@@ -1,0 +1,332 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb.Content
+@Include("../../includes/Razor/GetImage.cshtml")
+@Include("../../includes/Razor/VerifyImage.cshtml")
+@Include("../../includes/Razor/GetCurrentUrl.cshtml")
+@{
+  @Include("../../includes/razor/GeneralSettings.cshtml")
+  bool userIsLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+  bool loadedVoucherBol = false;
+  double subtotalNum = GetDouble("Ecom:Order.PriceWithoutDiscountsOrTaxes.Price") - GetDouble("Ecom:Order.ShippingFee.PriceWithoutVAT");
+  string print = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["print"]) ? "print" : "";
+  string paragraphID = Dynamicweb.Frontend.PageView.Current().CurrentParagraph.ID.ToString();
+  string pageId = Pageview.Page.ID.ToString();
+  string urlString = "/Default.aspx?ID=" + pageId + "&CC" + paragraphID + "=Order&OrderID=" + GetString("Ecom:Order.ID");
+  string voucherValueString = GetString("discountVoucher.Clean");
+  string subtotalString = GetString("Ecom:Order.OrderLines.Total.PriceWithoutVAT"),//subtotalNum.ToString("#,##.00"),
+		 orderVAT = GetString("Ecom:Order.OrderLines.Total.PriceVAT"),
+		 orderTotal = GetString("Ecom:Order.OrderLines.Total.PriceWithVAT");
+  string coin = GetString("Ecom:Order.Currency.Symbol");
+  string orderDiscount = GetString("Ecom:Order.OrderLines.TotalDiscount");
+  string discountImage = generalSettings["Discounts"] != null ? generalSettings["Discounts"].ToString() : "";
+  string colWithUserLogged = userIsLoggedIn || print == "print" ? "col-xs-12" : "col-xs-12 col-sm-8";
+  string paragraphId = Pageview.CurrentParagraph.ID.ToString();
+  string printDetail = "/Default.aspx?ID="+ pageId + "&CC"+paragraphId+"=Order&OrderID="+GetString("Ecom:Order.ID") + "&LayoutTemplate=Designs/" + designName + "/LeftMenu.cshtml" + "&print=true";
+  DateTime dt = (GetDate("Ecom:Order.Completed").ToString().Contains("1/1/0001")) ? GetDate("Ecom:Order.Date") : GetDate("Ecom:Order.Completed");
+  Dictionary<string, string> dict_discounts = new Dictionary<string, string>();
+  System.Web.HttpCookie cookiesObj = new System.Web.HttpCookie("userAndPass");
+  cookiesObj.Expires = DateTime.Now.AddDays(-1d);
+  System.Web.HttpContext.Current.Response.Cookies.Add(cookiesObj);
+  if (System.Web.HttpContext.Current.Request.Params["LayoutTemplate"] == null && System.Web.HttpContext.Current.Request.Params["recurring"] == null)
+  {
+    urlString += "&LayoutTemplate=Designs/" + designName + "/LeftMenu.cshtml";
+    System.Web.HttpContext.Current.Response.Redirect(urlString);
+  }
+}
+
+<div id="orderDetailContainer" class="@print orderContainer">
+  <div class="continueButton col-xs-12 hidden-xs topButton">
+    @*<a target="_blank" href="@printDetail" class="btn btn-bg pull-left print">@Translate("print", "Print")</a>*@
+    <a class="btn btn-bg2 pull-left" href="javascript:history.back();">@Translate("back","Back")</a>
+  </div>
+  <div class="row">
+    <div class="@colWithUserLogged">
+      <div class="row">
+        <div id="orderDetails" class="col-xs-12 blockContent">
+          <h2 class="title">@Translate("orderDetails", "Order Details")</h2>
+          <dl>
+            <dt class="col-xs-6 col-sm-3 text-right"><b>@Translate("orderNumber", "Order Number"):</b></dt>
+            <dd class="col-xs-6 col-sm-3">@GetString("Ecom:Order.ID")</dd>
+            <dt class="col-xs-6 col-sm-3 text-right clearLeft"><b>@Translate("orderDate", "Order date"):</b></dt>
+            <dd class="col-xs-6 col-sm-3">@dt.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-xs-6 col-sm-3 text-right clearLeft"><b>@Translate("paymentMethod", "Payment method"):</b></dt>
+            <dd class="col-xs-6 col-sm-3">@GetString("Ecom:Order.PaymentMethod")</dd>
+            @if(!String.IsNullOrEmpty(GetString("PONumber.Clean"))) {
+                <dt class="col-xs-6 col-sm-3 text-right clearLeft"><b>@Translate("poNumber","PO Number"):</b></dt>
+                <dd class="col-xs-6 col-sm-3">@GetString("PONumber.Clean")</dd>
+            }
+            <dt class="col-xs-6 col-sm-3 text-right clearLeft"><b>@Translate("shippingMethod", "Shipping method"):</b></dt>
+            <dd class="col-xs-6 col-sm-3">@GetString("Ecom:Order.ShippingMethod")</dd>
+          </dl>
+        </div>
+        <div class="col-xs-12 col-sm-6 blockContent">
+          <h3 class="title">@Translate("billedAddress", "Billing Address")</h3>
+          <dl>
+            <dt class="hidden">@Translate("name", "Name"):</dt>
+            <dd>@GetString("Ecom:Order.Customer.FirstName") @GetString("Ecom:Order.Customer.Surname")</dd>
+            <dt class="hidden">@Translate("address", "Address"):</dt>
+            <dd>@GetString("Ecom:Order.Customer.Address") @GetString("Ecom:Order.Customer.Address2")</dd>
+            <dt class="hidden">@Translate("country", "Country"):</dt>
+            <dd>@GetString("Ecom:Order.Customer.City"), @GetString("Ecom:Order.Customer.Region") @GetString("Ecom:Order.Customer.Zip") <br/> @GetString("Ecom:Order.Customer.Country") </dd>
+            <dt class="hidden">@Translate("phone", "Phone"):</dt>
+            <dd>@GetString("Ecom:Order.Customer.Phone")</dd>
+            <dt class="hidden">@Translate("email", "Email"):</dt>
+            <dd>@GetString("Ecom:Order.Customer.Email")</dd>
+          </dl>
+        </div>
+        <div class="col-xs-12 col-sm-6 blockContent">
+          <h3 class="title">@Translate("shippingAddress", "Shipping Address")</h3>
+          <dl>
+            <dt class="hidden">@Translate("name", "Name"):</dt>
+            <dd>@GetString("Ecom:Order.Delivery.FirstName") @GetString("Ecom:Order.Delivery.Surname")</dd>
+            <dt class="hidden">@Translate("address", "Address"):</dt>
+            <dd>@GetString("Ecom:Order.Delivery.Address") @GetString("Ecom:Order.Delivery.Address2")</dd>
+            <dt class="hidden">@Translate("country", "Country"):</dt>
+            <dd>@GetString("Ecom:Order.Delivery.City"), @GetString("Ecom:Order.Delivery.Region") @GetString("Ecom:Order.Delivery.Zip") <br/> @GetString("Ecom:Order.Delivery.Country") </dd>
+            <dt class="hidden">@Translate("phone", "Phone"):</dt>
+            <dd>@GetString("Ecom:Order.Delivery.Phone")</dd>
+            <dt class="hidden">@Translate("email", "Email"):</dt>
+            <dd>@GetString("Ecom:Order.Delivery.Email")</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    @if (!userIsLoggedIn)
+    {
+      <div id="createCartUser" class="col-xs-12 col-sm-4 blockContent">
+
+        <div class="col-xs-12">
+          <h2 class="title">@Translate("createAnAccount", "Create an account by providing a password below.")</h2>
+          <span>@Translate("weSaveYourInformation", "We’ll save your information so you don’t have to enter it again on your next order.")</span>
+          <form class="DMForms contactsForm col-xs-12 noPadding" name="UserManagementEditForm" action="/Default.aspx" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="ID" value="91" />
+            <input type="hidden" name="UserManagementForm" value="1"><input type="hidden" id="UserManagementForm.DeleteImage" name="UserManagementForm.DeleteImage">
+            <input name="UserManagement_Form_EmailAllowed_ApplyValue" type="hidden" id="UserManagement_Form_EmailAllowed_ApplyValue" value="AllowEmail">
+            <input type="hidden" name="UserManagement_Form_FirstName" value="@(GetString("Ecom:Order.Customer.FirstName"))" />
+            <input type="hidden" name="UserManagement_Form_LastName" value="@(GetString("Ecom:Order.Customer.Surname"))" />
+            <input type="hidden" name="UserManagement_Form_Email" value="@(GetString("Ecom:Order.Customer.Email"))" />
+            <input type="hidden" name="UserManagement_Form_UserName" value="@(GetString("Ecom:Order.Customer.Email"))" />
+            <input type="hidden" name="UserManagement_Form_Address" value="@(GetString("Ecom:Order.Customer.Address"))" />
+            <input type="hidden" name="UserManagement_Form_Address2" value="@(GetString("Ecom:Order.Customer.Address2"))" />
+            <input type="hidden" name="UserManagement_Form_City" value="@(GetString("Ecom:Order.Customer.City"))" />
+            <input type="hidden" name="UserManagement_Form_State" value="@(GetString("Ecom:Order.Customer.Region"))" />
+            <input type="hidden" name="UserManagement_Form_Zip" value="@(GetString("Ecom:Order.Customer.Zip"))" />
+            <input type="hidden" name="UserManagement_Form_Country" value="@(GetString("Ecom:Order.Customer.Country.Code"))" />
+            <input type="hidden" name="UserManagement_Form_Phone" value="@(GetString("Ecom:Order.Customer.Phone"))" />
+            <div class="usernameContainer">
+              <b>@Translate("thisWillBeYourUsername", "This will be your Username")</b>
+              <br />
+              @GetString("Ecom:Order.Customer.Email")
+            </div>
+            <fieldset class="TextInput mandatory confirmation">
+              <label for="UserManagement_Form_NewPassword">@Translate("newPassword", "New Password")</label>
+              <input name="UserManagement_Form_NewPassword" type="password" id="UserManagement_Form_NewPassword" autocomplete="off">
+            </fieldset>
+            <fieldset class="TextInput mandatory confirmation">
+              <label for="UserManagement_Form_NewPasswordConfirm">@Translate("confirmPassword", "Confirm Password")</label>
+              <input name="UserManagement_Form_NewPasswordConfirm" type="password" id="UserManagement_Form_NewPasswordConfirm" autocomplete="off">
+            </fieldset>
+            <input type="submit" class="btn btn-bg col-xs-12" value='@Translate("createAccount","Create account")'>
+          </form>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (!string.IsNullOrEmpty(GetString("ShippingInstructions.Clean")))
+  {
+    <div class="row blockContent">
+      <div class="col-xs-12">
+        <h2 class="title">@Translate("shippingInstructions", "Shipping Instructions")</h2>
+        <div>
+          @GetString("ShippingInstructions.Clean")
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="col-xs-12 noPadding lastStepProducts" id="productContent">
+    <header class="showCartHeader col-sm-12 noPadding">
+      <h2 class="title hidden-xs hidden-print">@Translate("yourOrder", "Your Order")</h2>
+      <div class="hidden-xs col-sm-2 col-xs-offset-4 noPadding">
+        @Translate("unitPrice", "Unit price")
+      </div>
+      <div class="hidden-xs col-sm-1 noPadding">
+        @Translate("discount", "Discount")
+      </div>
+      <div class="hidden-xs col-sm-2 noPadding">
+        @Translate("discountPrice", "Discount Price")
+      </div>
+      <div class="hidden-xs col-sm-1 noPadding">
+        @Translate("qty", "QTY")
+      </div>
+      <div class="col-sm-2 totalPrice noPadding">
+        <h2 class="hidden-sm hidden-md hidden-lg pull-left">@Translate("yourOrder", "Your Order")</h2>
+        <span class="hidden-print">@Translate("totalPrice", "Total Price")</span>
+      </div>
+    </header>
+
+    <ul class="cartProductsList">
+      @foreach (LoopItem orderLine in GetLoop("OrderLines"))
+      {
+        int productQuantity = orderLine.GetInteger("Ecom:Order:OrderLine.Quantity");
+        int productStock = orderLine.GetInteger("Ecom:Product.AvailableAmount");
+        double num_orderlineStock = orderLine.GetDouble("Ecom:Order:OrderLine.Quantity");
+        string parentLineId = orderLine.GetString("Ecom:Order:OrderLine.ParentLineID");
+        string orderType = orderLine.GetString("Ecom:Order:OrderLine.Type");
+        string productId = orderLine.GetString("Ecom:Order:OrderLine.ProductID");
+        string productPriceIsZero = orderLine.GetString("Ecom:Order.Price.PricePIP");
+        string discountType = "";
+        string productName = orderLine.GetString("Ecom:Order:OrderLine.ProductName");
+        string productNumber = orderLine.GetString("Ecom:Product.Number");
+        string pattern = "/Files/Files/" + designName + "/Products/" + productNumber + ".jpg";
+        string imageUrl = GetImagePathUrl(orderLine.GetString("Ecom:Product.ImageSmall.Clean"), orderLine.GetString("Ecom:Product.ImageMedium.Clean"), orderLine.GetString("Ecom:Product.ImageLarge.Clean"), pattern);
+        string showPriceSelect = productQuantity < 10 && productStock > 0 ? "hidden" : "";
+        string productFriendlyUrl = Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(itemArea["ProductDetail"].ToString() + "&ProductID=" + productId);
+        bool productPriceIsZeroBol = orderLine.GetBoolean("Ecom:Order:OrderLine.Price.IsZero");
+        bool isProduct = orderLine.GetBoolean("Ecom:Order:OrderLine.IsProduct");
+        bool isDiscount = false;
+
+        if (orderType == "3" || orderType == "1")
+        {
+          isDiscount = true;
+          if (isProduct || productId != "" || productPriceIsZeroBol || productPriceIsZero == "")
+          {
+            discountType = "offerProduct";
+          }
+          else {
+            discountType = "offerValue";
+          }
+        }
+        if (isDiscount && parentLineId == "" && voucherValueString != "")
+        {
+          discountType = "offerVoucher";
+          loadedVoucherBol = true;
+        }
+        if (discountType == "" && isProduct)
+        {
+          <li class="col-xs-12 noPadding">
+            <div class="col-xs-12 col-sm-4 noPaddingLeft noPadding-xs">
+              <figure class="text-center col-xs-4 col-sm-4">
+                <a href="/@itemArea["ProductDetail"]&amp;ProductID=@productId">
+                  <img class="img-responsive" alt="@productName" title="@productName" src="@(GetImage(imageUrl,400,400))" />
+                </a>
+              </figure>
+
+              <div class="col-xs-8 prodName noPadding">
+                <h2>
+                  <a href="/@itemArea["ProductDetail"]&amp;ProductID=@productId">
+                    @productName
+                  </a>
+                </h2>
+                @if (!string.IsNullOrEmpty(orderLine.GetString("Ecom:Product.ShortDescription")))
+                {
+                  <div class="itemDetails">
+                    @orderLine.GetString("Ecom:Product.ShortDescription")<br />
+                  </div>
+                }
+              </div>
+
+            </div>
+            <div class="col-xs-8 col-xs-offset-4 col-sm-offset-0 col-sm-2 price noPadding">
+              @orderLine.GetString("Ecom:Order:OrderLine.UnitPrice")<br />
+            </div>
+            <div class="col-xs-8 col-xs-offset-4 col-sm-offset-0 col-sm-1 discount noPadding">
+              <span class="hidden-sm hidden-md hidden-lg">@Translate("discount", "Discount"):</span>
+              @if (orderLine.GetBoolean("Ecom:Product.Discount.TotalAmount.IsZero"))
+              {
+                @:-.--
+                }
+              else
+              {
+                @orderLine.GetString("Ecom:Product.Discount.TotalAmount.PriceWithoutVATFormatted");
+              }
+            </div>
+            <div class="hidden-xs col-sm-2 noPadding">
+              @orderLine.GetString("Ecom:Product.Discount.Price")
+            </div>
+            <div class="col-xs-4 col-xs-offset-4 col-sm-offset-0 col-sm-1 quantity noPaddingLeft">
+              <b class="hidden-sm hidden-md hidden-lg pull-left">@Translate("qty", "Qty")&nbsp;&nbsp;</b>
+              @productQuantity
+            </div>
+            <div class="col-xs-4 col-sm-2 totalPrice noPadding">
+              @orderLine.GetString("Ecom:Order:OrderLine.TotalPriceWithProductDiscounts.PriceWithoutVATFormatted")
+            </div>
+          </li>
+        }
+
+      }
+    </ul>
+
+    <div class="col-xs-12 totalValues noPadding">
+      <div class="col-xs-12 noPadding">
+        @if (GetDouble("Ecom:Order.RewardTotalPoints") != 0)
+        {
+          <div class="hidden-xs col-xs-12 col-sm-offset-7 col-sm-4 noPadding loyaltyPoints">@Translate("loyaltyPointsEarned", "Loyalty Points Earned:") @GetString("Ecom:Order.RewardTotalPoints")</div>
+        }
+        
+      </div>
+      <div id="totalPriceContainer" class="col-xs-12 col-xs-offset-0 col-sm-5 col-sm-offset-7 noPadding pull-right noPadding-xs">
+        <div class="col-xs-12 noPadding blockContent">
+        	<div class="col-xs-6 col-sm-7 noPadding"><b>@Translate("subTotal", "Subtotal")</b></div>
+        	<div class="col-xs-6 col-sm-5 price pull-right total noPadding-xs"><b>@subtotalString</b></div>
+        </div>
+        @if (!GetBoolean("Ecom:Order.TotalDiscount.IsZero"))
+        {
+        <div class="col-xs-12 noPadding blockContent">
+          <div class="col-xs-6 col-sm-7 noPadding">@Translate("orderDiscount", "Order Discount")</div>
+          <div class="col-xs-6 col-sm-5 price pull-right total noPadding-xs">@orderDiscount.Replace("$-", "- $")</div>
+        </div>
+        }
+        <div class="col-xs-12 noPadding blockContent">
+        	<div class="col-xs-6 col-sm-7 noPadding">@Translate("VAT", "VAT")</div>
+        	<div class="col-xs-6 col-sm-5 price pull-right noPadding-xs">@orderVAT</div>
+        </div>
+        <div class="col-xs-12 noPadding totalContainer blockContent">
+          <div class="col-xs-6 col-sm-7 noPadding total"><b>@Translate("total", "* Total")</b></div>
+          <div class="col-xs-6 col-sm-5 price pull-right total noPadding-xs"><b>@orderTotal</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (GetBoolean("Ecom:Order.Recurring.Enabled"))
+  {
+    <div class="row">
+      <div class="col-xs-12 blockContent">
+        <h2 class="title">@Translate("recurringOrder", "Recurring Order")</h2>
+        <div>
+          <dl>
+            <dt class="col-xs-6 col-sm-3 text-right bold">@Translate("every", "Every"):</dt>
+            <dd class="col-xs-6 col-sm-3">@GetString("Ecom:Order.Recurring.Interval") @GetString("Ecom:Order.Recurring.IntervalUnit.Name")</dd>
+            <dt class="col-xs-6 col-sm-3 text-right clearLeft bold">@Translate("endDate", "End Date"):</dt>
+            <dd class="col-xs-6 col-sm-3">@GetDate("Ecom:Order.Recurring.EndDate.Clean").ToString("dd/MM/yyyy")</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (!string.IsNullOrEmpty(GetString("Ecom:Order.Customer.Comment.Clean")))
+  {
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="title">@Translate("giftMessage", "Gift Message")</h2>
+        <div>
+          @GetString("Ecom:Order.Customer.Comment.Clean")
+        </div>
+      </div>
+    </div>
+  }
+  <div class="continueButton continueBottom col-xs-12">
+    @*<a target="_blank" href="@printDetail" class="btn btn-bg pull-left print">@Translate("print", "Print")</a>*@
+    <a class="btn btn-bg2 pull-left" href="javascript:history.back();">@Translate("back","Back")</a>
+  </div>
+</div>
+
+        
+@SnippetStart("jsOnLoad")
+onLoadCartStep3(null, '@print');
+@SnippetEnd("jsOnLoad")

@@ -1,0 +1,551 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System;
+@using System.IO;
+@using System.Web;
+@using System.Text;
+@using System.Collections.Generic;
+@using System.Text.RegularExpressions;
+@using Dna.Ecommerce.LiveIntegration;
+@Include("../../includes/Razor/GetImage.cshtml")
+@Include("../../includes/Razor/VerifyImage.cshtml")
+@Include("../../includes/Razor/GetCurrentUrl.cshtml")
+@{
+    // General API
+    Dynamicweb.Content.Items.Item areaItem = Pageview.Area.Item;
+    bool isLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+    bool isFrontEnd = Dynamicweb.Environment.ExecutingContext.IsFrontEnd();
+    string currentPageId = Pageview.Page.ID.ToString();
+    // ----
+    string titleKey = "title";
+    string title = "";
+    string imageKey = "image";
+    string image = "";
+    //Product
+    bool showQuantity = areaItem["ShowQuantityField"].ToString() == "True" ? true : false;
+    bool productIsFavorite = GetBoolean("Ecom:Product.IsProductInFavoriteList");
+    bool isGiftCard = GetInteger("Ecom:Product.Type") == 3;
+    string variantDefaultId = GetString("Ecom:Product.DefaultVariantComboID");
+    string variantCurrentId = GetString("Ecom:Product.VariantID");
+    string variantId = (!string.IsNullOrEmpty(variantCurrentId)) ? variantCurrentId : variantDefaultId;
+    string stockStatus = GetInteger("Ecom:Product.Stock") > 0 ? "fa-check" : "fa-close";
+    string productId = GetString("Ecom:Product.ID");
+    string productLanguage = GetString("Ecom:Product.LanguageID");
+    string productName = GetString("Ecom:Product.Name");
+    string productNumber = GetString("Ecom:Product.Number");
+    string productIntro = GetString("Ecom:Product.LongDescription");
+    string productDescription = GetString("Ecom:Product.LongDescription");
+    string pointPrice = GetString("Ecom:Product.PointPrice");
+    string productDetails = GetString("Ecom:Product:Field.Details.Value.Clean");
+    string productWarranty = GetString("Ecom:Product:Field.Warranty.Value.Clean");
+    double productPrice = GetDouble("Ecom:Product.Price.PriceWithoutVAT.Value");
+	double productPriceValue = GetInteger("Ecom:Product.Discount.Price.PricePIP") / 100.0; // !! don't use variant.GetDouble("Ecom:Product.Price.PriceWithoutVAT"); because it is a string underneath and a value like '' won't be recognized and will be returned as 0
+    int productStock = GetInteger("Ecom:Product.AvailableAmount");
+	
+	double productMultiplier = GetDouble("Ecom:Product:Field.UnitPriceMultiplier");
+         productMultiplier = productMultiplier == 0 ? 1 : productMultiplier;
+
+    string productVOCName = GetString("Ecom:Product:Field.VOC.Name");
+	double productVOCValue = !string.IsNullOrEmpty(GetString("Ecom:Product:Field.VOC.Value"))? Convert.ToDouble(GetString("Ecom:Product:Field.VOC.Value")): 0;
+
+	string productAddToCartLink = "/Default.aspx?ID=104&ProductID="+  productId +"&cartCmd=add" + "&Quantity=";
+
+    string ecoRating = GetString("Ecom:Product:Field.EcoRating");
+    double phValue = GetDouble("Ecom:Product:Field.pHValue");   
+     
+    //Image
+    string pattern = productNumber + "*";
+    string productImage = GetImagePathUrl(GetString("Ecom:Product.ImageSmall.Clean"), GetString("Ecom:Product.ImageMedium.Clean"), GetString("Ecom:Product.ImageLarge.Clean"), pattern);
+    string productGetImage = GetImage(productImage, 0, 350);
+    string imagesFolder = "/Files/Files/"+designName+"/Products/";
+    string imagePattern = imagesFolder + productNumber + ".jpg";
+    List<Dictionary<string, string>> imagesList = new List<Dictionary<string, string>>();
+    string folderPath = Path.GetDirectoryName(HttpContext.Current.Server.MapPath("/Files/Files/" + designName+"/Products/" + productNumber + ".jpg"));
+    // Favorites
+    string productRemoveFromList = "/Default.aspx?Id="+currentPageId+ "&amp;ProductID=" + productId +"&amp;CCRemoveFromMyLists="+productId+"&amp;CCRemoveFromListVariantID="+variantId+"&amp;CCRemoveFromListLanguageID="+productLanguage;
+    string productAddToList = "/Default.aspx?Id="+currentPageId+ "&amp;ProductID=" + productId +"&amp;CCAddToMyLists="+productId+"&amp;CCAddToListVariantID="+variantId+"&amp;CCAddToListLanguageID="+productLanguage;
+    string favoriteUrl = productIsFavorite ? productRemoveFromList : productAddToList;
+    // Downloads
+    string downloadsFilter = "Products contains 'p_"+productId+",' or Products contains 'p_"+productId+":' or Products ends with 'p_"+productId+"'";
+    Dictionary<string, string> iconFiles = new Dictionary<string, string>();
+    iconFiles.Add("pdf", "fa-file-pdf-o");
+    iconFiles.Add("jpg", "fa-picture-o");
+    iconFiles.Add("png", "fa-picture-o");
+    iconFiles.Add("zip", "fa-file-archive-o");
+    iconFiles.Add("rar", "fa-file-archive-o");
+    // Loops
+    List<LoopItem> loopVariantCombinations = GetLoop("VariantCombinations");
+    List<LoopItem> loopVariantGroups = GetLoop("VariantGroups");
+    List<LoopItem> loopProdPrices = GetLoop("Product.Prices");
+    List<LoopItem> loopDetails = GetLoop("Details");
+
+    // Get Images from folder
+    if (Directory.Exists(folderPath))
+    {
+        string temp = @"\";
+        foreach (string file in Directory.GetFiles(folderPath, pattern))
+        {
+            Dictionary<string, string> dct_image = new Dictionary<string, string>();
+            image = "/Files/Files/"+designName+"/Products/" + file.Substring((file.LastIndexOf(@temp) + 1), (file.Length - file.LastIndexOf(@temp) - 1));
+            string metafield = "title";
+            var metadata = Dynamicweb.Content.Files.Metadata.EditorFactory.GetMetadataForFile(image);
+            title = metadata != null ? metadata.GetValue(metafield).ToString() : productName;
+            dct_image.Add(titleKey, title);
+            dct_image.Add(imageKey, image);
+            imagesList.Add(dct_image);
+        }
+    }
+
+    var currentUser = Dynamicweb.Security.UserManagement.User.GetCurrentExtranetUser();
+
+    string label1 = GetString("Ecom:Product:Field.Label1.Value"),
+           label2 = GetString("Ecom:Product:Field.Label2.Value"),
+           application1 = GetString("Ecom:Product:Field.Application1.Value"),
+           application2 = GetString("Ecom:Product:Field.Application2.Value"),
+           application3 = GetString("Ecom:Product:Field.Application3.Value"),
+           application4 = GetString("Ecom:Product:Field.Application4.Value");
+bool eachUnit = GetBoolean("Ecom:Product:Field.EachUnit.Value");
+}
+@Include("Includes/productJson.cshtml")
+
+
+<main class="page-common page-product-detail page-products">
+  <div class="container" data-amountrequired='@Translate("amountIsRequired","Amount is required.")' data-pageid="@currentPageId" data-productid="@productId" data-variantid="@variantId" data-errorcombination1='@Translate("combinationNotAvailable","Combination not available")'>
+    <div class="row">
+      <div id="filtersContainer" class="col-md-3 noPaddingLeft">
+          @RenderSnippet("Navigation")
+          
+      </div>
+  	<div class="col-md-9 noPaddingRight product-detail"><div class="row">
+      <div class="col-lg-12 col-md-12">
+
+        <div class="product-detail__heading pull-right">
+          <div class="product__info">
+            <div class="product__color ecoRating@(ecoRating)">@ecoRating</div>
+
+            @if(!string.IsNullOrEmpty(label1) || !string.IsNullOrEmpty(label2)) {
+              <div class="labels">
+                @if(!string.IsNullOrEmpty(label1)) {
+                  <img src='/Files/Files/VanBaerle/Products/icons/@(label1).png'>
+                }
+                @if(!string.IsNullOrEmpty(label2)) {
+                  <img src='/Files/Files/VanBaerle/Products/icons/@(label2).png'>
+                }
+              </div>
+            }
+			@if(phValue != 0){
+            <span>@Translate("phValue", "pH-Wert")</span>
+            <div class="product__ph">@phValue.ToString("0.00")</div>
+			}
+            @if(!string.IsNullOrEmpty(application1) || !string.IsNullOrEmpty(application2) || !string.IsNullOrEmpty(application3) || !string.IsNullOrEmpty(application4)) {
+              <div class="applications">
+                @if(!string.IsNullOrEmpty(application1)) {
+                  <img src='/Files/Files/VanBaerle/Products/icons/@(application1).png'>
+                }
+                @if(!string.IsNullOrEmpty(application2)) {
+                 <img src='/Files/Files/VanBaerle/Products/icons/@(application2).png'>
+                }
+                @if(!string.IsNullOrEmpty(application3)) {
+                  <img src='/Files/Files/VanBaerle/Products/icons/@(application3).png'>
+                }
+                @if(!string.IsNullOrEmpty(application4)) {
+                  <img src='/Files/Files/VanBaerle/Products/icons/@(application4).png'>
+                }
+              </div>
+            }
+            @* <div class="product__VOC">
+              <p>@productVOCName @productVOCValue</p>
+            </div>
+            <span>Anwendung</span>
+            <div class="product__apps">
+              <img src="https://unsplash.it/25" alt="">
+              <img src="https://unsplash.it/25" alt="">
+              <img src="https://unsplash.it/25" alt="">
+              <img src="https://unsplash.it/25" alt="">
+            </div>*@
+          </div>
+        </div>
+        <h4 class="heading">@productName</h4>
+
+      </div>
+      <div class="col-lg-4 col-md-3">
+        <div class="product-detail__img">
+          <img src="@productGetImage" alt="@productName" title="@productName">
+        </div>
+      </div>
+      <div class="col-lg-8 col-md-9">
+        
+        @if (!string.IsNullOrEmpty(productIntro))
+        {
+        <div class="product-detail__description">@productIntro
+
+
+       
+        </div>
+        }
+         @if(!string.IsNullOrEmpty(GetString("Ecom:Product:Field.Features"))) {
+           <div class="product-detail__features">
+            <h5 class="heading product-detail__feature-heading">@Translate("Product Features","Eigenschaften")</h5>  
+            @GetValue("Ecom:Product:Field.Features")
+          </div>
+        }  
+       
+        @* <div class="col-xs-12 noPadding">
+
+        @if (!string.IsNullOrEmpty(productDetails))
+        {
+            <div id="longDescription" class="hidden">
+              <b class="lead">@Translate("details", "Details")</b>
+              @productDetails
+            </div>
+        }
+
+        </div>*@
+        <input class="hidden" type="submit" value='@Translate("addToCart", "Add to Cart")' />
+      </div>
+
+      <div class="col-lg-12 col-md-12">
+         @if (loopVariantCombinations.Count > 0)
+          {
+          <h5 class="heading product-detail__variants-heading">@Translate("Products","Produkte")</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered product-detail__variants">
+              <thead>
+              <tr>
+                <td>@Translate("artNo", "Art. Nr.")</td>
+                @if(!eachUnit){
+                  <td>@Translate("gebindeart", "Gebindeart")</td>
+                  <td>@Translate("preis", "Preis/kg")</td>
+                  <td>@Translate("unitPrice", "Price")</td>
+                  <td>@Translate("voc", "VOC")</td>
+                }else{
+                  <td>@Translate("description", "Description")</td>
+                  <td>@Translate("unitPriceEachUnit", "Price")</td>
+                }
+                <td>@Translate("quantity", "Quantity")</td>
+                <td>@Translate("actions", "Actions")</td>
+              </tr>
+              </thead>
+              <tbody>
+                @foreach (LoopItem variant in loopVariantCombinations)
+                {
+                string variantHref = "/" + variant.GetString("Ecom:VariantCombination.Link.Clean") + "?PID=" + Dynamicweb.Frontend.PageView.Current().CurrentParagraph.ID.ToString(),
+                productNumberVariant = variant.GetString("Ecom:Product.Number"),
+                variantPrice = variant.GetString("Ecom:Product.Price"),
+                variantStock = variant.GetString("Ecom:Product.AvailableAmount"),
+                variantSmallImage = variant.GetString("Ecom:Product.ImageSmall.Clean"),
+                variantIdNo = variant.GetString("Ecom:VariantCombination.VariantID"),
+                variantName = variant.GetString("Ecom:VariantCombination.VariantText"),
+                variantShortDescription = variant.GetString("Ecom:VariantCombination.VariantText");
+                double variantVOC = !string.IsNullOrEmpty(variant.GetString("Ecom:Product:Field.VOC.Value"))? Convert.ToDouble(variant.GetString("Ecom:Product:Field.VOC.Value")) : 0;
+                double variantPriceValue = variant.GetInteger("Ecom:Product.Discount.Price.PricePIP") / 100.0; // !! don't use variant.GetDouble("Ecom:Product.Price.PriceWithoutVAT"); because it is a string underneath and a value like '' won't be recognized and will be returned as 0
+                       
+
+                double multiplier = variant.GetDouble("Ecom:Product:Field.UnitPriceMultiplier.Value.Raw");
+                       multiplier = multiplier == 0 ? 1 : multiplier;
+
+                string addToCartLink = "/Default.aspx?ID=104&ProductID="+  productId +"&VariantID=" + variantIdNo + "&cartCmd=add" + "&Quantity=";
+                
+                <tr class="variant-item">
+                    <td>@productNumberVariant</td>
+                    <td>@variantName</td>
+                    @if(!eachUnit && variantPriceValue > 0){
+                      <td>@PriceFacade.FormatPrice(variantPriceValue / multiplier)</td>
+                    	<td>@(variantPriceValue > 0 ? variant.GetString("Ecom:Product.Price") : Translate("priceOnRequest","Price on request"))</td>
+                      <td>@(variantVOC > 0 ? variantVOC.ToString() : "")</td>
+                    }else{
+                      <td>@(variantPriceValue > 0 ? variant.GetString("Ecom:Product.Price") : Translate("priceOnRequest","Price on request"))</td>
+                  	}
+                    @if(variantPriceValue > 0){
+                    <td>
+                      <div class="product-detail__qtt">
+                        <span class="product-detail__qtt-adj product-detail__qtt-adj--minus">–</span>
+                        <input class="product-detail__qtt-value" data-stock="200000" min="1" value="1" readonly>
+                        <span class="product-detail__qtt-adj product-detail__qtt-adj--plus">+</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="product-detail__buttons">
+                        <form name="addToCart" class="add-to-cart form-fields" action="@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl((areaItem["MiniCart"] ?? "").ToString())" method="post" data-outofstock='@Translate("outOfStock", "Out of stock")'>
+                          <input type="hidden" name="cartcmd" value="add" />
+                          <input type="hidden" name="productID" value="@productNumberVariant" />
+                          <button type="button" class="btn btn-primary product-detail__add-cart" data-href='@addToCartLink'>
+                            <i class="icon vb-cart"></i> <span data-add='@Translate("addToCart", "Add to cart")' data-added='@Translate("added", "Added")'>@Translate("addToCart", "Add to Cart")</span>
+                          </button>
+                        </form>
+                        @*if (isLoggedIn && isFrontEnd)
+                        {
+                        string icon = productIsFavorite ? "fa-heart" : "fa-heart-o";
+                        <p>
+                          <a class="btn-gold-outline" data-favorite="@productIsFavorite" id="favorite" data-user="@Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn()" data-addtext='@Translate("addToWishlist","Add to Wish list")' data-removetext='@Translate("removeFromWishlist","Remove from Wish list")' href="@favoriteUrl"><i class="fa @icon"></i> @Translate(productIsFavorite ? "removeFromWishlist" : "addToWishlist")</a>
+                        </p>
+                        }
+                        <i class="vb-heart product-detail__add-wish"></i>
+              			*@
+                        <input class="hidden" type="submit" value='@Translate("addToCart", "Add to Cart")' />
+                      </div>
+                    </td>
+                    }else{
+                    <td></td>
+                    <td></td>
+        			}
+                </tr>
+                }
+                @if (GetLoop("ProductRelatedGroups").Count > 0) {
+
+                                    
+                    foreach (LoopItem group in GetLoop("ProductRelatedGroups"))
+                    {
+                      List<LoopItem> relatedProducts = group.GetLoop("RelatedProducts");
+                      if (relatedProducts.Count > 0) {
+                      foreach (LoopItem productItem in relatedProducts) {
+                        string relatedProductId = productItem.GetString("Ecom:Product.ID"),
+                        relatedProductName = productItem.GetString("Ecom:Product.Name"),
+                        relatedPrice = productItem.GetString("Ecom:Product.Price"),
+                        relatedProductNumber = productItem.GetString("Ecom:Product.Number"),
+                        relatedProductLink = productItem.GetString("Ecom:Product.PrimaryOrCurrentPageID") != Pageview.Page.ID.ToString() ? "/Default.aspx?ID=" + productItem.GetString("Ecom:Product.PrimaryOrCurrentPageID") + "&ProductID=" + productItem.GetString("Ecom:Product.ID") : "/Default.aspx?ID=" + Pageview.Page.ID.ToString() + "&ProductID=" + productItem.GetString("Ecom:Product.ID"),
+                        relatedImage = (!string.IsNullOrEmpty(productItem.GetString("Ecom:Product.ImageSmall.Clean"))) ? productItem.GetString("Ecom:Product.ImageSmall.Clean") : "/Files/Files/" + designName + "/Products/Images/" + relatedProductNumber + ".jpg";
+                        double relatedPriceValue = productItem.GetInteger("Ecom:Product.Discount.Price.PricePIP") / 100.0;
+                        double multiplier = productItem.GetDouble("Ecom:Product:Field.UnitPriceMultiplier");
+              			double relatedVOCValue = !string.IsNullOrEmpty(productItem.GetString("Ecom:Product:Field.VOC.Value"))? Convert.ToDouble(productItem.GetString("Ecom:Product:Field.VOC.Value")): 0;
+              			
+                        multiplier = multiplier == 0 ? 1 : multiplier;
+                        string addToCartLink = "/Default.aspx?ID=104&ProductID="+  relatedProductId + "&cartCmd=add" + "&Quantity=";
+              
+                        <tr class="variant-item">
+                          <td>@relatedProductNumber</td>
+                          <td>@relatedProductName</td>
+                          @if(!eachUnit){
+                          <td>@* @PriceFacade.FormatPrice(relatedPriceValue / multiplier) *@</td>
+                          }
+                          <td>@(relatedPriceValue > 0 ? relatedPrice : "")</td>
+                          <td>@(relatedVOCValue > 0.00 ? relatedVOCValue.ToString() : "")</td>
+                          <td>
+                            <div class="product-detail__qtt">
+                              <span class="product-detail__qtt-adj product-detail__qtt-adj--minus">–</span>                    
+                              <input class="product-detail__qtt-value" data-stock="200000" min="1" value="1" readonly>
+                              <span class="product-detail__qtt-adj product-detail__qtt-adj--plus">+</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="product-detail__buttons">
+                              <form name="addToCart" class="add-to-cart form-fields" action="@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl((areaItem["MiniCart"] ?? "").ToString())" method="post" data-outofstock='@Translate("outOfStock", "Out of stock")'>
+                                <input type="hidden" name="cartcmd" value="add" />
+                                <input type="hidden" name="productID" value="@relatedProductNumber" />
+                                <button type="button" class="btn btn-primary product-detail__add-cart" data-href='@addToCartLink'>
+                                  <i class="icon vb-cart"></i> <span data-add='@Translate("addToCart", "Add to cart")' data-added='@Translate("added", "Added")'>@Translate("addToCart", "Add to Cart")</span>
+                                </button>
+                              </form>                      
+                              @*<i class="vb-heart product-detail__add-wish"></i>*@
+                              <input class="hidden" type="submit" value='@Translate("addToCart", "Add to Cart")' />
+                            </div>
+                          </td>
+                        </tr>
+                        
+                        }
+                      }
+                    }
+
+
+
+              
+                }
+              </tbody>
+            </table>
+          </div> 
+          @* end table-responsive *@
+          } else {
+     
+      	  <div class="table-responsive">
+            <table class="table table-bordered product-detail__variants">
+              <thead>
+              <tr>
+                <td>@Translate("artNo", "Art. Nr.")</td>
+                @if(!eachUnit && productVOCValue > 0.00){
+                <td style="width: 40%; ">@Translate("gebindeart", "Gebindeart")</td>
+                <td>@Translate("preis", "Preis/kg")</td>
+                <td>@Translate("unitPrice", "Price")</td>
+                <td>@Translate("voc", "VOC")</td>
+                }else{
+                <td style="width: 40%; ">@Translate("description", "Description")</td>
+                <td>@Translate("unitPriceEachUnit", "Price")</td>
+                }
+                <td>@Translate("quantity", "Quantity")</td>
+                <td>@Translate("actions", "Actions")</td>
+              </tr>
+              </thead>
+              <tbody>
+      			<tr class="variant-item">
+                    <td>@productNumber</td>
+                    <td>@productName</td>
+                  	@if(!eachUnit && productVOCValue > 0.00) {
+                      <td>@PriceFacade.FormatPrice(productPriceValue / productMultiplier)</td>
+                    	<td>@productPrice</td>
+                    	<td>@(productVOCValue > 0.00 ? productVOCValue.ToString() : "")</td>
+                  	}else{
+                     <td> @(productPrice > 0.00 ? GetString("Ecom:Product.Price") : Translate("priceOnRequest","Price on request"))</td>
+                  	}
+                    
+                    <td>
+                      <div class="product-detail__qtt">
+                        <span class="product-detail__qtt-adj product-detail__qtt-adj--minus">–</span>
+                        <input class="product-detail__qtt-value" data-stock="200000" min="1" value="1" readonly>
+                        <span class="product-detail__qtt-adj product-detail__qtt-adj--plus">+</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="product-detail__buttons">
+                        <form name="addToCart" class="add-to-cart form-fields" action="@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl((areaItem["MiniCart"] ?? "").ToString())" method="post" data-outofstock='@Translate("outOfStock", "Out of stock")'>
+                          <input type="hidden" name="cartcmd" value="add" />
+                          <input type="hidden" name="productID" value="@productNumber" />
+                          <button type="button" class="btn btn-primary product-detail__add-cart" data-href='@productAddToCartLink'>
+                            <i class="icon vb-cart"></i> <span data-add='@Translate("addToCart", "Add to cart")' data-added='@Translate("added", "Added")'>@Translate("addToCart", "Add to Cart")</span>
+                          </button>
+                        </form>
+                        @*if (isLoggedIn && isFrontEnd)
+                        {
+                        string icon = productIsFavorite ? "fa-heart" : "fa-heart-o";
+                        <p>
+                          <a class="btn-gold-outline" data-favorite="@productIsFavorite" id="favorite" data-user="@Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn()" data-addtext='@Translate("addToWishlist","Add to Wish list")' data-removetext='@Translate("removeFromWishlist","Remove from Wish list")' href="@favoriteUrl"><i class="fa @icon"></i> @Translate(productIsFavorite ? "removeFromWishlist" : "addToWishlist")</a>
+                        </p>
+                        
+                        <i class="vb-heart product-detail__add-wish"></i>
+              			}*@
+                        <input class="hidden" type="submit" value='@Translate("addToCart", "Add to Cart")' />
+                      </div>
+                    </td>
+                 
+                </tr>
+      		  </tbody>
+            </table>
+          </div> 
+      	  }
+          <div class="product-detail__download">
+            @if (loopDetails.Any())
+            {
+            <h5 class="heading">@Translate("download","Download")</h5>
+            @RenderItemList(new {
+            ItemType = "ProductDownloads",
+            ListSourceType = "Page",
+            ListSourcePage = Pageview.Area.Item["ProductDownloads"],
+            ItemFieldsList = "*",
+            ListTemplate = "ItemPublisher/List/ProductDownloads.cshtml",
+            ListPageSize = 99,
+            IncludeParagraphItems = true,
+            Filter = downloadsFilter
+            })
+            
+            <ul class="product-detail__download-list">
+              @foreach (LoopItem detail in loopDetails)
+              {
+              string file = detail.GetString("Ecom:Product:Detail.Image.Clean");
+              var metadata = Dynamicweb.Content.Files.Metadata.EditorFactory.GetMetadataForFile(file);
+              string temp = @".",
+              metafield = "title",
+              fileName = file.Substring((file.LastIndexOf("/") + 1), (file.Length - file.LastIndexOf("/") - 1)),
+              fileTitle = metadata != null ? metadata.GetValue(metafield).ToString() : fileName,
+              substringFile = file.Substring((file.LastIndexOf(temp) + 1), (file.Length - file.LastIndexOf(temp) - 1)),
+              icon = iconFiles.ContainsKey(substringFile) ? iconFiles[substringFile] : "fa-file-pdf-o";
+              <li>
+                <a class="product-detail__download-link" href="@file" download>
+                  <img class="icon" src="/assets/images/download-file.svg" alt=""> @fileTitle
+                </a>
+              </li>
+              }
+            </ul>
+            <hr/>
+            <div class="product-detail__description">
+            <p>PMB: Produktmerkblätter | Fiches techniques</p>
+			<p>SDB: Sicherheitsdatenblätter | Fiches de sécurité</p>
+            </div>
+            }
+            @{
+            string socialMedia = (areaItem["SocialNetworks"] ?? "").ToString();
+            if (!string.IsNullOrEmpty(socialMedia))
+            {
+            <div class="product-detail__share">
+              @foreach (var socialID in socialMedia.Split(','))
+              {
+                var item = Dynamicweb.Content.Items.ItemManager.Storage.GetById("SocialLinks", socialID);
+                if (item["ShareURL"] != null && !string.IsNullOrEmpty(item["ShareURL"].ToString()))
+                {
+                  string socialLink = (item["ShareURL"] ?? "").ToString();
+                  string socialName = (item["Name"] ?? "").ToString();
+                  string className = (item["Icon"] ?? "").ToString();
+              <a class="link" target="_blank" href="@socialLink@GetCurrentUrl()">
+            
+            @*
+              Must remove "fa-" in @className, only return "facebook" not "fa-facebook"
+            *@
+            
+                <i class="vb-@className"></i>
+              </a>
+                }
+              }
+            </div>
+              }
+            }
+          </div>
+
+      </div>
+    </div></div>
+
+  @*
+    <div class="related-products">
+      <!-- Related -->
+      @if (GetLoop("ProductRelatedGroups").Count > 0)
+      {
+        <h4 class="heading">Related to items you’ve viewed</h4>
+        <div class="row">
+        @foreach (LoopItem group in GetLoop("ProductRelatedGroups"))
+        {
+          List<LoopItem> relatedProducts = group.GetLoop("RelatedProducts");
+          if (relatedProducts.Count > 0)
+          {
+          foreach (LoopItem productItem in relatedProducts)
+          {
+          string relatedProductId = productItem.GetString("Ecom:Product.ID"),
+          relatedProductName = productItem.GetString("Ecom:Product.Name"),
+          relatedProductNumber = productItem.GetString("Ecom:Product.Number"),
+          relatedProductLink = productItem.GetString("Ecom:Product.PrimaryOrCurrentPageID") != Pageview.Page.ID.ToString() ? "/Default.aspx?ID=" + productItem.GetString("Ecom:Product.PrimaryOrCurrentPageID") + "&ProductID=" + productItem.GetString("Ecom:Product.ID") : "/Default.aspx?ID=" + Pageview.Page.ID.ToString() + "&ProductID=" + productItem.GetString("Ecom:Product.ID"),
+          relatedImage = (!string.IsNullOrEmpty(productItem.GetString("Ecom:Product.ImageSmall.Clean"))) ? productItem.GetString("Ecom:Product.ImageSmall.Clean") : "/Files/Files/" + designName + "/Products/Images/" + relatedProductNumber + ".jpg";
+          <div class="col-md-3 col-sm-6">
+            <div class="product-simple">
+              <a href="@relatedProductLink">
+                <img class="product-simple__img" src="@GetImage(relatedImage, 300, 0, 0, 0, 0, 0, "jpg")" alt="@relatedProductName" title="@relatedProductName">
+              </a>
+              <a href="@relatedProductLink"><h5 class="product-simple__title">@relatedProductName</h5></a>             
+            </div>
+          </div>
+          }
+          }
+        }
+        </div>
+      }
+    </div> 
+
+    *@
+	</div>
+  </div>
+</main>
+
+@SnippetStart("OGMeta")
+<meta property="og:title" content='@productName' />
+<meta property="og:image" content='@Pageview.GlobalTags.GetTagByName("Global:Request.Scheme").Value.ToString()://@Pageview.GlobalTags.GetTagByName("Global:Request.Host").Value.ToString()@imagePattern' />
+<meta property="og:site_name" content='@areaItem["CompanyName"]' />
+<meta property="og:url" content='@Pageview.GlobalTags.GetTagByName("Global:Request.Scheme").Value.ToString()://@Pageview.GlobalTags.GetTagByName("Global:Request.Host").Value.ToString()@Pageview.GlobalTags.GetTagByName("Global:Pageview.Url").Value.ToString()' />
+<meta property="og:description" content='@StripHtml(productIntro)' />
+<meta property="og:type" content="article" />
+<meta property="og:locale" content='@Pageview.GlobalTags.GetTagByName("Global:Area.LongLang").Value.ToString().Replace("-", "_")' />
+@SnippetEnd("OGMeta")
+
+@SnippetStart("jsOnLoad")
+onLoadProductDetail({obj_product:@productJSON});
+@SnippetEnd("jsOnLoad")
+
+@functions {
+  public static string StripHtml(string source)
+  {
+    return Regex.Replace(source, "<.*?>", string.Empty);
+  }
+}

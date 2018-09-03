@@ -1,0 +1,38 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Web.Script.Serialization;
+@{
+  Dictionary<string, Dictionary<string, Dictionary<string, string>>> product = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+  Dictionary<string, Dictionary<string, string>> variants = new Dictionary<string, Dictionary<string, string>>();
+  string productJSON = "";
+
+  if(loopVariantCombinations.Count > 0){
+    foreach (LoopItem variant in loopVariantCombinations){
+      string variantHref = "/"+ variant.GetString("Ecom:VariantCombination.Link.Clean") + "?PID=" + Dynamicweb.Frontend.PageView.Current().CurrentParagraph.ID.ToString(),
+             productNumberVariant = variant.GetString("Ecom:Product.Number"),
+             price = variant.GetString("Ecom:Product.Price"),
+             stock = variant.GetString("Ecom:Product.AvailableAmount"),
+             smallImage = variant.GetString("Ecom:Product.ImageSmall.Clean"),
+             id = variant.GetString("Ecom:VariantCombination.VariantID"),
+             variantName = variant.GetString("Ecom:VariantCombination.VariantText"),
+             variantShortDescription = variant.GetString("Ecom:VariantCombination.VariantText");
+      Dictionary<string, string> variantDict = new Dictionary<string, string>();
+
+      variantDict.Add("name", variantName);
+      variantDict.Add("id", id);
+      variantDict.Add("number", productNumberVariant);
+      variantDict.Add("price", price);
+      variantDict.Add("stock", stock);
+      variantDict.Add("smallImage", smallImage);
+      variantDict.Add("productIsFavorite", variant.GetString("Ecom:Product.IsProductInFavoriteList"));
+      variantDict.Add("addToList", variant.GetString("Ecom:Product.AddToFavorites"));
+      variantDict.Add("removeFromList", variant.GetString("Ecom:Product.RemoveFromFavorites"));
+
+      variants.Add(id, variantDict);
+    }
+    product.Add("product", variants);
+
+  }
+  productJSON = new JavaScriptSerializer().Serialize(product);
+
+}

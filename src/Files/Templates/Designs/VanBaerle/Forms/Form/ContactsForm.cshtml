@@ -1,0 +1,503 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@* version 1.3 *@
+@{
+  string designFolder = GetString("Template:DesignBaseUrl");
+}
+<style> 
+  .info-simple .info__subheading.info__subheading--lg {
+      min-height:52px;
+   }
+</style>
+<main class="page-contact">
+  <section class="banner">
+    <div class="banner__half banner__half--image" style="background-image:url(@designFolder/assets/images/5_mainImage.jpg)"></div>
+    <div class="banner__half banner__half--content">
+      <div class="banner__text">
+        <h1 class="banner__heading">
+          <strong>Erreichbar sein</strong><br>
+          und andere erreichen.
+        </h1>
+      </div>
+      <div class="banner__line"></div>
+    </div>
+  </section>
+  <section class="section section--invert-color">
+    <div class="container">
+      <div class="section__description">
+        <div class="section-desc__line"></div>
+        <div class="section-desc__text">
+          <h1 class="section-desc__title">Kontakt</h1>
+        </div>
+      </div>
+      <div class="contact-list">
+        <div class="info-simple">
+          <img class="info__img" src="@designFolder/assets/images/person-12.jpg" alt="">
+          <h4 class="info__heading">Anita Belotto</h4>
+          <div class="info__subheading">Empfang</div>
+          <ul>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              Schützenmattstrasse 21
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              4142 Münchenstein
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+              </div>
+             +41 61 415 91 11
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/envelope.svg" alt="">
+              </div>
+              info@vanbaerle.ch
+            </li>
+          </ul>
+        </div>
+        <div class="info-simple">
+          <img class="info__img" src="@designFolder/assets/images/person-13.jpg" alt="">
+          <h4 class="info__heading">Thomas Brügger</h4>
+          <div class="info__subheading">Service Center Hygiene</div>
+          <ul>
+             <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              Schützenmattstrasse 21
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              4142 Münchenstein
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+              </div>
+              +41 61 415 91 11
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/envelope.svg" alt="">
+              </div>
+              info.cz@vanbaerle.com
+            </li>
+          </ul>
+        </div>
+        <div class="info-simple">
+          <img class="info__img" src="@designFolder/assets/images/person-14.jpg" alt="">
+          <h4 class="info__heading">Rita Meyer</h4>
+          <div class="info__subheading">Service Center Silikate</div>
+          <ul>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              Schützenmattstrasse 21
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              4142 Münchenstein
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+              </div>
+              +41 61 415 91 11
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/envelope.svg" alt="">
+              </div>
+              th.tan@vanbaerle.com.sg
+            </li>
+          </ul>
+        </div>
+        <div class="info-simple">
+          <img class="info__img" src="@designFolder/assets/images/person-2.png" alt="">
+          <h4 class="info__heading">Markus Staub</h4>
+          <div class="info__subheading">Chief Financial Officer</div>
+          <ul>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              Schützenmattstrasse 21
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              4142 Münchenstein
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+              </div>
+              +41 61 415 91 11
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/envelope.svg" alt="">
+              </div>
+              markus.staub@vanbaerle.ch
+            </li>
+          </ul>
+        </div>
+        <div class="info-simple">
+          <img class="info__img" src="@designFolder/assets/images/person-11.png" alt="">
+          <h4 class="info__heading">Ellen Brugger</h4>
+          <div class="info__subheading">Head Corporate Communications</div>
+          <ul>
+             <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              Schützenmattstrasse 21
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              4142 Münchenstein
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+              </div>
+              +41 61 415 91 11
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/envelope.svg" alt="">
+              </div>
+              ellen.brugger@vanbaerle.ch
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section bg-2">
+    <div class="container">
+      <div class="section__description">
+        <div class="section-desc__line"></div>
+        <div class="section-desc__text">
+          <h1 class="section-desc__title">Tochtergesellschaften</h1>
+        </div>
+      </div>
+      <div class="contact-list">
+        <div class="info-simple">
+          <h4 class="info__heading">Singapore</h4>
+          <div class="info__subheading info__subheading--lg">vanBaerle Silicates (S) Pte Ltd</div>
+          <ul>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              100 Pasir Panjang Road 
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+             08-04 Singapore 118518
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+              </div>
+              +65 68 99 33 43
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/envelope.svg" alt="">
+              </div>
+              th.tan@vanbaerle.com.sg
+            </li>
+          </ul>
+        </div>
+        <div class="info-simple">
+          <h4 class="info__heading">Slowakei</h4>
+          <div class="info__subheading info__subheading--lg">vanBaerle VS s.r.o.</div>
+          <ul>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              Palisàdy 33 81106
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              Bratislava, Slowakei
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+              </div>
+              +421 2 32 41 06 21
+            </li>
+          </ul>
+        </div>
+        <div class="info-simple">
+          <h4 class="info__heading">Tschechien</h4>
+          <div class="info__subheading info__subheading--lg">vanBaerle Swiss Hygiene s.r.o.</div>
+          <ul>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              Pernerova 168 530 02
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              Pardubice, Tschechische Republik
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+              </div>
+              +420 466 818 213
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/envelope.svg" alt="">
+              </div>
+              info.cz@vanbaerle.com
+            </li>
+          </ul>
+        </div>
+        <div class="info-simple">
+          <h4 class="info__heading">Frankreich</h4>
+          <div class="info__subheading info__subheading--lg">vanBaerle France S.A.S.</div>
+          <ul>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              3 Boulevard de l’europe
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+               68100 Mulhouse Frankreich
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+              </div>
+              +41 61 415 92 15
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/envelope.svg" alt="">
+              </div>
+              info@vanbaerle.fr
+            </li>
+          </ul>
+        </div>
+        <div class="info-simple">
+          <h4 class="info__heading">Taiwan</h4>
+          <div class="info__subheading info__subheading--lg">vanBaerle Silicates Taiwan Co. Ltd.</div>
+          <ul>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              No. 99-1, Sec 2, Nanti Rd, Wuqi Dist
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+              </div>
+              Taichung City 43500 Taiwan (R.O.C.)
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+              </div>
+              +88 642 639 98 09
+            </li>
+            <li class="info__item">
+              <div class="icon">
+                <img class="icon__img" src="@designFolder/assets/images/envelope.svg" alt="">
+              </div>
+              info@vanbaerle.tw
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section-map">
+    <div class="contact-info">
+      <h3 class="contact-info__heading">Kontakt</h3>
+      <div class="info-simple">
+        <div class="info__subheading">vanBaerle AG</div>
+        <ul>
+          <li class="info__item">
+            <div class="icon">
+              <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+            </div>
+            Schützenmattstrasse 21
+          </li>
+          <li class="info__item">
+            <div class="icon">
+              <img class="icon__img" src="@designFolder/assets/images/pin.svg" alt="">
+            </div>
+           4142 Münchenstein
+          </li>
+          <li class="info__item">
+            <div class="icon">
+              <img class="icon__img" src="@designFolder/assets/images/phone.svg" alt="">
+            </div>
+            +41 61 415 91 11
+          </li>
+          <li class="info__item">
+            <div class="icon">
+              <img class="icon__img" src="@designFolder/assets/images/phone-2.svg" alt="">
+            </div>
+            +41 61 415 92 22
+          </li>
+          <li class="info__item">
+            <div class="icon">
+              <img class="icon__img" src="@designFolder/assets/images/envelope.svg" alt="">
+            </div>
+            info@vanbaerle.ch
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div id="js-contact-map"
+         class="contact-map"
+         data-lat="47.51077"
+         data-lng="7.61669">
+    </div>
+  </section>
+</main>
+<script>
+var map, marker, infowindow,
+  contactMap = document.getElementById("js-contact-map"),
+  coords = {
+    lat: parseFloat(contactMap.dataset.lat),
+    lng: parseFloat(contactMap.dataset.lng)
+  },
+  centerCoords = {
+    lat: coords.lat + .003,
+    lng: coords.lng - .015
+  },
+  centerCoordsSm = {
+    lat: coords.lat + .003,
+    lng: coords.lng
+  },
+  mapOptions = {
+    center: centerCoords,
+    zoom: 14,
+    disableDefaultUI: true,
+    styles: [
+      {
+        "elementType": "geometry",
+        "stylers": [
+          {
+            "color": "#f8f8f8"
+          }
+        ]
+      },
+      {
+        "elementType": "labels.icon",
+        "stylers": [
+          {
+            "visibility": "off"
+          }
+        ]
+      },
+      {
+        "featureType": "poi",
+        "elementType": "geometry",
+        "stylers": [
+          {
+            "color": "#eeeeee"
+          }
+        ]
+      },
+      {
+        "featureType": "road",
+        "elementType": "geometry",
+        "stylers": [
+          {
+            "color": "#e6e6e6"
+          }
+        ]
+      },
+      {
+        "featureType": "transit.line",
+        "elementType": "geometry",
+        "stylers": [
+          {
+            "color": "#e5e5e5"
+          }
+        ]
+      },
+      {
+        "featureType": "water",
+        "elementType": "geometry",
+        "stylers": [
+          {
+            "color": "#a3ccff"
+          }
+        ]
+      }
+    ]
+  };
+function initMap() {
+  map = new google.maps.Map(contactMap, mapOptions);
+  marker = new google.maps.Marker({
+    position: coords,
+    map: map,
+    icon: "@designFolder/img/pin-gradient.svg"
+  });
+  infowindow = new google.maps.InfoWindow({
+    content: "<div class=\"contact-map__info-window\">\n" +
+    "<h5 class=\"text\">Wegbeschreibung</h5>\n" +
+    "<a class=\"link\" href=\"https://goo.gl/maps/5jsXBb5jnB32\" target=\"_blank\">" +
+    "So finden Sie uns" +
+    "</a>\n" +
+    "</div>"
+  });
+  infowindow.open(map, marker);
+  marker.addListener("click", function () {
+    infowindow.open(map, marker);
+  });
+  function centerOnResize() {
+    if (document.documentElement.clientWidth < 768) {
+      map.setCenter(centerCoordsSm);
+    } else {
+      map.setCenter(centerCoords);
+    }
+  }
+  centerOnResize();
+  google.maps.event.addDomListener(window, "resize", function () {
+    centerOnResize();
+  });
+}
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDD5H3WDy1NmiTm7UjrK38wL-HXndyEQlY&callback=initMap"></script>
+
+
+

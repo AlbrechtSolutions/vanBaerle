@@ -1,0 +1,143 @@
+﻿@using Dynamicweb;
+@using Dynamicweb.Frontend;
+@using Dynamicweb.Rendering;
+@using Dynamicweb.Security.UserManagement;
+@{
+    string urlAddresses = GetString("UserManagement:User.ManageAddressesUrl");
+    string urlEdit = GetString("UserManagement:User.EditUrl");
+    string editLogin = urlEdit + "&login=1";
+    string editProfile = urlEdit + "&profile=1";
+    string countryId = GetString("UserManagement:User.Country");
+    string stateId = GetString("UserManagement:User.State");
+    string name = GetString("UserManagement:User.Name");
+    string firstName = GetString("UserManagement:User.FirstName");
+    string colLeftClass = "col-md-3 col-sm-3 col-xs-12 text-right";
+    string colRightClass = "col-md-9 col-sm-9 col-xs-12";
+	string paymentTerms = GetString("UserManagement:User.AccessUser_PaymentTerms");
+	double programDiscount = GetDouble("UserManagement:User.AccessUser_ProgramDiscountPercent");
+    Pageview.Meta.Title = Translate("accountInformation", "Account Information");
+    var countryReturned = Dynamicweb.Ecommerce.International.CountryText.GetCountryTextById(countryId);
+	string salesRepId= GetString("UserManagement:User.AccessUser_SalesRepId");
+	User salesRep = User.GetUserBySql("Select * from AccessUSer where AccessUserExternalID = '"+salesRepId+"'");
+	string paymentStatus30 = GetString("UserManagement:User.AccessUser_Account1To30Days");
+	string paymentStatus60=GetString("UserManagement:User.AccessUser_Account31To60Days");
+	string paymentStatus90=GetString("UserManagement:User.AccessUser_Account61To90Days");
+}
+
+<div class="col-xs-12 noPadding">
+  <div class="accountInfoList">
+    <div class="row item">
+      @if(!string.IsNullOrEmpty(GetString("UserManagement:User.Name"))) {
+        <div class="col-md-3 col-sm-3 col-xs-12 text-right">@Translate("name", "Name"):</div>
+        <div class="col-md-3 col-sm-3 col-xs-12">@GetString("UserManagement:User.Name")</div>
+      }
+      else if(!string.IsNullOrEmpty(firstName)){
+        <div class="col-md-3 col-sm-3 col-xs-12 text-right">@Translate("name", "Name"):</div>
+        <div class="col-md-3 col-sm-3 col-xs-12">@firstName @GetString("UserManagement:User.LastName")</div>
+      }
+      @if(!string.IsNullOrEmpty(paymentTerms)){
+      <div class="col-md-3 col-sm-3 col-xs-12 text-right">@Translate("Payment Terms"):</div>
+      <div class="col-md-3 col-sm-3 col-xs-12">@paymentTerms</div>
+      }
+    </div>
+    
+    <div class="row item">
+      <div class="col-md-3 col-sm-3 col-xs-12 text-right">@Translate("Customer Number"):</div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <div class="pull-left">
+          @GetString("UserManagement:User.CustomerNumber")
+        </div>     
+      </div>
+      
+      <div class="col-md-3 col-sm-3 col-xs-12 text-right">@Translate("Program Discount"):</div>
+      <div class="col-md-3 col-sm-3 col-xs-12">@(programDiscount+"%")</div>
+      
+    </div>
+    <!-- <div class="@colLeftClass">@Translate("usernameEmail", "Username/Email"):</div>
+    <div class="@colRightClass">
+      <div class="pull-left">
+        @GetString("UserManagement:User.Email")
+      </div>
+      <a class="editUser pull-left" href="@editLogin">@Translate("editLoginInformation", "Edit login information")</a>
+    </div> -->
+   
+
+    <!-- @if(!string.IsNullOrEmpty(GetString("UserManagement:User.Company"))) {
+      <div class="@colLeftClass">@Translate("organization", "Organization"):</div>
+      <div class="@colRightClass">@GetString("UserManagement:User.Company")</div>
+    } -->
+    <div class="row item">
+      <div class="@colLeftClass">@Translate("Billing Address"):</div>
+      <div class="@colRightClass">
+        <div class="col-md-4 col-sm-4 col-xs-12 noPadding">
+          @GetString("UserManagement:User.Address")
+          @if(!string.IsNullOrEmpty(GetString("UserManagement:User.Address2"))) {         
+            @GetString("UserManagement:User.Address2")
+          }
+          <br/>
+          @if(!string.IsNullOrEmpty(GetString("UserManagement:User.City")) || !string.IsNullOrEmpty(stateId) || !string.IsNullOrEmpty(GetString("UserManagement:User.Zip"))) {
+            @GetString("UserManagement:User.City")@:, @GetString("UserManagement:User.State")  @GetString("UserManagement:User.Zip")
+          }
+          <!-- @if(!string.IsNullOrWhiteSpace(countryReturned.Name)) {
+            <br/> @countryReturned.Name
+          } -->
+        </div>
+        <!-- <a class="editAddresses col-md-10 col-sm-8 col-xs-12" href="@urlAddresses">@Translate("myAddresses", "My addresses")</a> -->
+      </div>
+    </div>
+	<div class="row item">
+      <div class="@colLeftClass">@Translate("Payment status 30 days"):</div>
+      <div class="@colRightClass">@paymentStatus30</div>
+    </div>
+	<div class="row item">
+      <div class="@colLeftClass">@Translate("Payment status 60 days"):</div>
+      <div class="@colRightClass">@paymentStatus60</div>
+    </div>
+	<div class="row item">
+      <div class="@colLeftClass">@Translate("Payment status 90 days"):</div>
+      <div class="@colRightClass">@paymentStatus90</div>
+    </div>
+
+
+    <div class="row item">
+      <div class="@colLeftClass">@Translate("Shipping Address"):</div>
+      <div class="@colRightClass">
+        <div class="col-md-4 col-sm-4 col-xs-12 noPadding">
+          @GetString("UserManagement:User.DefaultAddress.Address")
+          @if(!string.IsNullOrEmpty(GetString("UserManagement:User.DefaultAddress.Address2"))) {         
+            @GetString("UserManagement:User.DefaultAddress.Address2")
+          }
+          <br/>
+          @if(!string.IsNullOrEmpty(GetString("UserManagement:User.DefaultAddress.City")) || !string.IsNullOrEmpty(stateId) || !string.IsNullOrEmpty(GetString("UserManagement:User.Zip"))) {
+            @GetString("UserManagement:User.DefaultAddress.City")@:, @GetString("UserManagement:User.DefaultAddress.State")  @GetString("UserManagement:User.DefaultAddress.Zip")
+          }
+          <!-- @if(!string.IsNullOrWhiteSpace(countryReturned.Name)) {
+            <br/> @countryReturned.Name
+          } -->
+        </div>
+        <div class="col-xs-12 noPadding">
+
+          @if(GetString("UserManagement:User.AccessUser_DenyEditShippingAddressess") != "True") {
+              <a class="editAddresses btn btn-bg" href="@urlAddresses">@Translate("Manage Shipping Information")</a>
+          } 
+        </div>
+        
+      </div>
+    </div>
+
+
+
+	
+  </div>
+  <!-- <a class="editProfile btn btn-bg col-md-offset-2 col-sm-offset-3" href="@editProfile">@Translate("editProfile", "Edit profile")</a> -->
+
+</div>
+
+@SnippetStart("SalesRepContactDetails")
+<div class="col-xs-12 sales-rep-contact-details" style="text-align: right; font-weight: bold">
+  <p>@Translate("Your U.S Kids Golf Sales Representative")</p>
+  <p class="uppercase-it">@salesRep.Name</p>
+  <p>@salesRep.Phone</p>
+  <p>@salesRep.Email</p>
+</div>
+@SnippetEnd("SalesRepContactDetails")

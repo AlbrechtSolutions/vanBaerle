@@ -1,0 +1,140 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System.Text.RegularExpressions;
+@using Dynamicweb.Core
+
+@{
+  string designFolder = GetString("Template:DesignBaseUrl");
+  string device = Pageview.Device.ToString();
+  string OrSubpage = GetString("DwAreaFirstPageID") == GetString("Global:Page.ID") ? "home" : "subpage";
+  string print = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["print"]) ? "printOrPdf" : "";
+  string resultsPage = GetString("Item.Area.SearchResults");
+  string countryCode = Dna.IP.Frontend.GetCountryCode();
+  string longLang = Pageview.GlobalTags.GetTagByName("Global:Area.LongLang").Value.ToString();
+  string shortLang = Pageview.GlobalTags.GetTagByName("Global:Area.Lang").Value.ToString();
+  string email = GetString("Item.Area.Email");
+  string phone = GetString("Item.Area.Phone");
+	string subscribeToNewsletterAPI = GetString("Item.Area.Newsletter_Subscribe_API");
+
+  bool userIsLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+  bool isPrint = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["print"]);
+  List<LoopItem> socialMedia = GetLoop("Item.Area.SocialNetworks");
+  List<LoopItem> websiteLanguages = GetLoop("WebsiteLanguages");
+	List<LoopItem> languages = GetLoop("Languages");
+
+  string ipCountry = Dna.IP.Frontend.GetCountryCode();
+  string countryCodeModule = !string.IsNullOrEmpty(ipCountry) ? ipCountry : "US";
+  string userCountryCode = (Pageview.User != null && !string.IsNullOrEmpty(Pageview.User.CountryCode)) ? Pageview.User.CountryCode : ipCountry;
+  string userState = Pageview.User != null ? Pageview.User.State : string.Empty;    
+}<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vanBaerle</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+        WebFont.load({
+            google: {
+                families: [
+                    "Lato:100,300,300i,400,700,700i,900:latin,cyrillic,cyrillic-ext,latin-ext",
+                    "Roboto:400,700",
+                    "Montserrat"
+                ]
+            }
+        });
+    </script>
+
+  <link rel="shortcut icon" href="@(designFolder)images/favicon.ico" type="image/x-icon" />
+
+
+  @{
+  var minify = false;
+  var styleBundle = Dna.Optimizer.Renderer.RenderStyles(string.Format("{0}css", designFolder), "-main-styles", new[] { "exceptions" }, minify, true);
+  var scriptBundle = Dna.Optimizer.Renderer.RenderScripts(string.Format("{0}js", designFolder), "-main-scripts", new[] { "exceptions" }, minify, true);
+  }
+  <link rel="stylesheet" href="@styleBundle" />
+  <link rel="stylesheet" href="css/exceptions/exceptions.css">
+ 
+  
+  <script src="@scriptBundle"></script>
+
+  <script>
+  @RenderSnippet("jsVariables")
+  @SnippetStart("jsVariables") @SnippetEnd("jsVariables")
+
+  var obj_pages = {
+    str_miniCart: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.MiniCart"))',
+    str_login: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.Login"))',
+    str_globalTranslates: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.GlobalTranslates"))',
+    str_contactPopup: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.ContactUs_Popup"))',
+    str_cartInformation: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.Cart_Information"))',
+    str_typeAhead: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.TypeAhead"))'
+  },
+  obj_user = {
+    str_country: '@userCountryCode',
+    str_state: '@userState'
+  },
+  obj_settings = {
+    str_contactTimeout: '@GetString("Item.Area.Time")',
+    str_cartQty: '@GetString("Ecom:Order.OrderLines.TotalProductQuantity")'
+  },
+  obj_translates = {
+    str_seeAll: '@Translate("seeAllThe", "See all the")',
+    str_results: '@Translate("results", "results")'
+  };
+  $(function () {
+
+    @RenderSnippet("jsOnLoadVariables")
+    @SnippetStart("jsOnLoadVariables") @SnippetEnd("jsOnLoadVariables")
+    @RenderSnippet("jsOnLoad")
+    @SnippetStart("jsOnLoad") @SnippetEnd("jsOnLoad")
+  });
+ </script>
+  
+  
+@RenderSnippet("eCommerceTracking")
+
+  <!--Google Tag Manager-->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-MBXRK36');
+  </script>
+  <!--End Google Tag Manager-->
+
+ 
+  
+
+
+  @{
+    var key = System.Web.HttpContext.Current.Items["HideFooter"];
+    var hideFooter = key != null && Convert.ToBoolean(key);
+  }
+</head>
+
+
+<body data-page-id='@GetGlobalValue("Global:Page.ID")' data-language="@shortLang">
+<!--Google Tag Manager (noscript)--> 
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MBXRK36" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!--End Google Tag Manager (noscript)-->
+@SnippetStart("eCommerceTracking") @SnippetEnd("eCommerceTracking")
+
+  @{
+    string demo = string.Format("{0}css", designFolder);
+  }
+
+  @ContentPlaceholder()
+      
+  @if (!hideFooter)
+  {
+   @Include("Includes/PageTemplates/Footer.cshtml")
+  }
+  
+</body>
+</html>

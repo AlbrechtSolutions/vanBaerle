@@ -1,0 +1,19 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@MasterPageFile("Master.cshtml")
+@Title("ContentPage")
+@Description("Model for the homepage")
+@Include("Includes/PageTemplates/NavAndSlider.cshtml")
+
+<!-- <main id="mainContent" class="dwcontent" title="Main content" settings="id:mainContent"></main> -->
+@{
+	string renderPattern = GetBoolean("Item.Page.Show_Pattern")? "gray-box" : "";
+}
+
+@if (!string.IsNullOrEmpty(GetString("DwContent(centralContent)")))
+{
+  <div class="centralContainer @renderPattern">
+    <div class="row">
+    	<div id="centralContent" class="dwcontent" title="Centrals contents" settings="unwrap:true;sort:1;template:StandardParagraph.cshtml;id:centralContent"></div>
+    </div>
+  </div>
+}

@@ -1,0 +1,240 @@
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  Dynamicweb.Content.Items.Item areaItem = Pageview.Area.Item;
+  Dynamicweb.Ecommerce.International.CountryCollection countries = Dynamicweb.Ecommerce.International.Country.GetCountries();
+  Dynamicweb.Ecommerce.International.CountryCollection regions = Dynamicweb.Ecommerce.International.Country.GetRegions(countries.First().Code2);
+  bool userIsLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+
+  if(countries.Any()){
+    @: @SnippetStart("jsVariables") var countryRegions = {}; @SnippetEnd("jsVariables")
+
+    foreach(var country in countries.OrderBy(s => s.CountryText.Name)){
+      Dynamicweb.Ecommerce.International.CountryCollection tempRegions = Dynamicweb.Ecommerce.International.Country.GetRegions(country.Code2);
+
+      if(tempRegions.Any()){
+      @: @SnippetStart("jsVariables") countryRegions.@(country.Code2) = {}; @SnippetEnd("jsVariables")
+        <text>
+          @SnippetStart("jsVariables")
+            countryRegions.@(country.Code2).code = [];
+            countryRegions.@(country.Code2).name = [];
+          @SnippetEnd("jsVariables")
+        </text>
+        foreach(var region in tempRegions.OrderBy(s => s.CountryText.Name)){
+          <text>
+            @SnippetStart("jsVariables")
+              countryRegions["@country.Code2"].code.push("@region.RegionCode");
+              countryRegions["@country.Code2"].name.push("@region.CountryText.Name");
+            @SnippetEnd("jsVariables")
+          </text>
+        }
+      }
+    }
+  }
+	bool formLabelBold = GetBoolean("Form.LabelBold");
+	bool formLabelOverField = GetBoolean("Form.LabelOverField");
+	int formColumnShiftFormfieldId = GetInteger("Form.ColumnShiftFormfieldId");
+	string formCssClass = GetString("Form.CssClass");
+	string formSystemFields = GetString("Form.SystemFields");
+	string formId = GetString("Form.HtmlId");
+	string formOnSubmit = GetString("Form.OnSubmit");
+	string formSpamScript = GetString("Form.SpamScript");
+	string formAction = GetString("Form.Action");
+	string formLabelRequired = GetString("Form.LabelRequired");
+	string horizontalLabel = formLabelOverField ? "col-sm-3" : "";
+
+	if (formLabelOverField)
+	{
+		formCssClass += " form-horizontal";
+	}
+}
+<form novalidate method="post" action="@formAction" enctype="multipart/form-data" class="@formCssClass DMForms" id="@formId" onsubmit="@formOnSubmit">
+	@formSystemFields
+	<div class="form-fields">
+	@if (formColumnShiftFormfieldId > 0)
+	{
+		@GetStartTable();
+	}
+
+	@foreach (LoopItem field in GetLoop("Fields"))
+	{
+		int fieldId = field.GetInteger("Field.ID");
+		bool fieldIsButton = field.GetBoolean("Field.IsButton");
+		bool fieldIsList = field.GetBoolean("Field.IsList");
+		bool fieldRequired = field.GetBoolean("Field.Required");
+		string fieldHtmlId = field.GetString("Field.HtmlId");
+		string fieldName = field.GetString("Field.Name");
+		string fieldControl = field.GetString("Field.Control");
+		string fieldDescription = field.GetString("Field.Description");
+		string required = fieldRequired ? "required" : "";
+        string mandatory = fieldRequired ? "mandatory" : "";
+		string fieldPrepend = field.GetString("Field.Prepend");
+		string fieldAppend = field.GetString("Field.Append");
+		string fieldType = field.GetString("Field.Type");
+		string fieldClass = field.GetString("Field.CssClass");
+		bool fieldHasPrepend = !string.IsNullOrEmpty(fieldPrepend),
+		     fieldHasAppend = !string.IsNullOrEmpty(fieldAppend);
+		@* no labels *@
+		@*string hide = "hide";*@
+		@* with labels *@
+		string hide = "";
+
+		if (fieldHasAppend && fieldAppend.StartsWith("fa-"))
+		{
+			fieldAppend = string.Format("<i class=\"fa {0}\"></i>", fieldAppend);
+		}
+		if (fieldHasPrepend && fieldPrepend.StartsWith("fa-"))
+		{
+			fieldPrepend = string.Format("<i class=\"fa {0}\"></i>", fieldPrepend);
+		}
+		bool isInputGroup = fieldHasAppend || fieldHasPrepend;
+
+    <fieldset class="@fieldType @fieldClass @mandatory">
+      @* no labels *@
+      @*
+      @if (!fieldIsButton && (fieldType != "TextInput" && fieldType != "Textarea" && fieldType != "Text"))
+      {
+        hide = "";
+      }
+      *@
+
+      @* With labels *@
+      @if (fieldType == "Submit" || fieldType == "CheckBox" || fieldType == "Text" )
+      {
+        hide = "hide";
+      }
+
+      <label for="@fieldHtmlId" class="@hide control-label form-label">@fieldName</label>
+
+      @if(fieldIsList)
+      {@GetStartGroup()}
+        @if (fieldHasPrepend)
+        {<div class="input-group-addon">@fieldPrepend</div>}
+        @if (fieldType != "Submit" && fieldType != "Reset")
+        {
+         if(field.GetLoop("Options").Any() && fieldType != "Select") {
+          foreach (LoopItem option in field.GetLoop("Options"))
+          {
+            if(fieldType == "Radio") {
+              <label class="radioBoxContainer" for='@option.GetString("Option.Value")_@field.GetString("Field.SystemName")'>
+                  <input @required name='@field.GetString("Field.SystemName")' id='@option.GetString("Option.Value")_@field.GetString("Field.SystemName")' title='@option.GetString("Option.Value")' value='@option.GetString("Option.Value")' type="radio" />
+                  <span>@option.GetString("Option.Text")</span>
+              </label>
+            }
+            else if(fieldType == "CheckBoxList") {
+              <label class="checkBoxContainer" for='@option.GetString("Option.Value")_@field.GetString("Field.SystemName")'>
+                  <input @required name='@field.GetString("Field.SystemName")' id='@option.GetString("Option.Value")_@field.GetString("Field.SystemName")' title='@option.GetString("Option.Value")' value='@option.GetString("Option.Value")' type="checkbox" />
+                  <span>@option.GetString("Option.Text")</span>
+              </label>
+            }
+          }
+         }
+         else {
+          if(fieldType == "CheckBox") {
+            <label class="checkBoxContainer" for='@GetString("Form.Field.checkboxfield.SystemName")'>
+                <input @required name='@GetString("Form.Field.checkboxfield.SystemName")' id='@GetString("Form.Field.checkboxfield.SystemName")' value='@GetString("Form.Field.checkboxfield.Value")' type="checkbox" />
+                <span>@GetString("Form.Field.checkboxfield.Name")</span>
+            </label>
+          }
+          else if (fieldType == "Select" && fieldClass.Contains("country") ) {
+            bool firstTime = true;
+
+            <select data-live-search="true" class="@fieldClass" name="@(field.GetString("Field.SystemName"))">
+              <option value="">@Translate("country", "Country")</option>
+              @RenderSnippet("highlightedContries")
+              @foreach (var option in countries.OrderBy(s => s.CountryText.Name))
+              {
+                string code = option.Code2.ToString();
+
+                if(firstTime && (code == "CA" || code == "US")) {
+                  @SnippetStart("highlightedContries")
+                    <option value="@code">@option.CountryText.Name</option>
+                  @SnippetEnd("highlightedContries")
+                }
+                <option value="@code">@option.CountryText.Name</option>
+              }
+              @if(firstTime) {
+                @SnippetStart("highlightedContries")
+                <option disabled="disabled" value="">
+                  ----------------
+                </option>
+                @SnippetEnd("highlightedContries")
+              }
+            </select>
+
+          }
+          else {
+            if(!fieldControl.Contains("textarea")) {
+                @fieldControl.Replace("<select", "<select " + "data-live-search=\"true\"")
+            }
+            else {
+                <textarea name="@(field.GetString("Field.SystemName"))" value="@(field.GetString("Field.DefaultValue"))"></textarea>
+            }
+          }
+         }
+
+        }
+        else
+        {
+            string button = fieldType != "Reset" ? "btn-bg" : "btn-bg2";
+
+            <div class="formButtons">
+                @fieldControl.Replace("<input ", "<input class='btn " + button + "'")
+            </div>
+        }
+
+        @if (fieldHasAppend)
+        {<div class="input-group-addon">@fieldAppend</div>}
+      @if(fieldIsList)
+      {@GetEndGroup()}
+      @if (!string.IsNullOrEmpty(fieldDescription))
+      {<p class="help-block"><small>@fieldDescription</small></p>}
+    </fieldset>
+
+		if (formColumnShiftFormfieldId == fieldId)
+		{
+			@GetShiftColumn();
+		}
+	}
+
+	@if (formColumnShiftFormfieldId > 0)
+	{
+		@GetEndTable();
+	}
+
+	</div>
+
+</form>
+
+@SnippetStart("jsOnLoadVariables")
+  obj_dataManagementForms.str_findText = '@Translate("FindFileText", "Find")';
+@SnippetEnd("jsOnLoadVariables")
+
+@SnippetStart("jsOnLoad")
+  onLoadValidatePageForms($('#@formId'), true);
+@SnippetEnd("jsOnLoad")
+
+@functions {
+	private string GetStartTable()
+	{
+		return "<div class=\"row\"><div class=\"col-xs-6\">";
+	}
+
+	private string GetShiftColumn()
+	{
+		return "</div><div class=\"col-xs-6\">";
+	}
+
+	private string GetEndTable()
+	{
+		return "</div></div>";
+	}
+	private string GetStartGroup()
+	{
+		return "<div class=\"input-group\">";
+	}
+	private string GetEndGroup()
+	{
+		return "</div>";
+	}
+}

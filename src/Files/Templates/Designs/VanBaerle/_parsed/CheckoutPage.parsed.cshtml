@@ -1,0 +1,264 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System.Web;
+@using System.Text;
+@using System.Text.RegularExpressions;
+@{ string designName = GetString("Template:DesignBaseUrl").Replace("/Files/Templates/Designs/", "").Replace("/", "");}@functions{
+    public static string GetImage(string sourceString, int imageWidth, int imageHeight, int imageWidthTablet = 0, int imageHeightTablet = 0, int imageWidthMobile = 0, int imageHeightMobile = 0, string imageFormat = "jpg", int imageCompression = 0, int imageCrop = 5, string background = "", string designName = "VanBaerle")
+    {
+        Dynamicweb.Frontend.PageView currentPageview = Dynamicweb.Frontend.PageView.Current();
+        string currDevice = currentPageview.Device.ToString();
+        string alternativeImage = !String.IsNullOrEmpty(currentPageview.Area.Item["NoImage"].ToString()) ? currentPageview.Area.Item["NoImage"].ToString() : "/Files/Templates/Designs/"+ designName + "/images/alternativeImage.jpg";
+        string widthString = "";
+        string heightString = "";
+        string getImageFormat = imageFormat != "jpg" ? "&amp;Format=" + imageFormat : "";
+        string getImageCompression = imageCompression != 0 ? "&amp;Compression=" + imageCompression : "";
+        string bgColor = !string.IsNullOrEmpty(background) ? "&amp;Background="+background : "";
+        int getImageWidth = imageWidth != 0 ? imageWidth : 0;
+        int getImageHeight = imageHeight != 0 ? imageHeight : 0;
+
+        if (currDevice == Dynamicweb.Frontend.Devices.DeviceType.Tablet.ToString())
+        {
+            getImageWidth = imageWidthTablet != 0 ? imageWidthTablet : getImageWidth;
+            getImageHeight = imageHeightTablet != 0 ? imageHeightTablet : getImageHeight;
+        }
+        else if (currDevice == Dynamicweb.Frontend.Devices.DeviceType.Mobile.ToString())
+        {
+            getImageWidth = imageWidthMobile != 0 ? imageWidthMobile : getImageWidth;
+            getImageHeight = imageHeightMobile != 0 ? imageHeightMobile : getImageHeight;
+        }
+
+        if (getImageWidth != 0)
+        {
+            widthString = "&amp;Width=" + getImageWidth;
+        }
+        if (getImageHeight != 0)
+        {
+            heightString = "&amp;Height=" + getImageHeight;
+        }
+
+        string output = "/Admin/Public/GetImage.ashx?Image=" + sourceString + widthString + heightString + "&amp;altFmImage_path=" + alternativeImage + getImageFormat + getImageCompression + "&amp;Crop=" + imageCrop + bgColor;
+        return output;
+    }
+}
+@functions{
+    public string GetCurrentUrl()
+    {
+        string currentUrl = Pageview.GlobalTags.GetTagByName("Global:Request.Scheme").Value.ToString() + "://" + Pageview.GlobalTags.GetTagByName("Global:Request.Host").Value.ToString() + Pageview.GlobalTags.GetTagByName("Global:Pageview.Url").Value.ToString();
+
+        return currentUrl;
+    }
+}
+@using Dynamicweb.Rendering
+@using System.Text.RegularExpressions
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+
+@helper OgMeta(string designName)
+{
+if (string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["ProductID"]))
+{
+      @SnippetStart("OGMeta")<meta property="og:title" content='@GetString("Title")'>
+      <meta property="og:image" content='@Pageview.GlobalTags.GetTagByName("Global:Request.Scheme").Value.ToString()://@Pageview.GlobalTags.GetTagByName("Global:Request.Host").Value.ToString()/Files/Templates/Designs/@designName/images/logo.png'>
+        <meta property="og:site_name" content='@GetString("Item.Area.CompanyName")'>
+        <meta property="og:url" content='@Pageview.GlobalTags.GetTagByName("Global:Request.Scheme").Value.ToString()://@Pageview.GlobalTags.GetTagByName("Global:Request.Host").Value.ToString()@Pageview.GlobalTags.GetTagByName("Global:Pageview.Url").Value.ToString()'>
+        <meta property="og:description" content='@StripHtml(GetString("Meta.Description"))'>
+        <meta property="og:type" content="article">
+        <meta property="og:locale" content='@Pageview.GlobalTags.GetTagByName("Global:Area.LongLang").Value.ToString().Replace("-", "_")'>
+        @SnippetEnd("OGMeta")
+  }
+}
+@helper HtmlHead(string designName)
+{
+  string designFolder = GetString("Template:DesignBaseUrl");
+  string robots = "";
+  string ipCountry = Dna.IP.Frontend.GetCountryCode();
+  string countryCodeModule = !string.IsNullOrEmpty(ipCountry) ? ipCountry : "US";
+  string userCountryCode = (Pageview.User != null && !string.IsNullOrEmpty(Pageview.User.CountryCode)) ? Pageview.User.CountryCode : ipCountry;
+  string userState = Pageview.User != null ? Pageview.User.State : string.Empty;
+  robots = (GetBoolean("Item.Area.DemoBanner") || GetBoolean("Item.Area.NoIndex")) ? CommaSplittedString(robots, "noindex") : "";
+  robots += (GetBoolean("Item.Area.DemoBanner") || GetBoolean("Item.Area.NoFollow")) ? CommaSplittedString(robots, "nofollow") : "";
+
+  <head>
+    <title>@GetValue("Title")</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE">
+    @if (!string.IsNullOrEmpty(robots))
+    {
+      <meta name="robots" content="@robots">
+    }
+    @OgMeta(designName)
+    @RenderSnippet("OGMeta")
+    @GetString("MetaTags")
+    @GetString("CopyRightNotice")
+    @GetString("Stylesheets")
+    @RenderSnippet("outScripts")
+    @GetString("Javascripts")
+
+    <link rel="shortcut icon" href="@(designFolder)images/favicon.ico" type="image/x-icon">
+    @{
+      var minify = GetBoolean("Item.Area.Minify_CSS_And_JavaScript");
+      var styleBundle = Dna.Optimizer.Renderer.RenderStyles(string.Format("{0}css", designFolder), "-main-styles", new[] { "exceptions"}, minify, true);
+      var scriptBundle = Dna.Optimizer.Renderer.RenderScripts(string.Format("{0}js", designFolder), "-main-scripts", new[] { "exceptions" }, minify, true);
+    }
+    <link rel="stylesheet" href="@styleBundle">
+    <script src="@scriptBundle"></script>
+    @SnippetStart("outScripts") @SnippetEnd("outScripts")
+    <!--[if lte IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.1.0/respond.min.js"></script>
+    <![endif]-->
+    <script>
+      @RenderSnippet("jsVariables")
+      @SnippetStart("jsVariables") @SnippetEnd("jsVariables")
+
+      var obj_pages = {
+        str_miniCart: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.MiniCart"))',
+        str_login: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.Login"))',
+        str_globalTranslates: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.GlobalTranslates"))',
+        str_contactPopup : '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.ContactUs_Popup"))'
+      },
+      obj_user = {
+        str_country: '@userCountryCode',
+        str_state: '@userState'
+      },
+      obj_settings = {
+        str_contactTimeout: '@GetString("Item.Area.Time")',
+        str_cartQty: '@GetString("Ecom:Order.OrderLines.TotalProductQuantity")'
+      };
+      $(function () {
+        @UserDoesNotExist()
+        @RenderSnippet("jsOnLoadVariables")
+        @SnippetStart("jsOnLoadVariables") @SnippetEnd("jsOnLoadVariables")
+        @RenderSnippet("jsOnLoad")
+        @SnippetStart("jsOnLoad") @SnippetEnd("jsOnLoad")
+      });
+      @if(!string.IsNullOrWhiteSpace(GetString("Item.Area.GoogleAnalytics")))
+        {
+          <text>
+      (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+      ga('create', '@GetString("Item.Area.GoogleAnalytics")', 'auto');
+      ga('send', 'pageview');
+      </text>
+        }
+    </script>
+  </head>
+}
+@helper UserDoesNotExist()
+{
+  if (Dynamicweb.Environment.ExecutingContext.IsFrontEnd() && !Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn())
+  {
+    if (!string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["Password"]) && !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["Username"]))
+    {
+        @SnippetStart("jsOnLoad")
+        @:var showLogin = true;
+        @:alert('@Translate("userNotFoundInTheDatabase", "User not found in the database")');
+        @SnippetEnd("jsOnLoad")
+    }
+  }
+}
+@helper Logo(string cssclass, string companyName, string designName)
+{
+  string logo = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["print"]) ? "/Admin/Public/GetImage.ashx?Image=/Files/Templates/Designs/"+designName+"/images/logo.png&Width=220" : "/Files/Templates/Designs/"+designName+"/images/logo.png";
+
+  <figure class="@cssclass">
+    <a href="/">
+      <img class="img-responsive" src="@logo" alt="@companyName" title="@companyName">
+    </a>
+  </figure>
+  
+}
+@helper DemoBanner()
+{
+  if (GetBoolean("Item.Area.Banner") && System.Web.HttpContext.Current.Request.Cookies["demoMode"] == null)
+  {
+      <div class="demoMode">Demo</div>
+  }
+}
+@helper Copyright()
+{
+  <div class="col-xs-12 text-center copyright">&copy; @DateTime.Now.Year @GetString("Item.Area.CompanyName") - @GetString("Item.Area.Copyright")</div>
+}
+@functions {
+  private string CommaSplittedString(string CommaSplittedString, string NewString)
+  {
+
+    if (!string.IsNullOrEmpty(CommaSplittedString))
+    {
+      CommaSplittedString += ", ";
+    }
+    CommaSplittedString += NewString;
+
+    return CommaSplittedString;
+  }
+  public static string StripHtml(string source)
+  {
+    return Regex.Replace(source, "<.*?>", string.Empty);
+  }
+}
+@{
+    int step = GetInteger("Ecom:Checkout.CurrentStep.Index");
+    string firstStep = (step == 0) ? "active" : "",
+           secondStep = (step == 1) ? "active" : "",
+           thirdStep = (step == 2) ? "active" : "",
+           longLang = Pageview.GlobalTags.GetTagByName("Global:Area.LongLang").Value.ToString(),
+           hideClass = (string.IsNullOrEmpty(firstStep) && string.IsNullOrEmpty(secondStep) && string.IsNullOrEmpty(thirdStep)) ? "hidden" : "",
+           isIE11 = GetGlobalValue("Global:Request.UserAgent") == "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" ? "isIE" : "isNotIe";
+}
+
+<!DOCTYPE HTML>
+<!--[if lt IE 8 ]><html class="ie7" lang="@(longLang)"><![endif]--><!--[if IE 8 ]><html class="ie8" lang="@(longLang)"><![endif]--><!--[if IE 9 ]><html class="ie9" lang="@(longLang)"><![endif]--><!--[if (gt IE 9)|!(IE)]><!-->
+<html lang="@(longLang)"><!--<![endif]-->
+@HtmlHead(designName)
+<body class="step_@step @isIE11">
+    <div class="wrap">
+      <header id="checkoutHeader" class="container">
+        @Logo("col-xs-12 col-sm-4 noPaddingLeft", GetString("Item.Area.CompanyName"), designName)
+        <div class="col-xs-12 col-sm-7">
+          <ul id="stepsList">
+              @Step("1", firstStep, hideClass, @Translate("customerDetails", "Customer details"))
+              @StepBreak()
+              @Step("2", secondStep, hideClass, @Translate("chooseShippingAndPayment", "Choose shipping & payment"))
+              @StepBreak()
+              @Step("3", thirdStep, hideClass, @Translate("payment", "Payment"))
+          </ul>
+        </div>
+      </header>
+
+      @if(!string.IsNullOrEmpty(GetString("DwContent(centralContentDw)"))){
+        <section id="centralContainer" class="container">
+          <div id="centralContent" class="subpage col-xs-12 noPadding">
+            <div id="centralContentDw" class="row">@GetValue("DwContent(centralContentDw)")</div>
+          </div>
+        </section>
+      }
+    @ContentPlaceholder()
+  </div>
+    @Copyright()
+    @DemoBanner()
+</body>
+</html>
+
+<!--  @Pageview.GlobalTags.GetTagByName("Global:Request.PathAndQuery").Value -->
+<!--  @Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value -->
+
+@helper Step(string number, string stepCssClass, string hideCssClass, string text) {
+    <li class="@stepCssClass col-xs-12 col-sm-2 headerNumbers @hideCssClass">
+        <div>
+            @number
+        </div>
+        <span class="hidden-xs">@text</span>
+    </li>
+}
+
+@helper StepBreak() {
+    <li class="col-xs-2 hidden-xs">
+        <i class="fa fa-arrow-right"></i>
+    </li>
+}

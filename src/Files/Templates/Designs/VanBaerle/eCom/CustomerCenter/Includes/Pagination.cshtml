@@ -1,0 +1,70 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  int totalPagesNum = GetInteger("Ecom.CustomerCenter.Paging.NumPages");
+}
+@if (totalPagesNum > 1)
+{
+  string pageParameter = "CCPage"+ paragraphId+ "=",
+         urlBack = GetString("Ecom:CustomerCenter.Paging.Back.URL"),
+         urlNext = GetString("Ecom:CustomerCenter.Paging.Forward.URL"),
+         pagingHref = "",
+         pageText ="",
+         active = "";
+  int curPageNum = GetInteger("Ecom.CustomerCenter.Paging.CurrentPage"),
+        thisPage = 0,
+        prevPage = 0,
+        nextPage = 0;
+
+  <div class="col-xs-12 text-center paginationContainer">
+    <ul class="pagination">
+      @if (urlBack != "")
+      {
+          prevPage = curPageNum - 1;
+          pageText = "&laquo; " + Translate("previous", "Previous") + " ";
+          @PageItem("",urlBack, pageText)
+      }
+      @if(curPageNum > 2 && totalPagesNum > 3){
+        for(int i=1;i <= 1;i++){
+          active = curPageNum == i ? "class=\"active\"" : "";
+          pagingHref = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Contains("CCPage") ? Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Replace(pageParameter+curPageNum, pageParameter + i ) : Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString() + "&CCPage"+ paragraphId+ "=" + i;
+          @PageItem(active,pagingHref, i.ToString())
+        }
+        @Ellipsis()
+      }
+      @foreach (LoopItem page in GetLoop("Ecom:CustomerCenter.Paging.Pages"))
+      {
+        thisPage = page.GetInteger("Ecom:CustomerCenter.Paging.PageIndex");
+        pagingHref = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Contains("CCPage") ? Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Replace(pageParameter+curPageNum, pageParameter + thisPage) : Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString() + "&CCPage"+ paragraphId+ "=" + thisPage;
+        active = page.GetString("Ecom:CustomerCenter.Paging.PageClass") != "" ? "class=\"active\"" : "";
+
+        @PageItem(active, pagingHref, thisPage.ToString())
+      }
+      @if(curPageNum < totalPagesNum-1 && totalPagesNum > 3){
+        @Ellipsis()
+        for(int i=totalPagesNum;i <= totalPagesNum;i++){
+          active = curPageNum == i ? "class=\"active\"" : "";
+          pagingHref = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Contains("CCPage") ? Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Replace(pageParameter+curPageNum, pageParameter+i) : Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString() + "&CCPage=" + i;
+
+          @PageItem(active,pagingHref, i.ToString())
+        }
+      }
+      @if (urlNext != "")
+      {
+          nextPage = curPageNum + 1;
+          pageText = " " + Translate("next", "Next") + " &raquo;";
+
+          @PageItem("", urlNext, pageText)
+      }
+    </ul>
+  </div>
+}
+
+@helper PageItem (string cssClass, string href, string text) {
+    <li @cssClass>
+        <a href="@href">@text</a>
+    </li>
+}
+@helper Ellipsis () {
+    <li><span>...</span></li>
+}

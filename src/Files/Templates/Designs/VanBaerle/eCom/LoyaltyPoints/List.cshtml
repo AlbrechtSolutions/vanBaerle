@@ -1,0 +1,88 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+@{
+  List<LoopItem> loyaltyList = GetLoop("Ecom:LoyaltyPoints.TransactionList");
+  string path = "/Default.aspx?ID=" + Pageview.Page.ID.ToString();
+  string paragraphId = Pageview.CurrentParagraph.ID.ToString();
+  int totalPagesNum = GetInteger("Ecom:LoyaltyPoints.TransactionList.PageCount");
+}
+
+@if(loyaltyList.Any()) {
+  <table id="loyaltyList" class="col-xs-12 noPadding text-left evenTable">
+    <thead>
+      <tr>
+        <th>
+          @Translate("date","Date")
+        </th>
+        <th>
+          @Translate("expirationDate","Expiration Date")
+        </th>
+        <th>
+          @Translate("comment","Comment")
+        </th>
+        <th>
+          @Translate("points","Points")
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+    @foreach(LoopItem loyalty in loyaltyList){
+      <tr>
+        <td data-th='@Translate("date","Date")'>@loyalty.GetDate("Ecom:LoyaltyPoints.Transaction.Date").ToString("MM/dd/yyyy")</td>
+        <td data-th='@Translate("expirationDate","Expiration Date")'>@loyalty.GetDate("Ecom:LoyaltyPoints.Transaction.ExpirationDate").ToString("MM/dd/yyyy")</td>
+        <td data-th='@Translate("comment","Comment")'>@loyalty.GetString("Ecom:LoyaltyPoints.Transaction.Comment")</td>
+        <td data-th='@Translate("points","Points")'>@loyalty.GetString("Ecom:LoyaltyPoints.Transaction.Points")</td>
+      </tr>
+    }
+    </tbody>
+  </table>
+  if (totalPagesNum > 1)
+  {
+    string pageParameter = "LPPage"+ paragraphId+ "=";
+    string urlBack = GetString("Ecom:LoyaltyPoints.TransactionList.PrevPageUrl");
+    string urlNext = GetString("Ecom:LoyaltyPoints.TransactionList.NextPageUrl");
+    string pagingHref = "";
+    string pageText ="";
+    string active = "";
+    int curPageNum = GetInteger("Ecom:LoyaltyPoints.TransactionList.CurrentPage");
+    int thisPage = 0;
+    int prevPage = 0;
+    int nextPage = 0;
+
+    <div class="col-xs-12 text-center paginationContainer">
+      <ul class="pagination">
+        @if (urlBack != "")
+        {
+            prevPage = curPageNum - 1;
+            pageText = "&laquo; " + Translate("previous", "Previous") + " ";
+            @PageItem("",urlBack, pageText)
+        }
+        @for(int  i=1; i < totalPagesNum; i++)
+        {
+          thisPage = i;
+          pagingHref = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Contains("LPPage") ? Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString().Replace(pageParameter+curPageNum, pageParameter + thisPage) : Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString() + "&LPPage"+ paragraphId+ "=" + thisPage;
+          active = i == curPageNum ? "class=\"active\"" : "";
+
+          @PageItem(active, pagingHref, thisPage.ToString())
+        }
+        @if (urlNext != "")
+        {
+            nextPage = curPageNum + 1;
+            pageText = " " + Translate("next", "Next") + " &raquo;";
+
+            @PageItem("", urlNext, pageText)
+        }
+      </ul>
+    </div>
+  }
+}
+else {
+  <div class="col-xs-12 noPadding">@Translate("noTransactions","No transactions for the user.")</div>
+}
+
+@helper PageItem (string cssClass, string href, string text) {
+    <li @cssClass>
+        <a href="@href">@text</a>
+    </li>
+}

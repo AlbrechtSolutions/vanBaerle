@@ -1,0 +1,258 @@
+/**
+ * Description: styles related to aTools.
+ * User: Manuel Nogueira
+ * Date: 18/November/2014
+**/
+
+.demoMode
+{
+  top:0;
+  right:0;
+  width: 196px;
+  height: 197px;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 9999999;
+  position: fixed;
+  line-height: 1000em;
+  text-indent: 1000em;
+  background-image: url('Files/Templates/Designs/VanBaerle/images/demo.png');
+  background-repeat: no-repeat;
+}
+
+/* Cookies */
+
+#cookiesBox {
+  width          : 100%;
+  height         : 30px;
+  min-width      : 100%;
+  z-index        : 8900;
+  text-transform : uppercase;
+  font-family    : Arial, Verdana, Helvetica, sans-serif;
+}
+
+#cookiesBox.theme1{
+  background     : #000;
+}
+
+#cookiesBox.theme2{
+  background     : #D2D2D2;
+}
+
+#cookiesBox.theme3{
+  background     : #FFF;
+}
+
+#cookiesBox a {
+  font-size       : 10px;
+  color           : #737373;
+}
+
+#cookiesBox a:hover {
+  text-decoration : underline;
+}
+
+#cookiesBox > div {
+  line-height : 30px;
+  padding     : 0 5px;
+  margin      : 0 auto;
+}
+
+#cookiesBox > div div {
+  font-size : 10px;
+  display   : inline;
+}
+
+#cookiesBox.theme1 > div div {
+  color: #FFF;
+}
+
+#cookiesBox.theme2 > div div {
+  color: #262626;
+}
+
+#cookiesBox.theme3 > div div {
+  color: #868686;
+}
+
+#cookiesBox > div > a {
+  padding-left: 15px;
+  float : right;
+  text-decoration: none;
+}
+/*****************************************/
+
+.scrollbar-measure
+{
+	width: 100px;
+	height: 100px;
+	overflow: scroll;
+	position: absolute;
+	top: -9999px;
+}
+
+#screenSize
+{
+  background: blue;
+  z-index: 9999;
+  width: 200px;
+  height: 20px;
+  position: fixed;
+  top:0;
+  left: 0;
+  color: red;
+}
+
+#toggleGuides
+{
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9999;
+}
+
+#guides
+{
+  position: fixed;
+  height: 100%;
+  top:-15px;
+  left: 0;
+  bottom: -15px;
+  right: 0;
+  margin: 0 auto;
+  z-index: 9000;
+  pointer-events: none;
+  overflow: hidden;
+  padding: 0px;
+}
+
+#guides div
+{
+  height: 100%;
+}
+
+#guides > .container > .row > div
+{
+  float: left;
+  outline: 1px solid #add8e6;
+  outline-offset: -15px;
+  background-clip: content-box;
+  opacity: 1;
+}
+
+#guides > .container > .row.outGutter
+{
+  border-left: 1px solid #add8e6;
+  border-right: 1px solid #add8e6;
+}
+
+/* Sticky Footer */
+
+/*
+html, body{
+  height: 100%;
+}
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  */
+/* Negative indent footer by it's height *//*
+
+  margin: 0 auto -195px;
+}
+#wrap > hr#pushFooter
+{
+  border: 0;
+  margin: 0;
+  height: 195px;
+}
+footer#footerWrapper
+{
+  height: 195px;
+}
+*/
+
+/* classes for bootstrap */
+
+.pull-none {
+  float: none !important;
+}
+.noPadding{
+  padding: 0;
+}
+.noPadding-left{
+  padding-left: 0;
+}
+.noPadding-right{
+  padding-right: 0;
+}
+.text-left
+{
+  text-align: left;
+}
+.text-right
+{
+  text-align: right;
+}
+.text-center
+{
+  text-align: center;
+}
+.bootbox.modal.fade {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.7);
+}
+
+
+/* ------------
+        MEDIA QUERIES
+        --------------- */
+
+@media (max-width: 480px)
+{
+  .verticalTableHolder
+  {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .verticalTableHolder > table
+  {
+    width: auto !important;
+  }
+  .verticalTableHolder > table th,
+  .verticalTableHolder > table td
+  {
+    min-width: 130px;
+    height: 50px;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px)
+{
+  #guides > .container > .row > div
+  {
+    background: blue;
+    background-clip: content-box;
+    opacity: 0.2;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px)
+{
+  #guides > .container > .row > div
+  {
+    background: green;
+    background-clip: content-box;
+    opacity: 0.2;
+  }
+}
+
+@media (min-width: 992px)
+{
+  #guides > .container > .row > div
+  {
+    background: red;
+    background-clip: content-box;
+    opacity: 0.2;
+  }
+}

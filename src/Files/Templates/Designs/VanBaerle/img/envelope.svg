@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="13px" viewBox="0 0 18 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="footer/footer" transform="translate(-1086.000000, -115.000000)" fill="#AAACAD">
+            <g id="footer">
+                <g id="Input" transform="translate(1072.000000, 98.000000)">
+                    <g id="New-Post_000000_-1" transform="translate(14.000000, 17.000000)">
+                        <path d="M0,0 L0,0.351764706 L0,12.3117647 L0,12.6635294 L0.36,12.6635294 L17.64,12.6635294 L18,12.6635294 L18,12.3117647 L18,0.351764706 L18,0 L17.64,0 L0.36,0 L0,0 Z M0.72,0.703529412 L17.28,0.703529412 L17.28,1.59393382 L9,7.99165441 L0.72,1.59393382 L0.72,0.703529412 Z M0.72,2.49533088 L8.775,8.71716912 C8.90652454,8.82004723 9.09347546,8.82004723 9.225,8.71716912 L17.28,2.49533088 L17.28,11.96 L0.72,11.96 L0.72,2.49533088 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

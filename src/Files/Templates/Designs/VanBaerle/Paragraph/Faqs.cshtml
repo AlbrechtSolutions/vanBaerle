@@ -1,0 +1,20 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  List<LoopItem> itemsList = GetLoop("ItemPublisher:Items.List");
+}
+
+@if(itemsList.Any()) {
+  <ul id="faqsList">
+    @foreach(LoopItem item in itemsList) {
+      <li>
+        <h2><span class="h2">@item.GetString("ItemPublisher:Item.Question.Value")</span> <i class="fa fa-sort-desc pull-right"></i></h2>
+        <div class="hidden col-xs-12 noPadding">@item.GetString("ItemPublisher:Item.Answer.Value")</div>
+      </li>
+    }
+  </ul>
+}
+
+@SnippetStart("jsOnLoad")
+  onLoadFaqs();
+@SnippetEnd("jsOnLoad")

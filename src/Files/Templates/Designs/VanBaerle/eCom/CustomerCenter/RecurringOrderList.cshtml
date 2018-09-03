@@ -1,0 +1,71 @@
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  List<LoopItem> recurringOrders = GetLoop("RecurringOrders");
+  string paragraphId = Pageview.CurrentParagraph.ID.ToString();
+  string path = "/Default.aspx?ID=" + GetGlobalValue("Global:Page.ID");
+  string sort = !string.IsNullOrWhiteSpace(System.Web.HttpContext.Current.Request.QueryString["CCSortOrder" + paragraphId]) ? System.Web.HttpContext.Current.Request.QueryString["CCSortOrder" + paragraphId].ToString() : "Asc";
+}
+
+@if(recurringOrders.Any()) {
+  <table id="myOrdersTable" class="col-xs-12 noPadding text-left evenTable">
+    <thead class="orderList">
+      <tr>
+        <th>
+            @Translate("frequency", "Frequency")
+            <a href="@(path)&CCOrderByField@(paragraphId)=Frequency&CCSortOrder@(paragraphId)=@sort">
+              <i class="fa fa-sort"></i>
+            </a>
+        </th>
+        <th>
+            @Translate("createDate", "Create Date")
+        </th>
+        <th>
+            @Translate("endDate", "End Date")
+            <a href="@(path)&CCOrderByField@(paragraphId)=EndDate&CCSortOrder@(paragraphId)=@sort">
+              <i class="fa fa-sort"></i>
+            </a>
+        </th>
+        <th>
+            @Translate("nextDelivery", "Next Delivery")
+            <a href="@(path)&CCOrderByField@(paragraphId)=NextDelivery&CCSortOrder@(paragraphId)=@sort">
+              <i class="fa fa-sort"></i>
+            </a>
+        </th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+        @foreach(var i in recurringOrders){
+          string detail = i.GetString("Ecom:CustomerCenter.RecurringOrders.RecurringOrderDetailsURL") + "?recurring=true";
+          string delete = i.GetString("Ecom:CustomerCenter.RecurringOrders.DeleteUrl");
+
+          <tr class="@GetString("Ecom:CustomerCenter.Paging.EvenRowClass")">
+              <td data-th='@Translate("frequency ","Frequency ")'>
+
+                @Translate("Every", "Every") @i.GetString("Ecom:RecurringOrder.Interval") @i.GetString("Ecom:RecurringOrder.IntervalUnit.Name")
+              </td>
+              <td data-th='@Translate("createDate", "Create Date")'>@i.GetString("Ecom:RecurringOrder.StartDate")</td>
+              <td data-th='@Translate("endDate", "End Date")'>@i.GetString("Ecom:RecurringOrder.EndDate")</td>
+              <td data-th='@Translate("nextDelivery", "Next Delivery")'>@i.GetString("Ecom:RecurringOrder.NextDelivery")</td>
+              <td class="actions" data-th='@Translate("actions ","Actions ")'>
+                <a class="pull-left recurringDetail" href="@detail" title='@Translate("viewRecurring","View recurring order details")'><i class="fa fa-file-text-o"></i>&nbsp;@Translate("details", "Details")</a>
+                @if(!string.IsNullOrWhiteSpace(delete)) {
+                  <a class="pull-left" href="@delete"><i class="fa fa-close"></i>&nbsp;@Translate("cancelSubscription", "Cancel subscription")</a>
+                }
+              </td>
+          </tr>
+          }
+      </tbody>
+  </table>
+  <div>
+    @Include("includes/Pagination.cshtml")
+  </div>
+}
+else {
+  @Translate("noRecurringOrdersFound","No recurring orders found.")
+}
+
+@SnippetStart("jsOnLoad")
+onLoadOrderList();
+@SnippetEnd("jsOnLoad")

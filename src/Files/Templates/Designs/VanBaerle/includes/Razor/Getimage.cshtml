@@ -1,0 +1,38 @@
+@{ string designName = GetString("Template:DesignBaseUrl").Replace("/Files/Templates/Designs/", "").Replace("/", "");}@functions{
+    public static string GetImage(string sourceString, int imageWidth, int imageHeight, int imageWidthTablet = 0, int imageHeightTablet = 0, int imageWidthMobile = 0, int imageHeightMobile = 0, string imageFormat = "jpg", int imageCompression = 0, int imageCrop = 5, string background = "", string designName = "VanBaerle")
+    {
+        Dynamicweb.Frontend.PageView currentPageview = Dynamicweb.Frontend.PageView.Current();
+        string currDevice = currentPageview.Device.ToString();
+        string alternativeImage = !String.IsNullOrEmpty(currentPageview.Area.Item["NoImage"].ToString()) ? currentPageview.Area.Item["NoImage"].ToString() : "/Files/Templates/Designs/"+ designName + "/images/alternativeImage.jpg";
+        string widthString = "";
+        string heightString = "";
+        string getImageFormat = imageFormat != "jpg" ? "&amp;Format=" + imageFormat : "";
+        string getImageCompression = imageCompression != 0 ? "&amp;Compression=" + imageCompression : "";
+        string bgColor = !string.IsNullOrEmpty(background) ? "&amp;Background="+background : "";
+        int getImageWidth = imageWidth != 0 ? imageWidth : 0;
+        int getImageHeight = imageHeight != 0 ? imageHeight : 0;
+
+        if (currDevice == Dynamicweb.Frontend.Devices.DeviceType.Tablet.ToString())
+        {
+            getImageWidth = imageWidthTablet != 0 ? imageWidthTablet : getImageWidth;
+            getImageHeight = imageHeightTablet != 0 ? imageHeightTablet : getImageHeight;
+        }
+        else if (currDevice == Dynamicweb.Frontend.Devices.DeviceType.Mobile.ToString())
+        {
+            getImageWidth = imageWidthMobile != 0 ? imageWidthMobile : getImageWidth;
+            getImageHeight = imageHeightMobile != 0 ? imageHeightMobile : getImageHeight;
+        }
+
+        if (getImageWidth != 0)
+        {
+            widthString = "&amp;Width=" + getImageWidth;
+        }
+        if (getImageHeight != 0)
+        {
+            heightString = "&amp;Height=" + getImageHeight;
+        }
+
+        string output = "/Admin/Public/GetImage.ashx?Image=" + sourceString + widthString + heightString + "&amp;altFmImage_path=" + alternativeImage + getImageFormat + getImageCompression + "&amp;Crop=" + imageCrop + bgColor;
+        return output;
+    }
+}

@@ -1,0 +1,156 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@Include("../../includes/razor/getimage.cshtml")
+@{
+    List<LoopItem> lists = GetLoop("Lists");
+
+    string pageId = Pageview.Page.ID.ToString();
+    string paragraphId = Dynamicweb.Frontend.PageView.Current().CurrentParagraph.ID.ToString();
+    string imagesFolder = "/Files/Files/" + designName + "/Products/";
+    string type = "";
+    string path = "/Default.aspx?ID=" + pageId;
+    string manageUrl = path + "&showLists=true";
+}
+
+@if(GetString("Ecom:CustomerCenter.ProductList.Mode").Contains("create")){
+  type = "create";
+  @Include("Includes/createList.cshtml")
+}
+else if(GetString("Ecom:CustomerCenter.ProductList.Mode").Contains("edit")){
+  type = "edit";
+  @Include("Includes/editList.cshtml")
+}
+else if(!string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.QueryString["showLists"])){
+  type = "showLists";
+  @Include("Includes/showLists.cshtml")
+}
+else{
+  <header class="col-xs-12" data-noproducts='@Translate("noFavoritesFound", "No favorites found.")'>
+    <div class="row">
+
+      @if(lists.Any()) {
+        string myListName = "CC" + Pageview.CurrentParagraph.ID,
+               listId = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.QueryString["ListID"]) ? System.Web.HttpContext.Current.Request.QueryString["ListID"] : "" ;
+
+        <form id="changeList" class="DMForms" actions="/" method="GET" name="lists">
+          <input type="hidden" name="ID" value="@pageId" />
+          <input type="hidden" name="@myListName" value="MyLists" />
+
+          <select name="ListID">
+            <option value="">@Translate("all", "All")</option>
+            @SnippetStart("Lists")
+            @foreach (LoopItem list in lists){
+              string name = !string.IsNullOrEmpty(list.GetString("Ecom:CustomerCenter.List.Name")) ? list.GetString("Ecom:CustomerCenter.List.Name") : Translate("Default");
+              string editURL = list.GetString("Ecom:CustomerCenter.List.EditURL");
+              string[] editURLArr = new string[] {"ListID="};
+              string[] words = editURL.Split(editURLArr, StringSplitOptions.RemoveEmptyEntries);
+              string selected = listId == words[1].ToString() ? "selected" : "" ;
+
+              <option @selected value="@words[1].ToString()">@name</option>
+            }
+            @SnippetEnd("Lists")
+            @RenderSnippet("Lists")
+          </select>
+        </form>
+      }
+
+      <a class="btn btn-primary" href="@GetString("Ecom:CustomerCenter.List.AddURL")">@Translate("newWishlist","New Wish list")</a>
+      <a class="btn btn-border" href="@manageUrl">@Translate("manageWishlist","Manage Wish lists")</a>
+    </div>
+  </header>
+
+  if(lists.Any()){
+    <ul id="productsList" class="productsList">
+      @foreach(LoopItem list in lists){
+          List<LoopItem> products = list.GetLoop("Ecom:CustomerCenter.List.ProductsList");
+
+          if (products.Any()){
+              foreach (LoopItem product in products)
+              {
+                  string imagePattern = imagesFolder + product.GetString("Ecom:Product.Number") + ".jpg";
+                  string imageString = !string.IsNullOrEmpty(product.GetString("Ecom:Product.ImageSmall.Clean")) ? product.GetString("Ecom:Product.ImageSmall.Clean") : !string.IsNullOrEmpty(product.GetString("Ecom:Product.ImageMedium.Clean")) ? product.GetString("Ecom:Product.ImageMedium.Clean") : !string.IsNullOrEmpty(product.GetString("Ecom:Product.ImageLarge.Clean")) ? product.GetString("Ecom:Product.ImageLarge.Clean") : imagePattern;
+                  string productName = product.GetString("Ecom:Product.Name");
+                  string productNumber = product.GetString("Ecom:Product.Number");
+                  string productLanguageID = product.GetString("Ecom:Product.LanguageID");
+                  string productId = product.GetString("Ecom:Product.ID");
+                  string productVariantId = product.GetString("Ecom:Product.VariantID");
+                  string productVariantText = product.GetString("Ecom:Product.DefaultVariantComboName");
+                  string productShortDescription = product.GetString("Ecom:Product.ShortDescription");
+                  string link = product.GetString("Ecom:Product.Link.Clean.PID");
+                  string removeFromList = product.GetString("Ecom:Product.RemoveProductFromList") + "&ListID=";
+                  int linkIndex = link.IndexOf("Layout");
+                  if (linkIndex > 0) {
+                      link = link.Substring(0, linkIndex);
+                  }
+
+            <li class="col-xs-12 noPadding border">
+              <div class="col-xs-12">
+                <figure class="col-xs-2 noPadding">
+                  <a href="@link">
+                    <img src="@GetImage(imageString, 400, 0)" alt="@productName" title="@productName" class="img-responsive" />
+                  </a>
+                </figure>
+                <div class="col-xs-10">
+                  <div class="col-xs-9">
+                    <h2>
+                      <a itemprop="name" href="@link">@productName</a>
+                      @if(!string.IsNullOrEmpty(productVariantText)) {
+                        <br/>
+                        <span>@productVariantText</span>
+          }
+                    </h2>
+                    @if(!string.IsNullOrEmpty(productShortDescription)) {
+                      <div class="tileHide shortDescription">
+                        @productShortDescription
+                      </div>
+      }
+                    @if(!string.IsNullOrEmpty(productNumber)) {
+                      <div class="tileHide prodNumber">
+                        @Translate("item", "Item #"): @productNumber
+                      </div>
+                    }
+                  </div>
+                  <div class="col-xs-3 noPaddingRight priceContainer">
+                    <form name="addToCart" action="/Default.aspx" method="post">
+                      <input type="hidden" name="productid" value="@productId" />
+                      <input type="hidden" name="cartcmd" value="add" />
+
+                      <span class="listPrice" itemprop="price"><span class="showTile">@Translate("price", "Price"): </span>@product.GetString("Ecom:Product.Price")</span>
+
+                      <a class="addToCart btn btn-bg col-xs-12" href="/Default.aspx?productid=@productId&amp;variantID=@productVariantId&amp;cartcmd=add"><i class="fa fa-shopping-cart"></i> @Translate("addToCart", "Add to cart")</a>
+
+                      <input class="hide" type="submit" value="@Translate("addToCart", "Add to cart")">
+                    </form>
+
+                    <form name="change" action="/Default.aspx">
+                      <input type="hidden" name="ID" value="@pageId" />
+                      <input type="hidden" name="CCAddToMyLists" value="@productId" />
+                      <input type="hidden" name="CCAddToListVariantID" value="@productVariantId" />
+                      <input type="hidden" name="CCAddToListLanguageID" value="@productLanguageID"/>
+
+                      <select name="CCAddToListID">
+                        <option readonly value="">@Translate("move", "Move")</option>
+                        @RenderSnippet("Lists")
+                      </select>
+                    </form>
+
+                    <a class="removeFromList pull-right" href="@removeFromList">@Translate("remove", "Remove")</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+          }
+        }
+      }
+    </ul>
+  }
+  else
+  {
+    <div class="noFavorites col-xs-12 noPadding">
+      @Translate("noFavoritesFound", "No favorites found.")
+    </div>
+  }
+}
+@SnippetStart("jsOnLoad")
+  onLoadWishList("@type");
+@SnippetEnd("jsOnLoad")

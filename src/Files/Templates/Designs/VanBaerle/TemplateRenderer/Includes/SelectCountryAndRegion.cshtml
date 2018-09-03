@@ -1,0 +1,31 @@
+﻿@helper CountrySelect(System.Collections.Generic.List<String> countriesList, Dictionary<string, string> countriesNames){
+  <label class="text-left">@Translate("selectYourCountry", "Select your country:")</label>
+  <select name="country">
+    <option selected="selected" value="">@Translate("all", "All")</option>
+    @RenderSnippet("US")
+    @foreach (string countryCode in countriesList.OrderBy(s => s))
+    {
+      string countryStrip = countriesNames.ContainsKey(countryCode) ? countriesNames[countryCode] : countryCode;
+      if (countryCode == "US")
+      {
+        @SnippetStart("USA")
+        <option value="@countryCode">@countryStrip</option>
+        @SnippetEnd("USA")
+      }
+      else if (countryCode == "CA")
+      {
+        @SnippetStart("CAN")
+        <option value="@countryCode">@countryStrip</option>
+        @SnippetEnd("CAN")
+      }
+      <option value="@countryCode">@countryStrip</option>
+    }
+  </select>
+}
+
+@helper RegionSelect(){
+  <label class="text-left">@Translate("selectYourRegion","Select your region:")</label>
+  <select data-width="100%" name="locality">
+      <option value="">@Translate("all","All")</option>
+  </select>
+}

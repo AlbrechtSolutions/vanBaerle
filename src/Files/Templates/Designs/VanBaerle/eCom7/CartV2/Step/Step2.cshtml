@@ -1,0 +1,177 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb.Content
+@using System.Web;
+@using System.Text;
+@using System.Web.Helpers;
+@using Dynamicweb.Ecommerce.Orders;
+@using System.Collections.Specialized;
+@using System.Text.RegularExpressions;
+
+@{
+  @Include("../../../includes/razor/GeneralSettings.cshtml")
+  var user = Pageview.User;
+  @Include("Includes/StockValidation.cshtml")
+  List<LoopItem> shippingMethods = GetLoop("Shippingmethods");
+  List<LoopItem> paymentMethods = GetLoop("Paymethods");
+  string previousButton = "/Default.aspx?ID="+Pageview.Page.ID+"&amp;"+GetString("CartV2.PreviousStepButtonName")+"=true";
+  string voucherValue = GetString("discountVoucher.Clean");
+  string organizationGroupID = itemArea["Organizations_Group_ID"] != null ? itemArea["Organizations_Group_ID"].ToString() : "";
+  string purchaseOrder = GetString("purchaseOrder.Clean");
+  string poNumber = GetString("PONumber.Clean");
+  string errors = "";
+  string errorsID = "";
+  string deliveryAddress = "";
+  string customerAddress = "";
+  bool showTermsAndConditions = generalSettings["ShowTermsAndConditions"] != null && generalSettings["ShowTermsAndConditions"].ToString() == "True" ? true : false;
+  @Include("Includes/Addresses.cshtml")
+  foreach (LoopItem validationError in GetLoop("ValidationErrors")){
+    errors += validationError.GetString("Ecom:Cart.ValidationError.ErrorMessage") + "--";
+    errorsID += validationError.GetString("Ecom:Cart.ValidationError.FieldSystemName") + "--";
+  }
+  errors = HttpUtility.JavaScriptStringEncode(errors);
+}
+
+<div id="step2Container">
+  <h2 class="cartDetail">@Translate("customerDetails", "Customer details")</h2>
+  <div id="cartFormContainer" class="col-xs-12 col-sm-8 col-md-9 noPaddingLeft noPadding-xs">
+    <form action="/Default.aspx?ID=@Pageview.Page.ID" name="ordersubmit" id="shippingInfo" method="post" novalidate>
+      <input type="hidden" id="updater" name="@GetString("CartV2.NextStepButtonName")" value="true" />
+
+        <div class="continueButton col-xs-12 topButton">
+          <a class="pull-left previousButton" href="@previousButton">@Translate("previous", "Previous")</a>
+          <input class="btn btn-bg pull-right" type="submit" value="@Translate("continueCheckout", "Continue Checkout")">
+        </div>
+
+        @if (paymentMethods.Any())
+        {
+          <h2 class="paymentTitle">@Translate("paymentMethod", "Payment method")</h2>
+          if (System.Web.HttpContext.Current.Request.Cookies["userAndPass"] != null)
+          {
+            <input value="True" type="hidden" name="EcomUserCreateNew" />
+            <input value="@GetString("Ecom:Order.Customer.Email")" type="hidden" name="EcomUserCreateUserName" />
+            <input value="@System.Web.HttpContext.Current.Request.Cookies["userAndPass"].Value.ToString()" type="hidden" name="EcomUserCreatePassword" />
+            <input value="@System.Web.HttpContext.Current.Request.Cookies["userAndPass"].Value.ToString()" type="hidden" name="EcomUserCreateConfirmPassword" />
+          }
+          <fieldset id="paymentMethod" class="col-xs-offset-0 col-sm-offset-1  col-sm-11 col-xs-12noPadding">
+            @foreach (LoopItem paymentMethod in paymentMethods)
+            {
+              <label>
+                <input checked="@(paymentMethod.GetBoolean("Ecom:Cart.Paymethod.IsSelected"))" value="@paymentMethod.GetString("Ecom:Cart.Paymethod.ID")" type="radio" name="EcomCartPaymethodID" />
+                @paymentMethod.GetString("Ecom:Cart.Paymethod.Name")
+              </label>
+            }
+            <label class="TextInput displayBlockImp poFieldset">
+                @Translate("poNumber","PO Number")
+                <input type="text" name="PONumber" id="PONumber" value="@poNumber" />
+            </label>
+          </fieldset>
+        }
+        @if (shippingMethods.Any())
+        {
+          <h2 class="shippingTitle">@Translate("shippingMethod", "Shipping Method")</h2>
+
+          <fieldset id="shippingMethod" class="col-xs-offset-0 col-sm-offset-1 col-sm-11 col-xs-12noPadding">
+              @foreach (LoopItem shipping in shippingMethods)
+              {
+                bool isSelected = shipping.GetBoolean("Ecom:Cart.Shippingmethod.IsSelected");
+                string shippingID = shipping.GetString("Ecom:Cart.Shippingmethod.ID"),
+                       shippingName = shipping.GetString("Ecom:Cart.Shippingmethod.Name"),
+                       shippingPrice = shipping.GetString("Ecom:Cart.ShippingMethod.Price.PriceWithoutVATFormatted");
+
+                <label>
+                    <input checked="@(shipping.GetBoolean("Ecom:Cart.Shippingmethod.IsSelected"))" value="@shippingID" type="radio" name="EcomCartShippingmethodID" />
+                    @shippingName (@shippingPrice)
+                </label>
+              }
+              <label class="shippingBlock">
+                <div>@Translate("shippingInstructions","Shipping Instructions")</div>
+                @GetString("ShippingInstructions")
+              </label>
+          </fieldset>
+        }
+
+        @if (GetBoolean("Ecom:Order.PaymentMethod.RecurringSupport"))
+        {
+          string recurringIntervalUnit = GetString("Ecom:Order.Recurring.IntervalUnit");
+
+          <h2>@Translate("recurringOrder","Recurring Order")</h2>
+          <fieldset class="col-xs-offset-0 col-sm-offset-1  col-sm-11 col-xs-12noPadding recurringContainer">
+            <label>
+                <input type="hidden" name="EcomRecurringOrderCreate" />
+                <input type="checkbox" name="EcomRecurringOrderCreate" id="EcomRecurringOrderCreate" />
+                @Translate("makeThisRecurringOrder", "Make this a recurring order")
+            </label>
+            <label>
+                <span>@Translate("recurringInterval", "Recur every")</span>
+                <input type="number" min="0" name="EcomOrderRecurringInterval" id="EcomOrderRecurringInterval" value="@(GetString("Ecom:Order.Recurring.Interval"))" />
+            </label>
+            <label>
+                <span>@Translate("period", "Period")</span>
+                <select name="EcomOrderRecurringIntervalUnit" id="EcomOrderRecurringIntervalUnit" value="0">
+                    <option value="0" @{if(recurringIntervalUnit=="0") { <text>selected="selected"</text> } } >
+                        @Translate("days", "Days")
+                    </option>
+                    <option value="1" @{if(recurringIntervalUnit=="1") { <text>selected="selected"</text> } } >
+                        @Translate("weeks", "Weeks")
+                    </option>
+                    <option value="2" @{if(recurringIntervalUnit=="2") { <text>selected="selected"</text> } } >
+                        @Translate("months", "Months")
+                    </option>
+                </select>
+            </label>
+            <label>
+              <span>@Translate("expDate", "Exp. Date")</span>
+              <input id="datepicker" type="text" name="DatePicker" value="" />
+              <i id="expDateIcon" class="fa fa-calendar"></i>
+            </label>
+          </fieldset>
+          <div class="hidden">
+            @GetString("Ecom:Order.Recurring.EndDate")
+          </div>
+        }
+        <h2>@Translate("giftMessage","Gift Message")</h2>
+        <fieldset class="col-xs-offset-0 col-sm-offset-1  col-sm-11 col-xs-12noPadding">
+          <label>
+            <span>@Translate("message","Message")</span>
+            <textarea rows="6" name="EcomOrderCustomerComment" id="EcomOrderCustomerComment" cols="19">@GetString("Ecom:Order.Customer.Comment")</textarea>
+          </label>
+        </fieldset>
+        <h2>@Translate("termsAndConditions","Terms and Conditions")</h2>
+        <fieldset class="col-xs-offset-0 col-sm-offset-1  col-sm-11 col-xs-12noPadding termsAndConditions">
+          @(showTermsAndConditions ? Translate("toContinueYouMustAgreeTo","* To continue you must agree to") : Translate("pleaseSee","Please see") )
+          <a id="termsAndConditionsClick" data-alert='@Translate("termsAndConditionsAlert","Please agree to Terms and Conditions")' href="#">@Translate("termsAndConditions","terms and conditions")</a>
+            @if(showTermsAndConditions) {
+              <label>
+                <input type="checkbox" id="EcomOrderCustomerAccepted" name="EcomOrderCustomerAccepted" value="1" />
+                @Translate("yesIAgree","Yes, I agree")
+              </label>
+            }
+            else{
+              <input type="hidden" id="EcomOrderCustomerAccepted" name="EcomOrderCustomerAccepted" value="1" />
+            }
+        </fieldset>
+        <div class="continueButton col-xs-12">
+            <a class="pull-left previousButton" href="@previousButton">@Translate("previous", "Previous")</a>
+
+            @Include("Includes/Voucher.cshtml")
+
+            <input class="btn btn-bg pull-right" type="submit" value='@Translate("continueCheckout", "Continue Checkout")'>
+        </div>
+        <div id="termsAndConditions" class="hidden">
+            <div id="terms">
+              @generalSettings["TermsAndConditions"]
+            </div>
+        </div>
+
+    </form>
+  </div>
+
+  @Include("Includes/OrdersList.cshtml")
+
+</div>
+
+@SnippetStart("jsOnLoad")
+onLoadCartStep2("@errors", '@GetString("WebSeviceConnectionStatus")');
+@SnippetEnd("jsOnLoad")
+

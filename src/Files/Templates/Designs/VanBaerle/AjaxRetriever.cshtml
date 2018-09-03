@@ -1,0 +1,124 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@Include("includes/Razor/GetImage.cshtml")
+@Include("includes/razor/VerifyImage.cshtml")
+@if (!string.IsNullOrEmpty(GetString("DwContent(body)")))
+{
+  <div>
+    <div class="ajaxContainer">
+      <div id="body" class="dwcontent" title="Content" settings="sort:1;template:StandardParagraph.cshtml"></div>
+      <script>
+        @RenderSnippet("jsVariables")
+        @RenderSnippet("jsOnLoadVariables")
+        @RenderSnippet("jsOnLoad")
+        @SnippetStart("jsVariables")@SnippetEnd("jsVariables")
+        @SnippetStart("jsOnLoadVariables")@SnippetEnd("jsOnLoadVariables")
+        @SnippetStart("jsOnLoad")@SnippetEnd("jsOnLoad")
+      </script>
+    </div>
+  </div>
+}
+
+@{
+  List<LoopItem> orderLines = GetLoop("OrderLines");
+  string showCart = GetString("Item.Area.ShowCart"),
+         currencyCode = GetString("Ecom:Order.Price.Currency.Symbol"),
+         checkout = showCart + "&CartV2.GotoStep1=true",
+         voucherValue = GetString("discountVoucher.Clean");
+  int quantity = GetInteger("Ecom:Order.OrderLines.TotalProductQuantity");
+
+  if (orderLines.Any() && System.Web.HttpContext.Current.Request.QueryString["translates"] == null)
+  {
+    <div>
+      <div id="miniCart" data-quantity="@quantity">
+        <div id="miniCartContainer">
+          <ul class="col-xs-12 minicart-list">
+            @foreach (LoopItem orderLine in orderLines)
+            {
+              bool productPriceIsZeroBool = orderLine.GetBoolean("Ecom:Order:OrderLine.Price.IsZero");
+              bool isProduct = orderLine.GetBoolean("Ecom:Order:OrderLine.IsProduct");
+              bool isDiscount = false;
+              string url = GetString("Item.Area.ProductDetail") + "&amp;ProductID=" + orderLine.GetString("Ecom:Order:OrderLine.ProductID");
+              string parentLineId = orderLine.GetString("Ecom:Order:OrderLine.ParentLineID");
+              string orderType = orderLine.GetString("Ecom:Order:OrderLine.Type");
+              string productId = orderLine.GetString("Ecom:Order:OrderLine.ProductID");
+              string discountType = "";
+              string productName = orderLine.GetString("Ecom:Order:OrderLine.ProductName");
+              string productPriceIsZero = orderLine.GetString("Ecom:Order.Price.PricePIP");
+              string productNumber = orderLine.GetString("Ecom:Product.Number");
+              string pattern = "/Files/Files/" + designName + "/Products/Images/" + productNumber + ".jpg";
+              string imageUrl = GetImagePathUrl(orderLine.GetString("Ecom:Product.ImageSmall.Default.Clean"), orderLine.GetString("Ecom:Product.ImageMedium.Default.Clean"), orderLine.GetString("Ecom:Product.ImageLarge.Default.Clean"), pattern);
+              string updateOrderline = "/Default.aspx?CartCmd=updateorderlines&" + orderLine.GetString("Ecom:Order:OrderLine.Quantity.Input.Name") + "=";
+
+              if (orderType == "3" || orderType == "1")
+              {
+                  isDiscount = true;
+                  if (isProduct || productId != "" || productPriceIsZeroBool || productPriceIsZero == "")
+                  {
+                    discountType = "offerProduct";
+                  }
+                  else {
+                    discountType = "offerValue";
+                  }
+             }
+              if (isDiscount && parentLineId == "" && voucherValue != "")
+              {
+                discountType = "offerVoucher";
+              }
+              if (discountType == "" && isProduct)
+              {
+                <li class="col-xs-12 noPadding">
+                  <figure class="text-center col-xs-2 noPadding">
+                    <a href="@url">
+                      <img class="img-responsive" alt="@productName" title="@productName" src="@(GetImage(imageUrl,95,123))" />
+                    </a>
+                  </figure>
+                  <div class="col-xs-4 noPaddingRight">
+                    <a class="col-xs-12 noPadding" href="@url">
+                      <b>@orderLine.GetString("Ecom:Order:OrderLine.ProductName")</b>
+                      @if (!string.IsNullOrEmpty(orderLine.GetString("Ecom:Order:OrderLine.ProductVariantText")))
+                      {
+                        <br />
+                        @orderLine.GetString("Ecom:Order:OrderLine.ProductVariantText")
+                      }
+                    </a>
+                   
+                  </div>
+                  <div class="col-xs-3">
+                    <button type="button" data-update="@updateOrderline" ref="minus">-</button>
+                    <span class="orderline-quantity">@orderLine.GetString("Ecom:Order:OrderLine.Quantity")</span>
+                    <button type="button" data-update="@updateOrderline" ref="plus">+</button>
+                  </div>
+                  <div class="col-xs-3 price">
+                    @orderLine.GetString("Ecom:Order:OrderLine.Price.PriceFormatted")
+                    @*@orderLine.TemplateTags()*@
+                  </div>
+
+
+                </li>
+              }
+            }
+            @if (GetInteger("Ecom:Order.TotalDiscount.PricePIP") != 0)
+            {
+              <li class="discountLine col-xs-12 noPadding">@Translate("discount", "Discount") <span class="pull-right">@GetString("Ecom:Order.TotalDiscount.PriceWithoutVATFormatted")</span></li>
+            }
+          </ul>
+
+          <footer class="col-xs-12">
+            <div class="subTotal col-xs-12 noPadding">@Translate("subtotal", "Subtotal") <span class="pull-right">@GetString("Ecom:Order.PriceWithoutDiscounts.PriceWithoutVATFormatted")</span></div>
+            <div class="summaryTotal col-xs-12 noPadding">@Translate("Total", "Total") <span class="pull-right">@GetString("Ecom:Order.OrderLines.Total.PriceWithoutVAT")</span></div>
+            <div class="miniCartBtns col-xs-12 noPadding">
+              <a class="btn btn-primary minicart-cart" href="/Default.aspx?ID=174">@Translate("showCart", "Show Cart")</a>
+              <a class="btn btn-primary minicart-checkout" href="/Default.aspx?ID=175">@Translate("checkout", "Checkout")</a>
+              <a class="btn btn-border minicart-continue" href="/Default.aspx?ID=171">@Translate("Continue Shopping", "Continue Shopping")</a>
+            </div>
+            @if(GetBoolean("Ecom:Order.ShippingFee.IsZero"))
+            {
+                <small class="col-xs-12 noPadding">@Translate("taxesAndShippingCalculatedCheckout", "*Taxes and Shipping Calculated at Checkout")</small>
+            }
+          </footer>
+        </div>
+      </div>
+    </div>
+  }
+}

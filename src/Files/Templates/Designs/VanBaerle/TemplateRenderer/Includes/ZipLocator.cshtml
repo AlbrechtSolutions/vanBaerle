@@ -1,0 +1,22 @@
+﻿<div class="col-xs-12" id="findStoreFilter">
+    <fieldset class="mandatory col-sm-3 col-xs-12" name="tag_adr">
+        <label class="text-left" for="zipCode">@Translate("Zip Code")</label>
+        <input type="text" name="zip" id="zipCode" title="@Translate("Zip Code")" />
+    </fieldset>
+    <fieldset class="col-sm-3 col-xs-12" name="tag_dst">
+        <label class="text-left" for="radius">@Translate("Distance")</label>
+        <select id="radius" name="radius">
+          <option value="5">5 @Translate("miles")</option>
+          <option value="15">15 @Translate("miles")</option>
+          <option value="25">25 @Translate("miles")</option>
+          <option value="50">50 @Translate("miles")</option>
+        </select>
+    </fieldset>
+    <div class="locations-filter col-xs-12 col-sm-3">
+        <button class="btn btn-bg" data-filter-value="test">@Translate("search","Search")</button>
+    </div>
+</div>
+
+@SnippetStart("jsOnLoad")
+onLoadMaps();
+@SnippetEnd("jsOnLoad")

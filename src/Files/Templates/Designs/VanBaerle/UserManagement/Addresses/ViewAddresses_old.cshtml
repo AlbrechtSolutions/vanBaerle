@@ -1,0 +1,65 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+@{
+  Dynamicweb.Content.Items.Item itemArea = Pageview.Area.Item;
+  List<LoopItem> addresses = GetLoop("UserManagement:User.UserAddresses");
+}
+
+@GetValue("UserManagement:User.ManageAddresses.FormStart")
+  <table data-cannotdelete='@Translate("mainAddressCanNotBeDeleted","Main address can not be deleted.")' data-cantdelete='@Translate("youCantDeleteDefaultAddress","You can’t delete a default address. Set another address as default before delete this address.")' data-deleteAddress='@Translate("deleteAddress","Delete Address?")' class="col-xs-12 noPadding viewAddresses evenTable">
+    <thead>
+      <tr>
+        <th>
+          <span>@Translate("description","Description")</span>
+        </th>
+        <th>
+          <span>@Translate("address","Address")</span>
+        </th>
+        <th>
+          <span>@Translate("default","Default")</span>
+        </th>
+        <th>
+          <span>@Translate("actions","Actions")</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+    @if(addresses.Any()){
+      foreach(LoopItem address in addresses){
+        string userAddressId = address.GetString("UserManagement:User.UserAddress.ID");
+        Dynamicweb.Ecommerce.International.CountryText countryName = Dynamicweb.Ecommerce.International.CountryText.GetCountryTextById(address.GetString("UserManagement:User.UserAddress.Country"));
+
+        <tr>
+          <td>@address.GetString("UserManagement:User.UserAddress.Description")</td>
+          <td>
+            @address.GetString("UserManagement:User.UserAddress.Address") @address.GetString("UserManagement:User.UserAddress.Address2")
+            @address.GetString("UserManagement:User.UserAddress.City"), @address.GetString("UserManagement:User.UserAddress.State") @address.GetString("UserManagement:User.UserAddress.Zip") @countryName.Name
+          </td>
+          <td>
+            @if(!string.IsNullOrEmpty(address.GetString("UserManagement:User.UserAddress.Default"))){
+              <i class="fa fa-check"></i>
+            }
+            else {
+              <a class="default" data-id="@userAddressId" href="#"><i class="fa fa-remove"></i></a>
+            }
+          </td>
+          <td class="actions">
+            <a class="edit" data-id="@userAddressId" href="#"><i class="fa fa-edit"></i>&nbsp;@Translate("edit","Edit")</a>
+            @if(string.IsNullOrEmpty(address.GetString("UserManagement:User.UserAddress.Default"))){
+              <a class="delete leftPadding" data-id="@userAddressId" href="#"><i class="fa fa-remove"></i>&nbsp;@Translate("delete","Delete")</a>
+            }
+          </td>
+        </tr>
+      }
+    }
+    </tbody>
+  </table>
+
+  <a class="btn btn-bg2" href="@itemArea["Login"]">@Translate("backMyProfile","Back to My Profile")</a>
+  <a class="btn btn-bg" href="javascript:addAddress()">@Translate("addAddress","Add Address")</a>
+
+@GetValue("UserManagement:User.ManageAddresses.FormEnd")
+@SnippetStart("jsOnLoad")
+onLoadListAddresses();
+@SnippetEnd("jsOnLoad")

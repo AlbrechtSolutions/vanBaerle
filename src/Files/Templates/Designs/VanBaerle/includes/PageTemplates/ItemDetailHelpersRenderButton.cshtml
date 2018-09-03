@@ -1,0 +1,16 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@helper RenderButton()
+{
+  string url = GetString("Item.Link");
+
+  if (!string.IsNullOrEmpty(url) && GetBoolean("Item.ShowReadMoreButton"))
+  {
+    string target = GetBoolean("Item.OpenInANewWindow") ? "target=\"_blank\"" : "",
+           style = GetBoolean("Item.ShowLinkAsButton") ? "class=\"btn-orange-outline\"" : "";
+
+      <p class="paragraphButton">
+        <a @style href="@url" @target >@GetString("Item.LinkText")</a>
+      </p>
+  }
+}

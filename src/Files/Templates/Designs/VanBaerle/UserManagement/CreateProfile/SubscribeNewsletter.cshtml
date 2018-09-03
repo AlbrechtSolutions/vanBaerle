@@ -1,0 +1,35 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+<form name="UserManagementEditForm" id="UserManagementEditForm" action="@GetValue("Global:Request.PathAndQuery")" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="UserManagementForm" value="1" />
+  <input type="hidden" id="UserManagementForm.DeleteImage" name="UserManagementForm.DeleteImage" />
+  <input name="UserManagement_Form_EmailAllowed_ApplyValue" type="hidden" id="UserManagement_Form_EmailAllowed_ApplyValue" value="AllowEmail" />
+  <input name="UserManagement_Form_EmailAllowed" type="hidden" id="UserManagement_Form_EmailAllowed" value="True" />
+
+  <fieldset class="mandatory">
+    <label for="UserManagement_Form_Name2">@Translate("name","Name")</label>
+    <input name="UserManagement_Form_Name" type="text" id="UserManagement_Form_Name2" />
+  </fieldset>
+  <fieldset class="mandatory checkEmail">
+    <label for="UserManagement_Form_Email">@Translate("emailAddress","Email Address")</label>
+    <input name="UserManagement_Form_Email" type="email" id="UserManagement_Form_Email" />
+  </fieldset>
+  <button type="submit" class="btn-green btn-small">@Translate("signUp","Sign Up")</button>
+
+  @GetValue("AccessUserName_validator")
+  @GetValue("AccessUserEmail_validator")
+
+  @foreach(LoopItem error in GetLoop("FormValidationErrors")){
+    @error.GetString("UserManagement:User.FormValidationError.FieldNiceName")
+    <br/>
+    @error.GetString("UserManagement:User.FormValidationError.Message")
+    <br/> <br/>
+  }
+
+</form>
+
+
+@SnippetStart("jsOnLoad")
+onLoadValidateNewsletter();
+@SnippetEnd("jsOnLoad")

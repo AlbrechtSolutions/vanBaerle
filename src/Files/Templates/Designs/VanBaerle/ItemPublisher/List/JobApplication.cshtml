@@ -1,0 +1,38 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System.Text.RegularExpressions;
+@Include("/Files/Templates/Designs/LayoutFunctions.cshtml")
+@{
+	string contentCenter = GetBoolean("Item.Center_This_Content") ? "text-center" : "";
+	List<LoopItem> itemsList = GetLoop("ItemPublisher:Items.List");
+}
+
+@if(itemsList.Any()) {
+  <ul class="standardList">
+    @foreach (LoopItem item in itemsList)
+    {
+      string urlString = !string.IsNullOrEmpty(item.GetString("ItemPublisher:Item.Link")) ? item.GetString("ItemPublisher:Item.Link") : string.Format("/Default.aspx?ID={0}", item.GetString("ItemPublisher:Item.Field.PageId"));
+      string urlStringApply = string.Format("Default.aspx?ID={0}&jobform=true", item.GetString("ItemPublisher:Item.Field.PageId"));
+      string pageDetailUrl = string.Format("Default.aspx?ID={0}", item.GetString("ItemPublisher:Item.Field.PageId"));
+
+      <li class="col-sm-@item.GetString("ItemPublisher:Item.Width") col-xs-@item.GetString("ItemPublisher:Item.WidthMobile") noPadding @contentCenter">
+
+        @RenderHeading(@item.GetBoolean("ItemPublisher:Item.ShowTitle"), @item.GetString("ItemPublisher:Item.TitleOrder"), @item.GetString("ItemPublisher:Item.Title"), @item.GetString("ItemPublisher:Item.HeadingType"), @item.GetString("ItemPublisher:Item.Subtitle"))
+        @RenderImage(@item.GetString("ItemPublisher:Item.Order"), @item.GetString("ItemPublisher:Item.Image"), @urlString, @item.GetString("ItemPublisher:Item.ImageTitle"), @item.GetString("ItemPublisher:Item.ImageWidth"), @item.GetString("ItemPublisher:Item.WidthMobile"), @item.GetString("ItemPublisher:Item.ItemWidth"), @item.GetString("ItemPublisher:Item.ImageStyle"), @item.GetString("ItemPublisher:Item.Title"))
+        <div class="@itemClass(@item.GetString("ItemPublisher:Item.Order"), @item.GetInteger("ItemPublisher:Item.ImageWidth")) col-xs-@(12 - item.GetInteger("ItemPublisher:Item.ImageWidth"))">
+          @RenderText(@item.GetBoolean("ItemPublisher:Item.ShowTitle"), @item.GetString("ItemPublisher:Item.TitleOrder"), @item.GetString("ItemPublisher:Item.Title"), @item.GetString("ItemPublisher:Item.Order"), @item.GetString("ItemPublisher:Item.Text"), @item.GetString("ItemPublisher:Item.Image"), @urlString, @item.GetString("ItemPublisher:Item.ImageTitle"), @item.GetString("ItemPublisher:Item.ImageWidth"), @item.GetString("ItemPublisher:Item.WidthMobile"), @item.GetString("ItemPublisher:Item.ItemWidth"), @item.GetString("ItemPublisher:Item.ImageStyle"), @item.GetString("ItemPublisher:Item.Title"), @item.GetString("ItemPublisher:Item.HeadingType"), @item.GetString("ItemPublisher:Item.Subtitle"))
+          <a class="readDetail" href="@pageDetailUrl">@Translate("readMore", "Read more") ></a>
+          @RenderButton(@urlString, @item.GetBoolean("ItemPublisher:Item.ShowReadMoreButton"), @item.GetBoolean("ItemPublisher:Item.ShowReadMoreButton"), @item.GetBoolean("ItemPublisher:Item.OpenInANewWindow"), @item.GetString("ItemPublisher:Item.LinkText"), @item.GetString("ItemPublisher:Item.DetailsUrl.PID"))
+          <div class="paragraphButton">
+            <a href="@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(urlStringApply)" class="btn">@Translate("apply", "Apply")</a>
+          </div>
+        </div>
+
+      </li>
+
+    }
+  </ul>
+}
+
+@Include("Includes/pagination.cshtml")
+@Include("Includes/Helpers.cshtml")

@@ -1,0 +1,183 @@
+﻿
+@helper RenderHeading(bool showTitle, string titleOrder, string titleString, string headingTypeItem, string subtitle)
+{
+  if(showTitle != false && titleOrder == "title-first")
+  {
+	  @RenderHeadingHtml(@titleString, @headingTypeItem, @subtitle)
+	}
+}
+
+@helper RenderHeadingHtml(string titleString, string headingTypeItem, string subtitle) {
+	if (!string.IsNullOrEmpty(titleString))
+	{
+	  string headingType = string.IsNullOrEmpty(headingTypeItem) ? "h1" : headingTypeItem;
+	  string solidBg = GetBoolean("Item.Solid_Color_Background") ? "header-solid-bg" : "";
+	  <header class="paragraphHeader @solidBg">
+	    @string.Format("<{0}>{1}</{0}>", headingType, titleString)
+	    @if (!string.IsNullOrEmpty(subtitle))
+      {
+        <span class="subtitle">@subtitle</span>
+      }
+	  </header>
+	}
+}
+
+@helper RenderText(bool showTitle, string titleOrder, string titleString, string itemOrder, string itemText, string imageString, string link, string imageStringTitle, string imageStringWidth, string widthMobile, string itemWidth, string imageStringStyle, string itemTitle, string headingType, string subtitle)
+{
+  int crop = 300;
+
+  if(itemOrder == "image-left" || itemOrder == "image-right"){
+    @RenderImageTag(@imageString, @link, @titleString, @imageStringWidth, @widthMobile, @itemWidth, @imageStringStyle, @itemOrder, @itemTitle)
+  }
+  if (showTitle != false && titleOrder == "title-with-text"){
+    @RenderHeadingHtml(@titleString, @headingType, @subtitle)
+  }
+  if (!string.IsNullOrWhiteSpace(itemText)){
+    <div class="paragraphText">
+
+      @if(System.Net.WebUtility.HtmlDecode(StripHtml(itemText)).Length > crop) {
+        @System.Net.WebUtility.HtmlDecode(StripHtml(itemText)).Substring(0, crop) <text>...</text>
+      }
+      else {
+        @itemText
+      }
+    </div>
+  }
+}
+
+@helper RenderButton(string link, bool showLinkButtonBool, bool showReadMoreButtonBool, bool openInANewWindowBool, string LinkText, string detailUrl)
+{
+	string urlString = !string.IsNullOrEmpty(link) ? link : detailUrl;
+	string button = showLinkButtonBool ? "readMore" : "";
+  string target = openInANewWindowBool ? "target='_blank'" : "";
+  string readMore = !string.IsNullOrEmpty(LinkText) ? LinkText : Translate("Read more");
+
+  if (showReadMoreButtonBool)
+  {
+
+    <p class="paragraphButton">
+      <a href="@urlString" @target class="@button">@readMore</a>
+    </p>
+  }
+}
+
+@helper RenderImage(string itemOrder, string imageString, string link, string titleString, string imageStringWidth, string widthMobile, string itemWidth, string imageStringStyle, string itemTitle)
+{
+  if(itemOrder == "image-left-column" || itemOrder == "image-right-column" || itemOrder == "image-top" || itemOrder == ""){
+    @RenderImageTag(@imageString, @link, @titleString, @imageStringWidth, @widthMobile, @itemWidth, @imageStringStyle, @itemOrder, @itemTitle)
+  }
+}
+
+@helper RenderImageTag(string imageString, string link, string imageStringTitle, string imageStringWidth, string widthMobile, string itemWidth, string imageStringStyle, string itemOrder, string itemTitle)
+{
+	if (!string.IsNullOrEmpty(imageString))
+	{
+		if (string.IsNullOrEmpty(link))
+		{
+			@RenderImageWrapper(@imageString, @imageStringTitle, @imageStringWidth, @widthMobile, @itemWidth, @imageStringStyle, @itemOrder, @itemTitle)
+		}
+		else
+		{
+		  string target = GetBoolean("Item.OpenInANewWindow") ? "target='_blank'" : "";
+			<a href="@link" @target>
+				@RenderImageWrapper(@imageString, @imageStringTitle, @imageStringWidth, @widthMobile, @itemWidth, @imageStringStyle, @itemOrder, @itemTitle)
+			</a>
+		}
+	}
+}
+
+@helper RenderImageWrapper(string imageString, string titleString, string imageStringWidth, string widthMobile, string itemWidth, string imageStringStyle, string itemOrder, string itemTitle)
+{
+  var image = System.Web.HttpContext.Current.Server.UrlEncode(imageString);
+  string imageStringAlt = (!string.IsNullOrEmpty(titleString)) ? titleString : itemTitle;
+  string figureWidth = "col-xs-" + imageStringWidth;
+  string optimizedwidth = "1280";
+
+  switch (itemOrder){
+    case "image-left":
+      figureWidth += " pull-left noPaddingLeft";
+      break;
+    case "image-left-column":
+      figureWidth += " pull-left noPaddingLeft";
+      break;
+    case "image-right":
+      figureWidth += " pull-right noPaddingRight";
+      break;
+    case "image-right-column":
+      figureWidth += " pull-right noPaddingRight";
+      break;
+    case "image-top":
+      figureWidth += " image-top";
+      if(Convert.ToInt32(imageStringWidth) < 12){
+        figureWidth += " col-xs-offset-" + ((12 - Convert.ToInt32(imageStringWidth)) / 2);
+      }
+      break;
+  }
+
+  if (Dynamicweb.Frontend.PageView.Current().Device.ToString() == Dynamicweb.Frontend.Devices.DeviceType.Mobile.ToString())
+  {
+    switch (widthMobile){
+      case "12":
+        optimizedwidth = "480";
+        break;
+      case "6":
+        optimizedwidth = "240";
+        break;
+    }
+  }
+  else {
+    switch (itemWidth){
+      case "3":
+        optimizedwidth = "722";
+        break;
+      case "4":
+        optimizedwidth = "722";
+        break;
+      case "6":
+        optimizedwidth = "722";
+        break;
+      case "8":
+        optimizedwidth = "960";
+        break;
+      case "9":
+        optimizedwidth = "960";
+        break;
+      default:
+        optimizedwidth = "1280";
+        break;
+    }
+  }
+
+  <figure class="@imageStringStyle @figureWidth">
+		<img class="img-responsive" src="/Admin/Public/GetImage.ashx?width=@optimizedwidth&crop=0&image=@image" title="@imageStringAlt" alt="@imageStringAlt" />
+	</figure>
+}
+
+
+@functions{
+  public string itemClass(string orderItem, int imageWidth)
+	{
+	  string order = orderItem;
+    string paragraphClass = imageWidth < 12 && order != "image-top" ? "col-xs-" + ( 12 - imageWidth) : "col-xs-12";
+    if(order == "image-left" || order == "image-right"){
+      paragraphClass = "noPadding";
+    }else if(order != "image-top"){
+// paragraphClass += " noPadding";
+    }
+
+    switch (order){
+      case "image-left-column":
+        paragraphClass += " pull-right";
+        break;
+      case "image-right-column":
+        paragraphClass += " pull-left";
+        break;
+    }
+
+    return paragraphClass;
+	}
+  public static string StripHtml(string source)
+  {
+   return Regex.Replace(source, "<.*?>", string.Empty);
+  }
+}

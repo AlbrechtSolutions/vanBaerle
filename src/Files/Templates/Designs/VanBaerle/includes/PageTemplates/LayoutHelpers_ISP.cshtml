@@ -1,0 +1,37 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@helper Breadcrumb() {
+    if (!string.IsNullOrEmpty(GetString("DwNavigation(breadCrumbsMenu2)")))
+    {
+        <div class="col-xs-12 noPadding">
+            <nav id="breadMenuContainer" class="col-xs-12 noPadding">
+                <ul id="breadCrumbsMenu">
+                    <li><a href="/">@Translate("home", "Home")</a></li>
+                    <ul id="breadCrumbsMenu2" class="dwnavigation" settings="startlevel:1;endlevel:6;template:breadCrumbs.xslt;expandmode:Pathonly;includemode:all;id:breadCrumbsMenu2;"></ul>
+                    @if (!string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["productid"]))
+                    {
+                        <li>
+                            @GetString("Title")
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    }
+}
+
+@helper PageTitle() {
+    string heading = GetString("Item.Page.PageHeading"),
+           title = !String.IsNullOrEmpty(heading) ? heading : GetString("DwPageName") ;
+
+    <div class="h1">@title</div>
+}
+
+@helper CentralContent(string rightClass = "col-xs-12 noPadding") {
+    if (!string.IsNullOrEmpty(GetString("DwContent(centralContent)")))
+    {
+        <section id="centralContainer" class="@rightClass">
+            <div id="centralContent" class="dwcontent row" title="Page content" settings="sort:1;template:StandardParagraph.cshtml;limit:StandardParagraph.cshtml;id:homeContent"></div>
+        </section>
+    }
+}

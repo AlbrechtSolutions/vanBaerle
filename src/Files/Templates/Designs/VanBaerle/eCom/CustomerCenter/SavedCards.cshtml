@@ -1,0 +1,85 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  string paragraphId = Pageview.CurrentParagraph.ID.ToString();
+  string path = "/Default.aspx?ID=" + GetGlobalValue("Global:Page.ID");
+  string sort = !string.IsNullOrWhiteSpace(System.Web.HttpContext.Current.Request.QueryString["CCSortOrder" + paragraphId]) ? System.Web.HttpContext.Current.Request.QueryString["CCSortOrder" + paragraphId].ToString() : "Asc";
+  var savedCards = GetLoop("SavedCards");
+}
+@if(savedCards.Any()){
+    <table id="savedCardsTable" class="col-xs-12 noPadding text-left evenTable">
+        <thead class="orderList">
+            <tr>
+                <th>
+                    @Translate("name", "Name")
+                    <a href="@(path)&CCOrderByField@(paragraphId)=Name&CCSortOrder@(paragraphId)=@sort">
+                      <i class="fa fa-sort"></i>
+                    </a>
+                </th>
+                <th>
+                    @Translate("IsDefault", "Default")
+                    <a href="@(path)&CCOrderByField@(paragraphId)=IsDefault&CCSortOrder@(paragraphId)=@sort">
+                      <i class="fa fa-sort"></i>
+                    </a>
+                </th>
+                <th>
+                    @Translate("cardtype", "Card type")
+                    <a href="@(path)&CCOrderByField@(paragraphId)=CardType&CCSortOrder@(paragraphId)=@sort">
+                      <i class="fa fa-sort"></i>
+                    </a>
+                </th>
+                <th>
+                    @Translate("identifier", "Card number")
+                    <a href="@(path)&CCOrderByField@(paragraphId)=Identifier&CCSortOrder@(paragraphId)=@sort">
+                      <i class="fa fa-sort"></i>
+                    </a>
+                </th>
+                <th>
+                    @Translate("payment", "Payment method")
+                    <a href="@(path)&CCOrderByField@(paragraphId)=Payment&CCSortOrder@(paragraphId)=@sort">
+                      <i class="fa fa-sort"></i>
+                    </a>
+                </th>
+                <th>
+                    @Translate("messages", "Messages")
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (LoopItem i in savedCards){
+                <tr class="@i.GetString("Ecom:CustomerCenter.Paging.EvenRowClass")">
+                    <td>@i.GetString("Ecom:SavedCard.Name")&nbsp;</td>
+                    <td>
+                        <a href="@i.GetString("Ecom:CustomerCenter.SavedCards.ToggleDefaultUrl")" title="Change default token">
+                            @if(i.GetBoolean("Ecom:SavedCard.IsDefault")) {
+                                @Translate("Yes")
+                            }
+                            else {
+                                @Translate("No")
+                            }
+                        </a>
+                    </td>
+                    <td>@i.GetString("Ecom:SavedCard.CardType")&nbsp;</td>
+                    <td>@i.GetString("Ecom:SavedCard.Identifier")&nbsp;</td>
+                    <td>@i.GetString("Ecom:SavedCard.Payment")&nbsp;</td>
+                    <td>
+                        <a href="@i.GetString("Ecom:CustomerCenter.SavedCards.MessagesUrl")" title="View messages for saved card">@Translate("messages", "Messages")</a>
+                    </td>
+                    <td>
+                        <a href="@i.GetString("Ecom:CustomerCenter.SavedCards.DeleteUrl")" title="Delete saved card" onclick="return confirm('Are you sure to delete saved card?');">@Translate("delete", "Delete")</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else {
+    @Translate("nosavedcards", "No saved cards found")
+}
+<div>
+    @Include("includes/Pagination.cshtml")
+</div>
+@SnippetStart("jsOnLoad")
+onLoadOrderList();
+@SnippetEnd("jsOnLoad")

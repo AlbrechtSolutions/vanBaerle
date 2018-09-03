@@ -1,0 +1,79 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb;
+@using Dynamicweb.Frontend;
+@Include("../../includes/Razor/GetImage.cshtml")
+@Include("../../includes/Razor/VerifyImage.cshtml")
+@{  
+  Dynamicweb.Content.Items.Item item = Pageview.Area.Item;
+  List<LoopItem> prodLoop = GetLoop("Products");
+  string currentPageId = Pageview.Page.ID.ToString();
+  string imagesFolder = "/Files/Files/" + designName + "/Products/";
+}
+
+
+  <div class="products-carousel">
+
+    @foreach (LoopItem product in prodLoop)
+    {
+    
+        string productVOCName = product.GetString("Ecom:Product:Field.VOC.Name");
+        string productVOCValue = product.GetString("Ecom:Product:Field.VOC.Value");
+        string isNewProduct = product.GetString("Ecom:Product:Field.NewProduct");
+        bool isGiftCard = product.GetInteger("Ecom:Product.Type") == 3;
+        string productNumber = product.GetString("Ecom:Product.Number");
+        string imagePattern = imagesFolder + productNumber + ".jpg";
+        string image = GetImagePathUrl(product.GetString("Ecom:Product.ImageSmall.Clean"), product.GetString("Ecom:Product.ImageMedium.Clean"), product.GetString("Ecom:Product.ImageLarge.Clean"), imagePattern);
+        string productName = product.GetString("Ecom:Product.Name");
+        string productID = product.GetString("Ecom:Product.ID");
+        string productVariantID = product.GetString("Ecom:Product.VariantID");
+        string productShortDescription = product.GetString("Ecom:Product.LongDescription");
+        string link = product.GetString("Ecom:Product.LinkGroup.Clean");
+
+        string ecoRating = product.GetString("Ecom:Product:Field.EcoRating");
+        string phValue = product.GetString("Ecom:Product:Field.pHValue");
+
+        string productLanguage = product.GetString("Ecom:Product.LanguageID");
+        string variantDefaultId = product.GetString("Ecom:Product.DefaultVariantComboID");
+        string variantCurrentId = product.GetString("Ecom:Product.VariantID");
+        string variantId = (!string.IsNullOrEmpty(variantCurrentId)) ? variantCurrentId : variantDefaultId;
+        string compareLink = productID + "$" + productLanguage + "$" + productVariantID;
+        bool productIsFavoriteBool = product.GetBoolean("Ecom:Product.IsProductInFavoriteList");
+        string productRemoveFromList = "/Default.aspx?Id=" + currentPageId + "&amp;ProductID=" + productID + "&amp;CCRemoveFromMyLists=" + productID + "&amp;CCRemoveFromListVariantID=" + variantDefaultId + "&amp;CCRemoveFromListLanguageID=" + productLanguage;
+        string productAddToList = "/Default.aspx?Id=" + currentPageId + "&amp;ProductID=" + productID + "&amp;CCAddToMyLists=" + productID + "&amp;CCAddToListVariantID=" + variantDefaultId + "&amp;CCAddToListLanguageID=" + productLanguage;
+        string favoriteUrl = productIsFavoriteBool ? productRemoveFromList : productAddToList;
+        string miniCartPage = (item["MiniCart"] ?? "").ToString();
+        List<LoopItem> variantCombinations = product.GetLoop("VariantCombinations");
+
+      @* Logic: If there is any variant check if there is any selected/default variant to load the price if not load price from first (by order xpto) variant.  *@
+        int productStock = !variantCombinations.Any() ? product.GetInteger("Ecom:Product.AvailableAmount") : variantCombinations.FirstOrDefault(x => x.GetString("Ecom:Product.DefaultVariantComboID").Equals(x.GetString("Ecom:VariantCombination.VariantID"))) == null ? variantCombinations.OrderBy(x => x.GetString("Ecom:VariantCombination.VariantID")).FirstOrDefault().GetInteger("Ecom:Product.AvailableAmount") : variantCombinations.FirstOrDefault(x => x.GetString("Ecom:Product.DefaultVariantComboID").Equals(x.GetString("Ecom:VariantCombination.VariantID"))).GetInteger("Ecom:Product.AvailableAmount");
+        string productPrice = !variantCombinations.Any() ? product.GetString("Ecom:Product.Price") : variantCombinations.FirstOrDefault(x => x.GetString("Ecom:Product.DefaultVariantComboID").Equals(x.GetString("Ecom:VariantCombination.VariantID"))) == null ? variantCombinations.OrderBy(x => x.GetString("Ecom:VariantCombination.VariantID")).FirstOrDefault().GetString("Ecom:Product.Price") : variantCombinations.FirstOrDefault(x => x.GetString("Ecom:Product.DefaultVariantComboID").Equals(x.GetString("Ecom:VariantCombination.VariantID"))).GetString("Ecom:Product.Price");
+        string stockStatus = productStock > 0 ? "fa-check" : "fa-close";
+
+        <div class="card-image card-image--horizontal">
+          <div class="card__img">
+             @if(isNewProduct == "True") {
+                  <span class="product-is-new">@Translate("New" , "New")</span>
+                  <a href="@link"><img src="@GetImage(image, 400, 0)" alt="@productName" title="@productName" class="img-responsive" /></a>
+              } else {
+                  <a href="@link"><img src="@GetImage(image, 400, 0)" alt="@productName" title="@productName" class="img-responsive" /></a>
+              }
+          </div>
+          <div class="card__text">
+            <div class="card__title">@productName</div>
+            @if (!string.IsNullOrEmpty(productShortDescription))
+            {
+              <div class="card__description">
+                @productShortDescription
+              </div>
+            }
+           
+            @if(!string.IsNullOrEmpty(link)) {
+              <a href='@link' class="card__more">@Translate("viewMore", "View more") <i class="arrow vb-arrow-right"></i></a>
+            }
+          </div>
+        </div>
+
+      }
+
+  </div>

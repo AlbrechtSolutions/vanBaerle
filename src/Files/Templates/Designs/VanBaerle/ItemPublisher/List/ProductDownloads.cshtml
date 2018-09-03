@@ -1,0 +1,34 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  // Possible files and "fontawesome" icons
+  Dictionary<string, string> iconFiles = new Dictionary<string, string>();
+  iconFiles.Add("pdf", "fa-file-pdf-o");
+  iconFiles.Add("jpg", "fa-picture-o");
+  iconFiles.Add("png", "fa-picture-o");
+  iconFiles.Add("zip", "fa-file-archive-o");
+  iconFiles.Add("rar", "fa-file-archive-o");
+}
+
+@if(GetLoop("ItemPublisher:Items.List").Any()) {
+  @SnippetStart("downloadItem")
+    <li>
+      <a href="#downloads_tab">@Translate("downloads", "Downloads") (items)</a>
+    </li>
+  @SnippetEnd("downloadItem")
+  <div class="col-xs-12" id="downloads_tab">
+    <ul>
+      @foreach(LoopItem item in GetLoop("ItemPublisher:Items.List")) {
+        string file = item.GetString("ItemPublisher:Item.File.Value"),
+               temp = @".",
+               substringFile = file.Substring((file.LastIndexOf(temp) + 1), (file.Length - file.LastIndexOf(temp) - 1)),
+               icon = iconFiles.ContainsKey(substringFile) ? iconFiles[substringFile] : "fa-file-pdf-o" ;
+
+        <li>
+          <a class="downloadFile" href="@file"><i class='fa @icon'></i> @item.GetString("ItemPublisher:Item.FileName.Value")</a>
+        </li>
+      }
+    </ul>
+  </div>
+}
+

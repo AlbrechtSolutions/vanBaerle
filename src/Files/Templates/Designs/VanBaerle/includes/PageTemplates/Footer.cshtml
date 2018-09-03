@@ -1,0 +1,111 @@
+﻿
+<footer class="main-footer">
+  <div class="container">
+    <div class="row">
+      	<div class="main-footer__column col-md-4 col-sm-12 screen-sm">
+            <h5 class="main-footer__heading">@Translate("Stay Tuned", "Stay Tuned")</h5>
+            @*<form action="#">
+              <div class="input-group main-footer__subscribe">
+                <span class="input-group-addon">
+                  <i class="vb-envelope input-group-addon-icon"></i>
+                </span>
+                <input type="email"
+                       id="subscriptionEmail"
+                       class="form-control"
+                       placeholder='@Translate("enterEmail","Enter email addres")'>
+                <span class="input-group-btn">
+                  <button class="btn btn-primary" type="submit">@Translate("subscribe","Subscribe")</button>
+                </span>
+              </div>
+            </form>*@
+          	<form name="NewsletterSubscribe" id="NewsletterSubscribe" method="post" enctype="multipart/form-data" data-api="@subscribeToNewsletterAPI" data-success='@Translate("Subscribe success","You have been subscribed to our latest news about products and promotions")' data-error='@Translate("invalidEmailAddress", "Invalid email address")'>
+          		<input name="UserManagementForm" value="1" type="hidden" />
+                <input id="UserManagementForm.DeleteImage" name="UserManagementForm.DeleteImage" type="hidden" />
+                <div style="display: none;">
+                    <input name="UserManagement_Form_EmailAllowed" id="UserManagement_Form_EmailAllowed" value="True" checked="checked" type="checkbox">
+                    <input name="UserManagement_Form_EmailAllowed_ApplyValue" id="UserManagement_Form_EmailAllowed_ApplyValue" value="AllowEmail" type="hidden">
+                </div>     
+          		<input class="hidden" placeholder="Name" name="UserManagement_Form_Name" type="text" id="UserManagement_Form_Name2"/> 
+          	<div class="input-group main-footer__subscribe"> 
+                  
+                   <span class="input-group-addon">
+                  	<i class="vb-envelope input-group-addon-icon"></i>
+                   </span>
+                  <input type="email" class="form-control" name="UserManagement_Form_Email" id="UserManagement_Form_Email" placeholder='@Translate("enterEmail","Enter email addres")' value='' />
+              	  <span class="input-group-btn">
+                  	<input type="submit" class="btn btn-primary" value='@Translate("subscribe","Subscribe")' />
+              	  </span>
+                 </div>
+            </form>
+          </div>
+      
+      <div class="col-md-2 col-sm-12 screen-sm pull-right">
+        <a href="index.html">
+          <img class="main-footer__logo" src="@logo" alt="vanBaerle">
+        </a>
+      </div>
+         
+      @*<div class="col-md-2 screen-sm">
+        <div class="main-footer__column">
+          <h5 class="main-footer__heading">@Translate("aboutUs", "About Us")</h5>
+          <ul class="main-footer__link-list">
+            <li><a href="/about-us">vanBaerle</a></li>
+            <li><a href="/about-us">Responsibility</a></li>
+            <li><a href="/about-us">Jobs</a></li>
+            <li><a href="/about-us">Contact</a></li>
+            <li><a href="/about-us">Terms</a></li>
+          </ul>
+        </div>
+      </div>*@
+      @*<div class="col-md-2 screen-sm">
+        <div class="main-footer__column">
+          <h5 class="main-footer__heading">@Translate("products","Products")</h5>
+          <ul class="main-footer__link-list">
+            <li><a href="/hygiene">Hygiene</a></li>
+            <li><a href="/silicates">@Translate("silicates", "Silicates")</a></li>
+          </ul>
+        </div>
+      </div>*@
+        
+      <div class="col-lg-3 col-md-4">
+        <div class="main-footer__column--sm">
+          <!-- .main-footer__socialcopy #1 -->
+          <div class="main-footer__socialcopy main-footer__socialcopy--sm">
+            @*<div class="main-footer__social">
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-facebook"></i>
+              </a>
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-twitter"></i>
+              </a>
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-linkedin"></i>
+              </a>
+            </div>*@
+            <span class="main-footer__copyright">&copy; @DateTime.Now.Year. &nbsp;  @GetString("Item.Area.Copyright")</span>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- main-footer__socialcopy #2 -->
+    <div class="main-footer__bottom main-footer__socialcopy">
+      <div class="main-footer__social">
+        @*<a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-facebook"></i>
+        </a>
+        <a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-twitter"></i>
+        </a>
+        <a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-linkedin"></i>
+        </a>*@
+
+        <span class="main-footer__copyright">&copy; @DateTime.Now.Year. &nbsp; @GetString("Item.Area.Copyright")</span>
+      </div>
+      
+      <ul id="copyrightMenu" class="footer-menu dwnavigation" settings="startlevel:2;endlevel:3;parenttag:copyrightMenu;template:liClean.xslt;expandmode:All;id:copyrightMenu;"></ul>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,90 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  string path = "/Default.aspx?ID=" + GetGlobalValue("Global:Page.ID");
+  string paragraphId = GetString("ParagraphID");
+
+  DateTime dat_today = DateTime.Now;
+  int ordersIndex = 0;
+  List<LoopItem> loopRma = GetLoop("RMAs");
+}
+
+@if (System.Web.HttpContext.Current.Request.QueryString["CC" + paragraphId] != null)
+{
+    <div class="col-xs-12 greenBg white successBanner">
+      @Translate("aNewRequestReturnHasBeenReceived", "A new Request for Return has been received.")
+    </div>
+}
+
+@if(loopRma.Any()) {
+  <table id="myOrdersTable" name="UserManagementEditForm" class="col-xs-12 noPadding text-left evenTable">
+    <thead class="hidden-xs">
+      <tr>
+        <th>
+          <span>@Translate("date","Date")</span>
+         <a href="@(path)&CCRMAByField@(paragraphId)=DateCreated&CCSortRMA@(paragraphId)=Asc">
+            <i class="fa fa-caret-up"></i>
+          </a>
+          <a href="@(path)&CCRMAByField@(paragraphId)=DateCreated&CCSortRMA@(paragraphId)=Desc">
+            <i class="fa fa-caret-down"></i>
+          </a>
+        </th>
+        <th>
+          <span>@Translate("rmaId","RMA ID")</span>
+          <a href="@(path)&CCRMAByField@(paragraphId)=RmaID&CCSortRMA@(paragraphId)=Asc">
+            <i class="fa fa-caret-up"></i>
+          </a>
+          <a href="@(path)&CCRMAByField@(paragraphId)=RmaID&CCSortRMA@(paragraphId)=Desc">
+            <i class="fa fa-caret-down"></i>
+          </a>
+        </th>
+        <th>
+          <span>@Translate("orderId","Order ID")</span>
+           <a href="@(path)&CCRMAByField@(paragraphId)=RmaReturnOrderID&CCSortRMA@(paragraphId)=Asc">
+            <i class="fa fa-caret-up"></i>
+          </a>
+          <a href="@(path)&CCRMAByField@(paragraphId)=RmaReturnOrderID&CCSortRMA@(paragraphId)=Desc">
+            <i class="fa fa-caret-down"></i>
+          </a>
+        </th>
+        <th>
+          <span>@Translate("status","Status")</span>
+          <a href="@(path)&CCRMAByField@(paragraphId)=RmaStateID&CCSortRMA@(paragraphId)=Asc">
+            <i class="fa fa-caret-up"></i>
+          </a>
+          <a href="@(path)&CCRMAByField@(paragraphId)=RmaStateID&CCSortRMA@(paragraphId)=Desc">
+            <i class="fa fa-caret-down"></i>
+          </a>
+        </th>
+        <th>@Translate("actions","Actions")</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach(LoopItem rma in loopRma){
+        <tr>
+          <td data-th='@Translate("date","Date")'>@rma.GetString("Ecom:RMA.Date")</td>
+          <td data-th='@Translate("rmaId","RMA ID")'><a href="@rma.GetString("Ecom:RMA.DetailsURL")">@rma.GetString("Ecom:RMA.ID")</a></td>
+          <td data-th='@Translate("orderId","Order ID")'>@rma.GetString("Ecom:RMA.OrderID")</td>
+          <td data-th='@Translate("status","Status")'>@rma.GetString("Ecom:RMA.Status")</td>
+          <td class="actions" data-th='@Translate("actions","Actions")'>
+            <a class="btnBlueYellow" href="@(rma.GetString("Ecom:RMA.DetailsURL"))"><i class="fa fa-file-text-o"></i>&nbsp;@Translate("view","View")</a>
+            @if(rma.GetBoolean("Ecom:RMA.HasCancel")){
+              <a class="btnBlueYellow leftPadding" href="@(rma.GetString("Ecom:RMA.CancelURL"))" title="@Translate("cancelReturnMerchandiseAuthorization","Cancel return merchandise authorization")" onclick="return confirm('@Translate("areYouSureYouWantCancel?","Are you sure you want to cancel?")');"><i class="fa fa-close"></i>&nbsp;@Translate("cancel","Cancel")</a>
+            }
+          </td>
+        </tr>
+      }
+
+    </tbody>
+  </table>
+}
+@if(GetBoolean("Ecom:CustomerCenter.RMA.EmptyList")){
+  <div>
+    @Translate("noReturnsFound","No returns found.")
+  </div>
+}
+@Include("includes/pagination.cshtml")
+
+<a href="@(GetString("Ecom:CustomerCenter.RMA.AddURL"))" class="btn btn-bg newReturn">@Translate("addNewReturn","Add new return")</a>
+
+

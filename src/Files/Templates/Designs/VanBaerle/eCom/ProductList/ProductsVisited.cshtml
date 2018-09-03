@@ -1,0 +1,15 @@
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb;
+@using Dynamicweb.Frontend;
+
+
+
+<div id="visitedProducts" class="row">
+	<div class="col-sm-12">
+		Visited Products
+		@foreach (LoopItem visitedProduct in GetLoop("eCom:Related.YouHaveSeenTheseProducts")) {
+			<p>@visitedProduct.GetString("Ecom:LastAddedProduct.Name")</p>
+		}
+	</div>
+</div>

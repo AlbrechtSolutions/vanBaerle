@@ -1,0 +1,152 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using System.Linq;
+@using Dynamicweb.Rendering;
+@using Dynamicweb.Content.Items;
+@using System.Collections;
+@using Dynamicweb.Security.UserManagement;
+
+@GetString("UserManagement:User.FormStart")
+<input name="UserManagement_Form_EmailAllowed_ApplyValue" type="hidden" id="UserManagement_Form_EmailAllowed_ApplyValue" value="AllowEmail" />
+<input name="UserManagement_Form_EmailAllowed" type="hidden" id="UserManagement_Form_EmailAllowed" value="True" />
+
+@if (!string.IsNullOrEmpty(GetGlobalValue("Global:Extranet.Email")))
+{
+  <input name="UserManagement_Form_Email" value="@(GetGlobalValue("Global:Extranet.Email"))" type="hidden" id="UserManagement_Form_Email" />
+}
+else
+{
+  <fieldset class="mandatory checkEmail">
+    <label for="UserManagement_Form_Email">@Translate("emailAddress", "Email Address")</label>
+    <input placeholder="@Translate("emailAddress","Email Address")" name="UserManagement_Form_Email" type="email" id="UserManagement_Form_Email" />
+  </fieldset>
+}
+
+<div class="col-xs-12 noPadding">
+  @Translate("updateYourEmailText", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor.")
+</div>
+
+@MySubscriptions()
+
+<button type="submit" class="btn btn-bg">@Translate("submit", "Submit")</button>
+
+@GetValue("AccessUserName_validator")
+@GetValue("AccessUserEmail_validator")
+
+@foreach (LoopItem error in GetLoop("FormValidationErrors"))
+{
+  @error.GetString("UserManagement:User.FormValidationError.FieldNiceName")
+  <br />
+  @error.GetString("UserManagement:User.FormValidationError.Message")
+  <br /> <br />
+}
+
+  </form>
+
+@* Newsletter Groups *@
+
+@helper MySubscriptions()
+{
+Dynamicweb.Content.Items.Item itemArea = Pageview.Area.Item;
+List<LoopItem> selectableGroups = GetLoop("SelectableGroups");
+var userGoups = User.GetCurrentUser().Groups.Select(g => g.ID).ToList(); // Cannot get the groups to the pageview because they don't updated
+var groupsList = new Dictionary<string, bool>();
+List<int> itemGroups = new List<int>();
+foreach (LoopItem selectableGroup in selectableGroups)
+{
+  itemGroups.Add(selectableGroup.GetInteger("UserManagement:User.SelectableGroup.ID"));
+  groupsList.Add(selectableGroup.GetString("UserManagement:User.SelectableGroup.ID"), userGoups.Contains(selectableGroup.GetInteger("UserManagement:User.SelectableGroup.ID")));
+}
+var allGroups = Group.GetGroupsByID(itemGroups);
+
+var groups = GetGroups(allGroups);
+
+var groupsWithTitle = groups.Item1;
+var groupsWithoutTitle = groups.Item2;
+
+if (groupsWithTitle.Any())
+{
+    <ul class="col-xs-12 noPadding" id="newsletterGroups">
+      @foreach (var title in groupsWithTitle)
+      {
+        <li class="col-xs-12 noPadding">
+          <h3>@title.Key.Replace("+", " ").Replace("%26", "&")</h3>
+          @foreach (var group in title)
+          {
+            if (groupsList.ContainsKey(group.Value.ID.ToString()))
+            {
+              string name = group.Value.Name;
+              var id = "UserManagement_Form_SelectableGroup_" + group.Value.ID;
+              var optionChecked = groupsList[group.Value.ID.ToString()] == true ? "checked" : "";
+              <fieldset>
+                <label for="@id"><input @optionChecked value="True" type="checkbox" id="@id" name="@id" /> @name</label>
+              </fieldset>
+            }
+          }
+        </li>
+      }
+      @if (groupsWithoutTitle.Any())
+      {
+        <li class="col-xs-12 noPadding">
+          <h3>@Translate("otherThemes", "Other themes")</h3>
+          @foreach (var group in groupsWithoutTitle)
+          {
+            @NoTitleContent(groupsList, group, true)
+          }
+        </li>
+      }
+    </ul>
+}
+if (!groupsWithTitle.Any())
+{
+    <ul class="col-xs-12 noPadding" id="newsletterGroups">
+      @foreach (var group in groupsWithoutTitle)
+      {
+        @NoTitleContent(groupsList, group, false)
+      }
+    </ul>
+}
+}
+
+@helper NoTitleContent(Dictionary<string, bool> groupsList, Group group, bool liExist = false)
+{
+string liStart = liExist ? "<li class=\"col-xs-12 noPadding\">" : "",
+ liEnd = liExist ? "</li>" : "";
+
+if (groupsList.ContainsKey(group.ID.ToString()))
+{
+  string name = group.Name,
+         id = "UserManagement_Form_SelectableGroup_" + group.ID,
+         optionChecked = groupsList[group.ID.ToString()] == true ? "checked" : "";
+
+    @liStart
+    <fieldset>
+      <label for="@id"><input @optionChecked value="True" type="checkbox" id="@id" name="@id" /> @name</label>
+    </fieldset>
+    @liEnd
+}
+}
+
+@functions
+{
+
+  Tuple<IEnumerable<IGrouping<string, KeyValuePair<string, Group>>>, List<Group>> GetGroups(GroupCollection groups)
+  {
+    //(from grp in allGroups where grp.Item["Title"] != null  orderby grp.Item["Title"] select grp).ToList();
+    var itemsForGroups = Dynamicweb.Content.Items.ItemManager.Storage.GetByIds(groups.First().ItemType, groups.Select(x => x.ItemId));
+    //var itemWsithTitle = itemsForGroups.Where(x => !string.IsNullOrWhiteSpace(x["Title"].ToString()));
+    var itemsWithTitle = itemsForGroups.Where(x => x["Title"] != null).OrderBy(x => x["Title"]).ToList();
+    var itemsWithoutTitle = itemsForGroups.Where(x => x["Title"] == null);
+
+    var groupsWithTitle = new List<KeyValuePair<string, Group>>();
+    foreach (var item in itemsWithTitle)
+    {
+      groupsWithTitle.Add(new KeyValuePair<string, Group>(item["Title"].ToString(), groups.First(x => x.ItemId == item.Id)));
+    }
+    var groupsWithoutTitle = new List<Group>();
+    foreach (var id in itemsWithoutTitle.Select(x => x.Id))
+    {
+      groupsWithoutTitle.Add(groups.First(x => x.ItemId == id));
+    }
+    return new Tuple<IEnumerable<IGrouping<string, KeyValuePair<string, Group>>>, List<Group>>(groupsWithTitle.GroupBy(x => x.Key), groupsWithoutTitle);
+  }
+}

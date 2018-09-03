@@ -1,0 +1,35 @@
+<div id="loading" class="col-xs-12">&nbsp;</div>
+<div class="map col-sm-8 col-xs-12 noPaddingLeft">
+    <div id="Maps-85-map"></div>
+</div>
+<div class="list col-sm-4 col-xs-12">
+    <div class="no-matches">@Translate("NoLocationsFound","No locations found")</div>
+    <ol class="storeList" id="Maps-85-list" data-sort-order="desc">
+        @foreach (System.Data.DataRow store in dataSet)
+          {
+            var regionTextList = dataRegionsSet.First(r => r["CountryTextRegionCode"].ToString() == store["AccessUserState"].ToString());
+            string regionTextString = regionTextList != null ? regionTextList["CountryTextName"].ToString() : "";
+
+            <li data-lat="@store["AccessUserGeoLocationLat"]" data-lng="@store["AccessUserGeoLocationLng"]" data-title="@store["AccessUserName"]"
+              data-filter-values="" data-country="@store["AccessUserCountry"]" data-citycode="@store["AccessUserState"]" data-city="@regionTextString" data-sort-value="@store["AccessUserName"]">
+              <div>
+
+                <b>@store["AccessUserName"]</b><br/>
+
+                @store["AccessUserAddress"]<br/>
+                @store["AccessUserCity"]
+                 @if(!string.IsNullOrEmpty(store["AccessUserState"].ToString())) {
+                  @:, @Dynamicweb.Ecommerce.International.CountryText.GetRegionTexts(store["AccessUserCountry"].ToString()).First(c => c.RegionCode == store["AccessUserState"].ToString()).Name
+                 }
+                 @store["AccessUserZip"]
+              </div>
+            </li>
+          }
+    </ol>
+
+</div>
+@SnippetStart("outScripts")
+<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3&amp;sensor=false"></script>
+<script type="text/javascript" src="/Files/Templates/Designs/RizzoDesignFolder/Maps/javascripts/Maps.js"></script>
+@SnippetEnd("outScripts")
+

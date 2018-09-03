@@ -1,0 +1,60 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@MasterPageFile("Master.cshtml")
+@Title("ContentPage")
+@Description("Model for the homepage")
+@Include("Includes/PageTemplates/NavAndSlider.cshtml")
+
+<!-- <main id="mainContent" class="dwcontent" title="Main content" settings="id:mainContent"></main> -->
+@{
+		@* string cultureName = GetGlobalValue("Global:Area.Culture.Name");
+		string pageImage = !string.IsNullOrEmpty(GetString("Item.Image.Value")) ? GetString("Item.Image.Value") : GetString("Item.Page.Image");
+		string genericImage = GetString("Item.Area.News_Image");
+		string image = !string.IsNullOrEmpty(pageImage) ? pageImage : genericImage;
+		string title = GetString("Item.Page.Title");
+		string description = GetString("Item.Page.Description").ToString();
+		string link =  GetString("Item.Page.Link").ToString();
+		string textLink = GetString("Item.Page.Link_Text").ToString(); *@
+
+
+		
+		DateTime date = GetDate("Item.Date.Value"); 
+     	string newsDate = date.ToString("MMMM dd, yyyy");
+
+		string newsTitle = GetString("Item.Title.Value"),
+			   newsImage = GetString("Item.Image.Value"),
+			   newsDescription = GetString("Item.Description.Value"),
+			   newsLinkText = GetString("Item.LinkText.Value"),
+			   newsLink = GetString("Item.Link.Value");
+
+		string renderPattern = GetBoolean("Item.Page.Show_Pattern")? "gray-box" : "";
+}
+
+<div class="centralContainer gray-box news-item">
+	<div class="row">
+
+		<article class="col-xs-12 section blue-box height_medium no-margin">
+			<figure class=" col-sm-6 pull-left noPaddingLeft" style="background: url(@newsImage) center center;"> &nbsp;
+			</figure>
+			<div class="col-xs-6 pull-right noPaddingRight">
+				<header class="paragraphHeader">
+			  	    <h1>@newsTitle</h1>
+			  	    <p>@newsDate</p>
+			  	</header>
+			</div>
+		</article>
+		<div class="col-xs-12 section mt-20">
+			<div class="center-text">
+				<div class="paragraphText">
+					@newsDescription
+
+					@if(!string.IsNullOrEmpty(newsLinkText) && !string.IsNullOrEmpty(newsLink)) {
+						<div class="text-center">
+							<div class="paragraphButton"><a href="@newsLink">@newsLinkText</a></div>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>

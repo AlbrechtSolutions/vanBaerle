@@ -1,0 +1,366 @@
+﻿/**
+ * Description: styles related to text.
+ * User: ShareIT
+ * Date: 12/Jan/2016
+**/
+
+@import url(configs.less);
+
+
+// Font Families
+
+*{
+  -webkit-font-smoothing: antialiased;
+}
+
+.caret,
+#filtersForm > fieldset > legend::after,
+.seeMore:after,
+a:before
+{
+  font-family: "FontAwesome", Fontawesome;
+}
+
+body, p, div, span, td, th, li, a, a:link, input, textarea, button
+{
+  font-family: "Lato", Helvetica, sans-serif;
+}
+
+
+// Font sizes
+
+
+html
+{
+  font-size: 62.5%;
+}
+
+body, p, div, span, td, th, li, a, a:link, input, textarea,
+.tile .listPrice,
+#cartRightContent li > div h3,
+#cartRightContent li > h3,
+#filtersForm > fieldset > legend
+ {
+  .font-size(16);
+}
+
+h3, .h3,
+h3 a, .h3 a,
+h3 a:link, .h3 a:link,
+.seeMore:after,
+#cartRightContent .totalContainer b,
+.shareIcons ul > li > a {
+  .font-size(18);
+}
+
+#bottomMenu > li > a,
+h2, .h2,
+h2 a, .h2 a,
+h2 a:link, .h2 a:link,
+.listPrice,
+.productsList h2 a,
+#totalPriceContainer .total b,
+#stepsList > li > div {
+  .font-size(20);
+}
+
+h1, .h1,
+h1 a, .h1 a,
+h1 a:link, .h1 a:link,
+#socialMedia a:before,
+.listMode > li i,
+.product-price,
+.product-title,
+#stepsList > li i,
+#shareContainer i,
+#playPause i {
+  .font-size(24);
+}
+
+.DMForms .small span {
+  .font-size(44);
+}
+
+.gallery i {
+  .font-size(80);
+}
+
+/* Font Color */
+
+.viewMore a,
+.viewMore a:hover, 
+.viewMorev a:focus, 
+.viewMore a:active,
+.removeAll {
+  color: @blue;
+}
+
+.ecoRatingGreen {
+  color: @green;
+}
+
+.shareIcons .fa::before {
+  color: @grayBD;
+}
+
+// Buttons
+.btn-warning,
+.btn-warning:hover,
+.btn-warning:visited
+{
+    color: @btn-warning-color;
+}
+.btn-black,
+.btn-black:hover,
+.btn-black:visited
+{
+  color: @btn-black-color;
+}
+.btn-bg,
+.btn-bg:hover,
+.btn-bg:visited
+ {
+    color: @btn-bg-color;
+}
+.btn-outline,
+.btn-outline:hover,
+.btn-outline:visited,
+{
+    color: @btn-outline-color;
+}
+.btn-default,
+.btn-default:hover,
+.btn-default:visited,
+ {
+/*    color: @btn-default-color; *** Nhan */
+}
+
+body, p, div, span, td, th, li, input, textarea,
+.black,
+.paragraphButton a.readMore,
+#bottomMenu > li > a,
+.ui-widget-content .ui-state-default.ui-state-active,
+.DMForms label
+{
+/*  color: @secondary; *** Nhan */
+}
+
+.white,
+#menuMain > li:hover > a,
+.paragraphButton a,
+.gallery i,
+.btn.btn-bg,
+//.shareIcons ul > li > a,
+#tabsContainer > ul > li > a,
+#subMenuNav li a:hover,
+#subMenuNav li.inpath,
+#subMenuNav li.activeItem a,
+#stepsList > li.active > div,
+.btn.btn-bg span,
+.btn-black,
+.btn-black:hover,
+.bootstrap-select.btn-group .dropdown-menu li.active a span.text,
+.ui-widget-content .ui-state-default,
+.btn-warning {
+  color: @primary;
+}
+/*
+a, 
+a:link, 
+a:hover,
+a span,
+a:link span,
+a:hover span {
+    color: @linksColor;
+}
+  */
+
+
+// Text Indent
+
+
+// Text Decoration
+#dontHaveAnAccount a,
+.accountInfoList a,
+fieldset a,
+table td a,
+.paragraphText a {
+  text-decoration: underline;
+}
+
+.paragraphText a:hover,
+.actions a,
+a.btn {
+  text-decoration: none;
+}
+
+// Text Align
+.gallery figure,
+.DMForms.contactsForm .Submit,
+.productsList figure,
+.shareIcons ul > li > a,
+#imgThumbs li,
+#subMenuNav li a,
+#stepsList > li,
+#stepsList > li > div,
+#stepsList > li > span,
+.DMForms .small span
+ {
+  text-align: center;
+}
+
+.contactsForm fieldset > label,
+.DMForms .checkBoxContainer,
+th,
+#returningLogin label,
+#shippingInfo fieldset > label,
+label[for=EcomOrderSubscribeToNewsletter],
+#newsletterGroups label {
+  text-align: left;
+}
+
+fieldset > label,
+.productsList[data-list=list] .listPrice {
+  text-align: right;
+}
+
+// Text Transform
+
+#tabsContainer > ul > li > a,
+#stepsList > li > span,
+.cartDetail,
+.previousButton,
+.ecoRating {
+  text-transform: uppercase;
+}
+
+
+/* Font-weight */
+.weightNormal,
+.paragraphText table th,
+h1, h2, h3, h4,
+#cartFormContainer label,
+label,
+label {
+  font-weight: normal;
+}
+
+.bold,
+.subMenuHolder > div > ul > li > a,
+.pagination > li.active a,
+#leftMenu .activeItem a,
+#relatedContainer h3 a,
+.accountInfoList dt,
+.showCartHeader *,
+#cartRightContent h3,
+.viewMore a,
+.ecoRating  {
+  font-weight: bold;
+}
+
+.ecoRating {
+  font-style: italic;
+}
+
+/* line-height */
+
+.productName {
+  line-height: 20px;
+}
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+
+/* ------------
+        MEDIA QUERIES
+        --------------- */
+
+
+@media (max-width: @screen-xs-max)
+{
+  .userRelatedForms fieldset > label {
+    text-align: left;
+  }
+  .showCartHeader .totalPrice,
+  .cartProductsList .totalPrice,
+  .totalValues .price {
+    text-align: right;
+  }
+  #contentWrapper > div.h1,
+  #totalPriceContainer small,
+  #cartFormContainer .topButton,
+  .continueButton,
+  .cartDetail,
+  #stepsList,
+  .chooseDelivery,
+  #cartFormContainer form h2,
+  #cartRightContent h2,
+  #orderDetailContainer .title,
+  .forgotButtons,
+  #dontHaveAnAccount {
+    text-align: center;
+  }
+  .cartProductsList .price,
+  .cartProductsList h2 a {
+    font-weight: bold;
+  }
+  .itemDetails,
+  .itemDetails *,
+  .actions a {
+    .font-size(12);
+  }
+  #productsList span.listPrice {
+    .font-size(20);
+  }
+
+}
+
+@media (max-width: @screen-sm-max) {
+  #bottomMenuContainer > ul > li,
+  .socialContainer,
+  #topMenuContainer,
+  #topHeaderContainer > figure {
+    text-align: center;
+  }
+  fieldset > label {
+    text-align: left;
+  }
+  #topMenuContainer a span.productCount {
+    .font-size(10);
+  }
+  #topMenuContainer a span {
+    .font-size(14);
+  }
+  .filtersHead > span {
+    .font-size(16);
+  }
+  #topMenu .fa:before {
+    .font-size(28);
+  }
+  #topMenuContainer a {
+    font-size: 0;
+  }
+}
+
+@media (min-width: @screen-sm-min) {
+  .accountInfoList dt {
+    text-align: right;
+  }
+}
+
+@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max)
+{
+
+}
+
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max)
+{
+
+}
+
+@media (min-width: @screen-lg-min)
+{
+
+}

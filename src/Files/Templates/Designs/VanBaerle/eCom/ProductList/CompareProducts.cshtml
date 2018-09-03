@@ -1,0 +1,60 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb;
+@using Dynamicweb.Frontend;
+@Include("../../includes/Razor/GetImage.cshtml")
+@Include("../../includes/Razor/VerifyImage.cshtml")
+@{
+  var item = Pageview.Area.Item;
+  var prodLoop = GetLoop("Products");
+  string currentPageId = Pageview.Page.ID.ToString();
+  string compareUrl = "/Default.aspx?ID=" + currentPageId + "&amp;Compare=";
+  string imagesFolder = "/Files/Files/"+designName+"/Products/";
+}
+
+@if(!string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.QueryString["list"])) {
+  if(prodLoop.Count > 0) {
+  <div id="compareProductsAjax">
+    <div id="compareProducts" class="container">
+      <div class="col-xs-12 col-xs-offset-0  col-sm-9 col-sm-offset-3 noPaddingLeft">
+        <div class="col-xs-12">
+          <header class="row">
+            <h2><i class="fa fa-caret-down"></i><span class="h2">@prodLoop.Count</span> @Translate("compare", "Compare")</h2>
+          </header>
+          <div class="col-xs-12">
+            <div class="row">
+              <ul class="col-xs-10">
+                @foreach (LoopItem product in prodLoop){
+                  string imagePattern = imagesFolder + product.GetString("Ecom:Product.Number") + ".jpg",
+                         image = GetImagePathUrl(product.GetString("Ecom:Product.ImageSmall.Clean"), product.GetString("Ecom:Product.ImageMedium.Clean"), product.GetString("Ecom:Product.ImageLarge.Clean"), imagePattern),
+                         productName = product.GetString("Ecom:Product.Name"),
+                         productID = product.GetString("Ecom:Product.ID"),
+                         productVariantID = product.GetString("Ecom:Product.VariantID"),
+                         link = product.GetString("Ecom:Product.Link.Clean.PID"),
+                         productLanguage = product.GetString("Ecom:Product.LanguageID"),
+                         compareLink = productID + "$" + productLanguage + "$" + productVariantID;
+                  compareUrl += compareLink + ",";
+
+                  <li class="col-xs-12 col-sm-6 col-md-4">
+                      <figure class="col-xs-11 noPadding">
+                        <a href="@link">
+                          <img src="@GetImage(image, 400, 0)" alt="@productName" title="@productName" class="img-responsive" />
+                        </a>
+                      </figure>
+                      <div data-link="@compareLink" class="col-xs-1 noPadding text-right removeItem"><i class="fa fa-times"></i></div>
+                      <h2 class="col-xs-12 noPadding"><a itemprop="name" href="@product.GetString("Ecom:Product.Link.Clean")">@productName</a></h2>
+                  </li>
+                }
+              </ul>
+              <a class="btn btn-bg col-xs-2 compareButton" href="@compareUrl">@Translate("compare", "Compare")</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+}
+else {
+  @Include("Includes/compareDetail.cshtml")
+}

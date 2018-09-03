@@ -1,0 +1,86 @@
+﻿
+List<LoopItem> mostPopularProducts = GetLoop("eCom:Related.MostPopularProducts") ;
+List<string> compareIDs = new List<string>();
+
+if(prodLoop.Count > 0) {
+  Pageview.Meta.Title = Translate("compareProducts", "Compare products");
+
+  <ul id="compareDetailList">
+    <li class="col-xs-3 noCompare">
+      <div class="div_1">
+        <a id="highlightDifferences" class="btn btn-bg" href="javascript:void(0)">@Translate("highlightDifferencesOnly","Highlight Differences Only")</a>
+      </div>
+      @DescriptionContainer("div_2", Translate("description","Description"))
+      @DescriptionContainer("div_3", Translate("stockLevel","Stock Level"))
+      @DescriptionContainer("div_4", Translate("weight","Weight"))
+      @DescriptionContainer("div_5", Translate("price","Price"))
+    </li>
+    @foreach (LoopItem product in prodLoop){
+      string imagePattern = imagesFolder + product.GetString("Ecom:Product.Number") + ".jpg";
+      string image = !string.IsNullOrEmpty(product.GetString("Ecom:Product.ImageSmall.Clean")) ? product.GetString("Ecom:Product.ImageSmall.Clean") : !string.IsNullOrEmpty(product.GetString("Ecom:Product.ImageMedium.Clean")) ? product.GetString("Ecom:Product.ImageMedium.Clean") : !string.IsNullOrEmpty(product.GetString("Ecom:Product.ImageLarge.Clean")) ? product.GetString("Ecom:Product.ImageLarge.Clean") : imagePattern;
+      string productName = product.GetString("Ecom:Product.Name");
+      string productID = product.GetString("Ecom:Product.ID");
+      string productVariantID = product.GetString("Ecom:Product.VariantID");
+      string link = product.GetString("Ecom:Product.Link.Clean.PID");
+      string productLanguage = product.GetString("Ecom:Product.LanguageID");
+      string compareLink = productID + "$" + productLanguage + "$" + productVariantID;
+      string stockLevel = product.GetInteger("Ecom:Product.AvailableAmount") > 0 ? Translate("inStock", "In Stock") : Translate("outOfStock", "Out of Stock");
+      compareUrl += compareLink + ",";
+      compareIDs.Add(productID);
+
+      <li class="col-xs-3">
+
+        <div class="div_1 noCompare">
+          <figure class="col-xs-11 noPadding">
+            <a href="@link">
+              <img src="@GetImage(image, 400, 0, 0, 0, 0, 0, "jpg")" alt="@productName" title="@productName" class="img-responsive" />
+            </a>
+          </figure>
+          <div data-link="@compareLink" class="col-xs-1 noPadding text-right removeItem"><i class="fa fa-times"></i></div>
+          <h2 class="col-xs-12 noPadding bold"><a itemprop="name" href="@product.GetString("Ecom:Product.Link.Clean")">@productName</a></h2>
+        </div>
+        @DescriptionContainer("div_2 noCompare", product.GetString("Ecom:Product.ShortDescription"), false)
+        @DescriptionContainer("div_3", stockLevel, false)
+        @DescriptionContainer("div_4", product.GetString("Ecom:Product.Weight"), false)
+        @DescriptionContainer("div_5", product.GetString("Ecom:Product.Price"), false)
+      </li>
+    }
+  </ul>
+
+  if(mostPopularProducts.Count > 0) {
+    var mostPopularProductsItem = mostPopularProducts.First(p => !compareIDs.Any(p2 => p2 == p.GetString("Ecom:Product.ID"))) != null ? mostPopularProducts.First(p => !compareIDs.Any(p2 => p2 == p.GetString("Ecom:Product.ID"))) : mostPopularProducts.First();
+    string imagePattern = imagesFolder + mostPopularProductsItem.GetString("Ecom:Product.Number") + ".jpg";
+    string image = !string.IsNullOrEmpty(mostPopularProductsItem.GetString("Ecom:Product.ImageSmall.Clean")) ? mostPopularProductsItem.GetString("Ecom:Product.ImageSmall.Clean") : !string.IsNullOrEmpty(mostPopularProductsItem.GetString("Ecom:Product.ImageMedium.Clean")) ? mostPopularProductsItem.GetString("Ecom:Product.ImageMedium.Clean") : !string.IsNullOrEmpty(mostPopularProductsItem.GetString("Ecom:Product.ImageLarge.Clean")) ? mostPopularProductsItem.GetString("Ecom:Product.ImageLarge.Clean") : imagePattern;
+    string link = mostPopularProductsItem.GetString("Ecom:Product.Link.Clean.PID");
+    string productName = mostPopularProductsItem.GetString("Ecom:Product.Name");
+    string productID = mostPopularProductsItem.GetString("Ecom:Product.ID");
+    string compare = productID + "$" + mostPopularProductsItem.GetString("Ecom:Product.LanguageID") + "$";
+
+    <div id="ofInterest" class="col-xs-3 hidden">
+      <h3>@Translate("ofInterest","Of Interest"):</h3>
+      <div class="col-xs-12 noPadding">
+        <figure class="col-xs-12">
+          <a href="@link">
+            <img src="@GetImage(image, 400, 0, 0, 0, 0, 0, "jpg")" alt="@productName" title="@productName" class="img-responsive" />
+          </a>
+        </figure>
+        <div class="col-xs-12">
+          <h4 class="col-xs-12 noPadding h2">@productName</h4>
+          <b class="pull-left">@mostPopularProductsItem.GetString("Ecom:Product.Price")</b>
+          <a data-link="@compare" class="btn btn-bg pull-right" href="@compare">@Translate("compare", "Compare")</a>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@SnippetStart("jsOnLoad")
+  @:onLoadCompareDetail("@prodLoop.Count");
+@SnippetEnd("jsOnLoad")
+
+@helper DescriptionContainer(string cssClass, string translate, bool bold = true){
+  string text = bold == true ? "<b>"+translate+"</b>" : translate;
+  cssClass = cssClass != "" ? "class=\""+cssClass+"\"" : "";
+
+  <div @cssClass>@text</div>
+}

@@ -1,0 +1,56 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  string paragraphId = Pageview.CurrentParagraph.ID.ToString(),
+         path = "/Default.aspx?ID=" + GetGlobalValue("Global:Page.ID"),
+         sort = !string.IsNullOrWhiteSpace(System.Web.HttpContext.Current.Request.QueryString["CCSortOrder" + paragraphId]) ? System.Web.HttpContext.Current.Request.QueryString["CCSortOrder" + paragraphId].ToString() : "Asc";
+  var savedCards = GetLoop("SavedCardLog");
+}
+@GetString("Ecom:CustomerCenter.Menu")
+
+<table id="savedCardsTable" class="col-xs-12 noPadding text-left evenTable">
+    <thead class="orderList">
+        <tr class="customerCenterMenu">
+            <th>
+                @Translate("date", "Date")
+                <a href="@(path)&CCOrderByField@(paragraphId)=Date&CCSortOrder@(paragraphId)=@sort">
+                  <i class="fa fa-sort"></i>
+                </a>
+            </th>
+            <th>
+                @Translate("order", "Order")
+                <a href="@(path)&CCOrderByField@(paragraphId)=Order&CCSortOrder@(paragraphId)=@sort">
+                  <i class="fa fa-sort"></i>
+                </a>
+            </th>
+            <th>
+                @Translate("errors", "Errors")
+                <a href="@(path)&CCOrderByField@(paragraphId)=Message&CCSortOrder@(paragraphId)=@sort">
+                  <i class="fa fa-sort"></i>
+                </a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if(!savedCards.Any()){
+        <tr id="trNoOrdersFound">
+            <td colspan="6"><strong>@Translate("noerrors", "No errors")</strong></td>
+        </tr>
+        }
+        else {
+            foreach (LoopItem i in savedCards){
+            <tr class="@i.GetString("Ecom:CustomerCenter.Paging.EvenRowClass")">
+                <td>@i.GetString("Ecom:SavedCardLog.Date")</td>
+                <td>@i.GetString("Ecom:SavedCardLog.Order")</td>
+                <td>@i.GetString("Ecom:SavedCardLog.Errors")</td>
+            </tr>
+            }
+        }
+    </tbody>
+</table>
+<div>
+    @Include("includes/Pagination.cshtml")
+</div>
+@SnippetStart("jsOnLoad")
+    onLoadOrderList();
+@SnippetEnd("jsOnLoad")

@@ -1,0 +1,162 @@
+/**
+ * Description: Customer Center
+ * User: ShareIT
+ * Date: 12/Jan/2016
+**/
+
+@import url(configs.less);
+
+/* RMA */
+#myOrdersTable,
+#loyaltyList {
+  border-bottom: 1px solid @secondary;
+  margin-bottom: 20px;
+}
+
+#RMAdata {
+  margin-bottom: 20px;
+
+  dt {
+    clear: left;
+  }
+}
+
+#requestContainer {
+  margin-bottom: 20px;
+}
+
+.newReturn {
+  margin-top: 30px;
+}
+
+.leftPadding {
+  margin-left: 20px;
+}
+
+.successBanner {
+    padding: 15px;
+}
+
+#myOrdersTable .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+    max-width: 80px !important;
+}
+
+.prodComments {
+    float: left;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.productsComment {
+
+    textarea {
+        width: 90%;
+    }
+    div label {
+        width: 10%;
+        float: left;
+    }
+}
+
+input[type="checkbox"]#all {
+    margin-right: 10px;
+}
+
+/* Wishlist */
+.createSubtitle {
+  margin: -20px -15px 30px -15px;
+}
+
+.removeFromList {
+  margin-top: 25px;
+}
+
+#EditListForm input[type=checkbox] {
+  margin: 15px 20px 0 20px;
+}
+
+#changeList .bootstrap-select {
+  margin-right: 5px;
+}
+
+form[name=change] .bootstrap-select {
+  width: 50% !important;
+  margin-top: 15px;
+}
+
+.noFavorites {
+  padding-top: 30px;
+}
+
+.recurringDetail {
+  margin-right: 20px;
+}
+
+#favoriteAllList {
+  padding: 0;
+  margin-top: 15px;
+  
+  > div {
+    padding-left: 5px;
+  }
+  
+  button[type=submit] {
+    width: 100%;
+    &:before{
+      content: "\f07a";
+      .fontawesome;
+      margin-right: 10px;
+    }
+  }
+}
+
+/* ------------
+        MEDIA QUERIES
+        --------------- */
+
+
+@media (max-width: @screen-xs-max)
+{
+  .recurringDetail {
+    margin-right: 5px !important;
+  }
+  .evenTable td {
+    min-height: 35px !important;
+  }
+  #requestContainer fieldset {
+    padding: 0 !important;
+  }
+}
+
+@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max)
+{
+
+}
+
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max)
+{
+
+}
+
+@media (max-width: @screen-sm-min)  {
+  a.editUser {
+    display: block;
+    width: 100%;
+  }
+}
+
+@media (max-width: @screen-sm-max)  {
+
+}
+
+@media (min-width: @screen-sm-min) {
+  a.editUser {
+    margin-left: 10px;
+  }
+}
+
+@media (min-width: @screen-lg-min)
+{
+
+}
+

@@ -1,0 +1,35 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System.Web;
+@using System.Text;
+@using System.Text.RegularExpressions;
+
+@SnippetStart("jsVariables")
+var obj_formErrorMessages = {
+  str_errorMessagesTitle: "@(HttpUtility.JavaScriptStringEncode(Translate("errorMessagesTitle", "Error")))",
+  str_closeWarning: "@(HttpUtility.JavaScriptStringEncode(Translate("errorMessagesCloseWarning", "close")))",
+  str_emptyField: "@(HttpUtility.JavaScriptStringEncode(Translate("emptyField", "Empty fields")))",
+  str_mustBeEqual: "@(HttpUtility.JavaScriptStringEncode(Translate("fieldsMustMatch", "Fields must match")))",
+  str_cannotBeEqual: "@(HttpUtility.JavaScriptStringEncode(Translate("diferentFields", "Cannot be equal to")))",
+  str_viewFullDetail: "@(HttpUtility.JavaScriptStringEncode(Translate("viewFullDetail", "View full detail")))",
+  str_selectDefault: "@(HttpUtility.JavaScriptStringEncode(Translate("selectDefault", "Select default")))",
+  str_invalidEmail: "@(HttpUtility.JavaScriptStringEncode(Translate("invalidEmail", "Invalid email")))",
+  str_invalidPhoneNumber: "@(HttpUtility.JavaScriptStringEncode(Translate("invalidPhoneNumber", "Invalid phone number")))",
+  str_invalidDate: "@(HttpUtility.JavaScriptStringEncode(Translate("invalidDate", "Invalid date")))"
+},
+obj_loginMessages = {
+  str_login:"@(HttpUtility.JavaScriptStringEncode(Translate("login", "Login")))",
+  str_emailNotExists:"@(HttpUtility.JavaScriptStringEncode(Translate("emailDoesNotExist", "Email does not exist")))",
+  str_password:"@(HttpUtility.JavaScriptStringEncode(Translate("password", "Password")))",
+  str_forgotPassword:"@(HttpUtility.JavaScriptStringEncode(Translate("forgotPassword", "Forgot password?")))",
+  str_email:"@(HttpUtility.JavaScriptStringEncode(Translate("email", "Email")))",
+  str_username:"@(HttpUtility.JavaScriptStringEncode(Translate("username", "Username")))",
+  str_recoverPassword:"@(HttpUtility.JavaScriptStringEncode(Translate("recoverPassword", "Recover password")))",
+  str_errorPassword:"@(HttpUtility.JavaScriptStringEncode(Translate("emptyPassword", "Empty password")))",
+  str_errorEmailEmpty:"@(HttpUtility.JavaScriptStringEncode(Translate("emptyEmail", "Empty email")))",
+  str_errorUserEmpty:"@(HttpUtility.JavaScriptStringEncode(Translate("userEmpty", "Empty user")))",
+  str_errorEmail:"@(HttpUtility.JavaScriptStringEncode(Translate("invalidEmail", "Invalid email")))",
+  str_fillTheFields:"@(HttpUtility.JavaScriptStringEncode(Translate("fillInTheFields", "Fill in the fields")))",
+  str_wrongData:"@(HttpUtility.JavaScriptStringEncode(Translate("wrongData", "Wrong data")))"
+};
+@SnippetEnd("jsVariables")

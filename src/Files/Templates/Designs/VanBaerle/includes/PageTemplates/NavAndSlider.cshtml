@@ -1,0 +1,142 @@
+﻿@{
+   var mainMenuFloat = GetString("DwPageName") == "Home" ? "main-menu--float" : "";
+	 string webshopLink = GetString("Item.Area.ProductDetail");
+	 string myProfileLink = GetString("Item.Area.MyProfile");
+	 string loginLink = GetString("Item.Area.Login");
+	 string  myCartLink = GetString("Item.Area.ShowCart");
+	 int cartQuantity = GetInteger("Ecom:Order.OrderLines.TotalProductQuantity");
+   string firstPage = "/Default.aspx?ID="+GetString("DwAreaFirstPageID");
+   string currentURL = GetString("DWExtranetAction");
+   string currentPageID = GetString("DwPageID");
+   string logo = GetString("Item.Area.Logo");
+   
+}
+
+
+<header id="js-menu" class="main-menu @mainMenuFloat">
+  <nav id="js-nav-screen" class="nav-fullscreen">
+    <div class="container">
+      <div class="nav-screen__inner">
+        <div id="js-nav-screen-close" class="nav-screen__close">
+          <i class="nav-screen__close-icon vb-x-thick"></i>
+        </div>
+        <ul id="menuMainMobile" class="dwnavigation" settings="startlevel:1;endlevel:3;template:liCleanMob.xslt;expandmode:All;id:menuMain;"></ul>
+        @if (languages.Count > 1)
+        {
+
+            <ul class="main-nav__lang">
+              @foreach (LoopItem siteLanguage in languages)
+              {
+                string pageId = siteLanguage.GetString("ID");
+                var siteCulture = siteLanguage.GetString("Culture");
+          string siteName = siteLanguage.GetString("Name");
+                string[] cultureInfo = siteLanguage.GetString("Culture").Split('-');
+          string pageID = siteLanguage.GetString("PageID");
+          string active = siteLanguage.GetBoolean("IsCurrent") ? "active" :"";
+                string languageLink = currentURL.Replace(currentPageID,pageID);
+                <li class="@active">
+                  <a href="@languageLink" title="@siteCulture">
+                  @siteName
+                    @*<img src="images/icons/@cultureInfo[0]_flag.png" alt="@siteCulture" title="@siteCulture" />*@
+                  </a>
+                </li>
+              }
+            </ul>
+        }
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row main-menu__menu">
+      <a class="col-md-3 main-menu__logo" href="@firstPage">
+        <img class="main-menu__logo-img" src="@logo" alt="vanBaerle logo">
+      </a>
+        
+      <form action="/Default.aspx" id="searchForm" class="col-md-4 main-menu__search-form">
+        <div class="form-group">
+                <input type="hidden" name="ID" value="@resultsPage">
+                @*<input type="hidden" name="ProductID" value="">*@
+                <fieldset class="TextInput mandatory">
+                  <label for="searchSubmit" class="hide">@Translate("search", "Search")</label>
+                  <input class="form-control main-menu__search-input" placeholder='@Translate("findSomething", "Find Something")' id="searchSubmit" data-error='@Translate("searchText", "Search for something")' type="text" name="q" value="">
+                </fieldset>
+                <button type="submit" class="main-menu__search-submit">
+                  <i class="vb-glass main-menu__search-input-icon"></i>
+                </button>
+         </div>        
+         <div id="autocompleteWrap">&nbsp;</div>
+       </form>  
+      <div class="col-md-5 col-xs-12 text-right main-menu__right">
+        <div class="main-menu__account">
+          <!-- Return Login button for guests -->
+          
+          @if(userIsLoggedIn)
+          {
+ 			string userName = !string.IsNullOrWhiteSpace(Pageview.User.Name) ? Pageview.User.Name : string.Format("{0}{1}", Pageview.User.FirstName, Pageview.User.LastName);
+           <!-- Return .main-menu__account-user for logged in users -->
+            <div class="main-menu__account-user">
+              <a href="@myProfileLink" class="pull-left">
+                <div class="main-menu__account-greet">@Translate("Welcome","Welcome"), <span class="main-menu__account-name">@userName</span></div>
+              </a>
+              <div class="main-menu__account-dropdown">
+                <ul id="account" class="dwnavigation" settings="parenttag:'account';startlevel:2;endlevel:3;template:LeftNavigation.xslt;id:account;sitemapmode:true"></ul>
+              </div>
+            </div>
+            <!-- /.main-menu__account-user -->
+          }
+          else{
+            <a class="btn btn-link main-menu__account-button main-menu__account-button--login" href="@loginLink">@Translate("Login","Login")</a>
+          }
+          <a class="btn btn-link main-menu__account-button main-menu__account-button--webshop" href="@webshopLink">@Translate("Webshop","Webshop")</a>
+          
+         
+          <ul id="topMenu">
+            <li class="myCart lastItem">
+              <a class="btn btn-link-secondary main-menu__account-button main-menu__account-button--cart myCart" href="@myCartLink">
+                @Translate("cart", "Cart")
+                <span class="cart-badge">
+                  <i class="vb-cart cart-badge__icon"></i>
+                  <span class="cart-badge__number">@cartQuantity</span>
+                </span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
+        <i id="js-menu-close" class="main-menu__close vb-x-square"></i>
+        @* <i id="js-menu-open" class="main-menu__open main-menu__open--menu vb-hamburger"></i> *@
+        <span id="js-menu-open" class="main-menu__open main-menu__open--menu"><i class="vb-hamburger"></i> @Translate("menu","Menu")</span>
+        <i id="js-nav-screen-open" class="main-menu__open main-menu__open--nav vb-hamburger"></i>
+      </div>
+    </div>
+    <hr class="main-menu__divider">      
+    <nav class="main-nav">
+      <!-- Main navigation -->
+      <ul id="menuMain" class="dwnavigation" settings="startlevel:1;endlevel:4;template:liCleanMob.xslt;expandmode:All;id:menuMain;"></ul>
+      <!-- Language chooser -->
+      @* Languages *@
+      @if (languages.Count > 1)
+      {
+
+          <ul class="main-nav__lang">
+            @foreach (LoopItem siteLanguage in languages)
+            {
+              string pageId = siteLanguage.GetString("ID");
+              var siteCulture = siteLanguage.GetString("Culture");
+			  string siteName = siteLanguage.GetString("Name");
+              string[] cultureInfo = siteLanguage.GetString("Culture").Split('-');
+			  string pageID = siteLanguage.GetString("PageID");
+			  string active = siteLanguage.GetBoolean("IsCurrent") ? "active" :"";
+              string languageLink = currentURL.Replace(currentPageID,pageID);
+              <li class="@active">
+                <a href="@languageLink" title="@siteCulture">
+                @siteName
+                  @*<img src="images/icons/@cultureInfo[0]_flag.png" alt="@siteCulture" title="@siteCulture" />*@
+                </a>
+              </li>
+            }
+          </ul>
+      }
+    </nav>
+  </div>
+</header> 

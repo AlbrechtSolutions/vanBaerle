@@ -1,0 +1,25 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@MasterPageFile("Master.cshtml")
+@Title("ProductCatalog")
+@Description("Product Catalog")
+@Include("includes/PageTemplates/LayoutHelpers.cshtml")
+@Include("Includes/PageTemplates/NavAndSlider.cshtml")
+
+@if (!string.IsNullOrEmpty(GetString("DwContent(centralContent)")))
+{
+  <div class="centralContainer">
+    <main class="page-common">
+      <div class="container">
+      	<div class="row">
+      		<div class="col-md-3 noPadding">
+      			  <ul class="dw-categories profile-menu dwnavigation" id="leftnavigation" data-settings="startlevel:2;endlevel:3;template:LeftNavigation.xslt;sitemapmode:true"></ul>
+      		</div>
+
+          <p>&nbsp;</p>
+          @PageTitle()
+          @CentralContent("col-md-9 noPadding")
+        </div>
+      </div>
+    </main>
+</div>
+}

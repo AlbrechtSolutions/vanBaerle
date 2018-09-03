@@ -1,0 +1,310 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb.Ecommerce.Orders;
+@using Dynamicweb.Content
+@Include("../../../includes/Razor/GetImage.cshtml")
+@Include("../../../includes/Razor/VerifyImage.cshtml")
+@Include("Includes/OrderType.cshtml")
+@{
+  @Include("Includes/StockValidation.cshtml")
+  @Include("../../../includes/razor/GeneralSettings.cshtml")
+
+  double subtotalNum = GetInteger("Ecom:Order.PriceWithoutDiscounts.PricePIP") / 100.0 - GetDouble("Ecom:Order.ShippingFee.PriceWithoutVAT");
+  string voucherValue = GetString("Ecom:Order.Customer.VoucherCode"),
+		 subtotalString = GetString("Ecom:Order.OrderLines.Total.PriceWithoutVAT"),//subtotalNum.ToString("#,##.00"),
+		 orderVAT = GetString("Ecom:Order.OrderLines.Total.PriceVAT"),
+		 orderTotal = GetString("Ecom:Order.OrderLines.Total.PriceWithVAT"),
+         orderDiscount = GetString("Ecom:Order.OrderLines.TotalDiscount"),
+         discountImage = generalSettings["Discounts"] != null ? generalSettings["Discounts"].ToString() : "",
+         currencyCode = GetString("Ecom:Order.Price.Currency.Symbol");
+  Dictionary<string, string> discountsDict = new Dictionary<string, string>();
+  string[] areaDiscounts = generalSettings["Discounts"] != null ? generalSettings["Discounts"].ToString().Split(',') : "".Split(',');
+  foreach (string str in areaDiscounts)
+  {
+    Dynamicweb.Content.Items.Item tempItem = Dynamicweb.Content.Items.Item.GetItemById("DiscountsImages", str);
+    if (tempItem != null && tempItem["Discount"] != null && tempItem["Image"] != null && !discountsDict.ContainsKey(tempItem["Discount"].ToString()))
+    {
+      discountsDict.Add(tempItem["Discount"].ToString(), tempItem["Image"].ToString());
+    }
+  }
+}
+
+@if(orderLines.Any()) {
+<div class="container">
+  
+  <div class="col-xs-12 noPadding" id="cart">
+    @* <div class="col-xs-12 noPadding">
+        <a class="btn btn-bg col-xs-12 col-sm-offset-8 col-sm-4 col-md-offset-9 col-md-3 gotoCheckout" href="/Default.aspx?ID=175">@Translate("gotoCheckout", "Go to checkout")</a>
+        <form class="hidden" action="/Default.aspx?ID=@Pageview.Page.ID" name="ordersubmit" id="showCart" method="post">
+          <input type="hidden" id="updater" name="@GetString("CartV2.NextStepButtonName")" value="@Translate("continueCheckout", "Continue Checkout")" />
+        </form>
+    </div> *@
+   
+    <div class="col-md-9 col-xs-12 noPaddingLeft" id="productContent">
+      <div class="col-xs-12 noPadding">
+        <p class="checkout-heading">@Translate("cart","Cart") (@GetString("Ecom:Order.OrderLines.Count"))</p>       
+      </div>
+      <header class="showCartHeader col-sm-12 noPadding">       
+         <div class="hidden-xs col-sm-4 noPadding text-left">
+           @* @Translate("unitPrice","Unit price") *@
+           @Translate("Item","Item")
+         </div>
+         <div class="hidden-xs col-sm-2 noPadding">
+           @* @Translate("discount","Discount") *@
+           @Translate("Unit Price", "Price")
+         </div>
+         <div class="hidden-xs col-sm-2 noPadding">
+           @Translate("smallQuantity","QTY")
+         </div>
+         <div class="col-sm-2 totalPrice noPadding">
+            @Translate("Total","Total")
+         </div>
+         <div class="col-sm-2 noPadding">
+           @Translate("Remove","Remove")
+         </div>
+      </header>
+
+      <ul class="cartProductsList">
+        @foreach (LoopItem orderLine in orderLines)
+        {
+          double orderlineStock = orderLine.GetDouble("Ecom:Order:OrderLine.Quantity");
+          bool productPriceIsZeroBool = orderLine.GetBoolean("Ecom:Order:OrderLine.Price.IsZero");
+          bool isProduct = orderLine.GetBoolean("Ecom:Order:OrderLine.IsProduct");
+          bool isDiscount = false;
+          int productStock = orderLine.GetInteger("Ecom:Product.AvailableAmount");
+          int productQuantity = orderLine.GetInteger("Ecom:Order:OrderLine.Quantity");
+          string parentLineId = orderLine.GetString("Ecom:Order:OrderLine.ParentLineID");
+          string orderType = orderLine.GetString("Ecom:Order:OrderLine.Type");
+          string productId = orderLine.GetString("Ecom:Order:OrderLine.ProductID");
+          string discountType = "";
+          string productPriceIsZero = orderLine.GetString("Ecom:Order.Price.PricePIP");
+          string productName = orderLine.GetString("Ecom:Order:OrderLine.ProductName");
+          string productNumber = orderLine.GetString("Ecom:Product.Number");
+          string pattern = "/Files/Files/" + designName + "/Products/" + productNumber + ".jpg";
+          string imageUrl = GetImagePathUrl(orderLine.GetString("Ecom:Product.ImageSmall.Clean"), orderLine.GetString("Ecom:Product.ImageMedium.Clean"), orderLine.GetString("Ecom:Product.ImageLarge.Clean"), pattern);
+          string showPriceSelect = productQuantity < 10 && productStock > 0 ? "hidden" : "";
+          string variantText = orderLine.GetString("Ecom:Order:OrderLine.ProductVariantText");
+          string updateOrderline = "/Default.aspx?CartCmd=updateorderlines&" + orderLine.GetString("Ecom:Order:OrderLine.Quantity.Input.Name") + "=";
+
+          discountType = OrderType(orderType, isProduct, productId, productPriceIsZeroBool, productPriceIsZero, discountType, parentLineId, voucherValue, false );
+        productStock = 99999;//disable stock check
+
+          if(string.IsNullOrEmpty(discountType) && orderType != "4") {
+            <li class="col-xs-12 noPadding">   
+              <div class="col-xs-12 col-sm-4 noPaddingLeft noPadding-xs">
+                <figure class="text-center col-xs-4 col-sm-4">
+                  <a href="/@itemArea["ProductDetail"]&amp;ProductID=@productId">
+                    <img class="img-responsive" alt="@productName" title="@productName" src="@(GetImage(imageUrl,95,123))" />
+                  </a>
+                </figure>
+                <div class="col-xs-8 prodName noPadding">
+                  <h2>
+                    <a href="/@itemArea["ProductDetail"]&amp;ProductID=@productId">
+                      <strong>@productName</strong>
+                      @if(!string.IsNullOrEmpty(variantText)){
+                      <span class="variantText">
+                        @variantText
+                      </span>  
+                      }
+                    </a>
+                  </h2>
+                  @if (!string.IsNullOrEmpty(productNumber))
+                  {
+                    <div class="itemDetails">
+                      @Translate("item#", "Item #"): @productNumber<br />
+                    </div>
+                  }
+
+                </div>
+
+              </div>
+              <div class="col-xs-8 col-xs-offset-4 col-sm-offset-0 col-sm-2 price noPadding text-center">
+                @if (orderLine.GetString("Ecom:Order:OrderLine.Points") == "0")
+                {
+                    @orderLine.GetString("Ecom:Order:OrderLine.UnitPrice")
+                    //@GetUnitPrice(orderLine.GetDouble("Ecom:Order:OrderLine.UnitPrice.Price"), orderLine.GetInteger("Ecom:Order:OrderLine.Quantity"), orderLine.GetString("Ecom:Order:OrderLine.ID"),orderLine.GetDouble("Ecom:Order:OrderLine.TotalPriceWithoutSymbol"), orderLines)
+                }
+                else {
+                    @orderLine.GetString("Ecom:Order:OrderLine.UnitPoints")@:&nbsp;@Translate(orderLine.GetString("Ecom:Order:OrderLine.UnitPoints") == "1" ? "point" : "points")
+                }
+              </div>
+              <div class="col-xs-8 col-xs-offset-4 col-sm-offset-0 col-sm-2 quantity noPadding text-center">
+
+                <b class="hidden-sm hidden-md hidden-lg pull-left">@Translate("qty", "Qty")&nbsp;&nbsp;</b>
+                <div>
+                  <button type="button" data-update="@updateOrderline" ref="cart-minus">-</button>
+                  <span class="orderline-quantity">@orderLine.GetString("Ecom:Order:OrderLine.Quantity")</span>
+                  <button type="button" data-update="@updateOrderline" ref="cart-plus" data-limit-stock='@productStock'>+</button>
+                </div>
+                
+
+              </div>
+              <div class="col-xs-4 col-xs-offset-4 col-sm-offset-0 col-sm-2 noPaddingLeft text-center">
+                @orderLine.GetString("Ecom:Order:OrderLine.Price.PriceWithoutVATFormatted")
+              </div>
+              <div class="col-xs-4 col-sm-2 totalPrice noPadding text-center">               
+                <a class="removeFromCart" href="@orderLine.GetString("Ecom:Order:OrderLine.DeleteLink")"><i class="fa fa-close"></i></a>
+              </div>
+            </li>
+          }
+          else if( discountType == "offerProduct" || discountType == "offerValue") {
+            <li class="col-xs-12 noPadding">
+              <div class="col-xs-12 col-sm-4 noPaddingLeft noPadding-xs">
+                <div class="text-center col-xs-4 col-sm-4">&nbsp;</div>
+                <div class="col-xs-8 prodName noPadding">
+                    @if(discountType == "offerProduct"){
+                        <a href="/@itemArea["ProductDetail"]&amp;ProductID=@productId">
+                          <strong>@productName</strong>
+                        </a>
+                    }
+                    else {
+                          <strong>@productName</strong>
+                    }
+                </div>
+
+              </div>
+              <div class="col-xs-12 col-sm-8 text-right noPadding-xs">
+                @orderLine.GetString("Ecom:Order:OrderLine.TotalPriceWithProductDiscounts.PriceWithoutVATFormatted").Replace(currencyCode+"-","- "+currencyCode)
+              </div>
+            </li>
+          }
+          else if ( discountType == "offerVoucher"){
+            // Voucher
+            @SnippetStart("Voucher")
+            string orderLineDiscountImage = discountImage;
+
+            if (discountsDict.ContainsKey(productName))
+            {
+                orderLineDiscountImage = discountsDict[productName];
+            }
+            string price = orderLine.GetString("Ecom:Order:OrderLine.Price.Price");
+            if (price.StartsWith("-"))
+            {
+              price = "-" + currencyCode + price.Replace("-", "");
+            }
+            else
+            {
+              price = currencyCode + price.Replace("-", "");
+            }
+            <div class="discountContainer col-xs-12">
+                <div class="row">
+                  <figure class="col-xs-4 col-sm-3 noPadding">
+                      <img class="img-responsive" src="@GetImage(orderLineDiscountImage,350,350)" alt="@productName" title="@productName" />
+                  </figure>
+                  <span class="col-xs-4 col-sm-4">@Translate("voucherCode", "Voucher code:") @GetString("Ecom:Order.Customer.VoucherCode")</span>
+                  <span class="col-xs-4 col-sm-5 price noPadding-xs text-right">
+                    @price
+                    <a class="removeVoucher" href="javascript:void(0)"><i class="fa fa-close"></i></a>
+                  </span>
+                </div>
+            </div>
+
+            @SnippetEnd("Voucher")
+          }
+        }
+      </ul>
+
+      @* <div class="col-xs-12 totalValues noPadding">
+        <div class="col-xs-12 noPadding">
+          @if(GetDouble("Ecom:Order.RewardTotalPoints") != 0) {
+            <div class="hidden-xs col-xs-12 col-sm-offset-7 col-sm-4 noPadding loyaltyPoints">@Translate("loyaltyPointsEarned", "Loyalty Points Earned:") @GetString("Ecom:Order.RewardTotalPoints")</div>
+          }
+
+          <div class="col-xs-6 col-sm-offset-7 col-sm-2 noPadding"><b>@Translate("subTotal", "Subtotal")</b></div>
+          <div class="col-xs-6 col-sm-2 price pull-right text-right"><b>@currencyCode@subtotalString</b></div>
+          @if(!GetBoolean("Ecom:Order.TotalDiscount.IsZero")){
+            <div class="col-xs-6 col-sm-offset-7 col-sm-2 noPadding">@Translate("orderDiscount", "Order Discount")</div>
+            <div class="col-xs-6 col-sm-2 price pull-right noPadding-xs text-right">
+                @orderDiscount.Replace(currencyCode+"-","- "+currencyCode)
+            </div>
+          }
+        </div>
+        <div class="col-xs-12 col-sm-7 noPadding-xs">
+          <div id="promoCodeContainer">
+            <span class="pull-left">@Translate("voucherCodeText", "Enter a Voucher Code:")</span>
+            <form class="cartPromo pull-left" method="POST" action="/Default.aspx?ID=@Pageview.Page.ID">
+              <input type="text" name="EcomOrderVoucherCode" value="@(GetString("Ecom:Order.Customer.VoucherCode"))" />
+              <button class="submitVoucher btn btn-bg" type="submit">
+                @Translate("apply", "Apply")
+              </button>
+            </form>
+            @GetString("Ecom:Cart.ValidationError.EcomOrderVoucherCode.ErrorMessage")
+          </div>
+        </div>
+        <div id="totalPriceContainer" class="col-xs-12 col-sm-5 noPadding pull-right noPadding-xs">
+          <div class="col-xs-12 noPadding">
+            @RenderSnippet("Voucher")
+          </div>
+          <div class="col-xs-6 col-sm-7 noPadding total"><b>@Translate("total", "* Total")</b></div>
+          <div class="col-xs-6 col-sm-5 price pull-right total noPadding-xs text-right"><b>@GetString("Ecom:Order.OrderLines.Total.PriceWithoutVAT")</b></div>
+          @if(!GetBoolean("Ecom:Order.TotalDiscount.IsZero"))
+          {
+            <div class="col-xs-6 col-sm-7 noPadding">@Translate("totalSavings", "Total Savings")</div>
+            <div class="col-xs-6 col-sm-5 price pull-right noPadding-xs text-right">
+              @GetString("Ecom:Order.TotalDiscount.Price").Replace("-",currencyCode)
+            </div>
+          }
+          @if(GetBoolean("Ecom:Order.ShippingFee.IsZero"))
+          {
+              <small class="col-xs-12 noPadding">
+                @Translate("taxesShipping","* Taxes and Shipping calculated at Checkout")
+              </small>
+          }
+        </div>
+      </div> *@
+    </div>
+    <div class="col-md-3 col-xs-12 noPaddingRight">
+      <div class="col-xs-12 totalValues">
+        <div class="col-xs-12 noPadding">
+           <p class="checkout-heading">@Translate("Summary", "Summary")</p>
+        </div>
+       
+        <div class="summary-list">
+          <div class="item summary-subtotal clearfix">
+            <div class="col-xs-6">@Translate("subTotal", "Subtotal")</div>
+            <div class="col-xs-6 pull-right text-right"><b>@subtotalString</b></div>
+          </div>
+          <div class="item summary-subtotal clearfix">
+            <div class="col-xs-6">@Translate("VAT", "VAT")</div>
+            <div class="col-xs-6 pull-right text-right"><b>@orderVAT</b></div>
+          </div>
+          <div class="item summary-total clearfix">
+            <div class="col-xs-6 total"><b>@Translate("Total", "Total")</b></div>
+            <div class="col-xs-6 price total text-right"><b>@orderTotal</b></div>
+          </div>
+        </div>
+        <div class="cart-summary-buttons">
+          <div class="col-xs-12">
+            <a class="btn btn-primary" href='@Pageview.Area.Item["Checkout"]'>@Translate("checkout", "Checkout")</a>
+            <a href='@GetValue("Ecom:Cart.EmptyCartLink")' class="btn btn-border">@Translate("emptyCart", "Empty Cart")</a>
+            <a class="btn btn-border" href='@Pageview.Area.Item["ProductDetail"]'>@Translate("Continue Shopping", "Continue Shopping")</a>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+  @*  <div class="col-xs-12 noPadding bottomButton">
+    <a class="btn btn-bg col-xs-12 col-sm-offset-8 col-sm-4 col-md-offset-9 col-md-3 gotoCheckout" href="/Default.aspx?ID=175">@Translate("gotoCheckout", "Go to checkout")</a>
+  </div> *@
+</div>
+}
+else {
+<main class="page-common page-products">
+  <div class="container">
+    <div class="row">
+		<div class="col-md-3 noPadding"></div>
+        <div class="col-md-9 noPadding">
+          <div class="col-xs-12 noPadding">
+              <p class="checkout-heading">@Translate("cart","Cart")</p>       
+            </div>
+          @Translate("cartIsEmpty", "Warenkorb ist leer.")
+        </div>
+    </div>
+  </div>
+</main>
+}
+
+@SnippetStart("jsOnLoad")
+  onLoadShoppingCart("@alertErrors", '@Translate("deleteItemConfirm", "Are you sure you want to delete the item?")');
+@SnippetEnd("jsOnLoad")
