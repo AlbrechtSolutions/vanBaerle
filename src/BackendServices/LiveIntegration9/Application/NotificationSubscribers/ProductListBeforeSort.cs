@@ -15,10 +15,12 @@ namespace Dna.Ecommerce.LiveIntegration.NotificationSubscribers
 
       var myArgs = (Dynamicweb.Ecommerce.Notifications.Ecommerce.ProductList.BeforeSortArgs)args;
 
+      var products = myArgs.Products.Where(p => !string.IsNullOrEmpty(p.Number)).ToList();
+      
       // Set product info
-      if (myArgs.Products.Any())
+      if (products.Any())
       {
-        SetProductInformation(myArgs.Products.ToList());
+        SetProductInformation(products);
       }
     }
   }

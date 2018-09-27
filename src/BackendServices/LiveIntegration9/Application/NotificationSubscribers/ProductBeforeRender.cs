@@ -15,7 +15,10 @@ namespace Dna.Ecommerce.LiveIntegration.NotificationSubscribers
       var myArgs = (Dynamicweb.Ecommerce.Notifications.Ecommerce.Product.BeforeRenderArgs)args;
 
       // Set product info
-      SetProductInformation(myArgs.Product);
+      if (!string.IsNullOrEmpty(myArgs.Product?.Number))
+      {
+            SetProductInformation(myArgs.Product);
+      }
     }
   }
 }

@@ -35,9 +35,10 @@ namespace Dna.Ecommerce.LiveIntegration.Extensions
 		}
 
 
-        public static double? GetUnitPriceMultiplier(this Product product)
+        public static double GetUnitPriceMultiplier(this Product product)
         {
-            double? multiplier = null;
+            double multiplier = 1;
+
             // WARNING: don't use the following method because the product won't have everytime that field populated and it may throw an exception
             // multiplier = (double)product.GetProductFieldValue("UnitPriceMultiplier");
 
@@ -46,7 +47,8 @@ namespace Dna.Ecommerce.LiveIntegration.Extensions
             {
                 ProductFieldValue value = fieldValues.GetProductFieldValue("UnitPriceMultiplier");
 
-                multiplier = value?.Value != null && value?.Value != DBNull.Value ? (double)value.Value : (double?)null;
+                multiplier = value?.Value != null && value?.Value != DBNull.Value ? (double)value.Value : 1;
+                multiplier = multiplier == 0 ? 1 : multiplier;
             }
 
             return multiplier;

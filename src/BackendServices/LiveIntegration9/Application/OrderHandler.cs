@@ -66,7 +66,14 @@ namespace Dna.Ecommerce.LiveIntegration
       Logger.Instance.Log(ErrorLevel.DebugInfo, string.Format("Updating order with ID: {0}. Complete: {1}. Order submitted from the backend: {2}. Stack trace: {3}", orderId, order.Complete, ExecutingContext.IsBackEnd(), Environment.StackTrace));
 
       // use current user if is not backend running or if the cart is Anonymous
-      var user = User.GetUserByID(order.CustomerAccessUserId) ?? (!ExecutingContext.IsBackEnd() ? User.GetCurrentExtranetUser() : null);
+      var user = (order.CustomerAccessUserId > 0 ? User.GetUserByID(order.CustomerAccessUserId) : null) 
+                ?? (!ExecutingContext.IsBackEnd() ? User.GetCurrentExtranetUser() : null);
+
+      // customization for VanBaerle branch: ERP doesn't support anonymous users and throws errors
+      if (user == null)
+      {
+        return null;
+      }
 
       /* create order: if it is false, you will get a calculate order from the ERP with the total prices */
       /* if it is true, then a new order will be created in the ERP */
@@ -539,7 +546,7 @@ namespace Dna.Ecommerce.LiveIntegration
           orderLine.AllowOverridePrices = true;
           orderLine.Type = Convert.ToString(Convert.ToInt32(OrderLineType.Fixed));
 
-          var multiplier = orderCreated ? 1 : orderLine.Product?.GetUnitPriceMultiplier() ?? 1.0; // if the order is created in NAV, the price the comes back already has the multiplier in it
+          var multiplier = orderCreated ? 1 : orderLine.Product?.GetUnitPriceMultiplier() ?? 1.0; // if the order is created in NAV, the price that comes back already has the multiplier in it
 
           dAux = ReadDouble(orderLineNode, "column [@columnName='OrderLineQuantity']");
           if (dAux.HasValue)
@@ -568,6 +575,7 @@ namespace Dna.Ecommerce.LiveIntegration
             {
                 unitPrice.PriceWithoutVAT = unitPrice.PriceWithVAT - unitPrice.VAT;
             }
+            unitPrice.VAT = unitPrice.PriceWithVAT - unitPrice.PriceWithoutVAT;
           }
           else
           {
@@ -576,6 +584,7 @@ namespace Dna.Ecommerce.LiveIntegration
             {
               unitPrice.PriceWithoutVAT = dAux.Value * multiplier;
               unitPrice.PriceWithVAT = unitPrice.PriceWithoutVAT + unitPrice.VAT;
+              unitPrice.VAT = unitPrice.PriceWithVAT - unitPrice.PriceWithoutVAT;
             }
           }
 
@@ -601,6 +610,7 @@ namespace Dna.Ecommerce.LiveIntegration
             {
                 orderLine.Price.PriceWithoutVAT = orderLine.Price.PriceWithVAT - orderLine.Price.VAT;
             }
+            orderLine.Price.VAT = orderLine.Price.PriceWithVAT - orderLine.Price.PriceWithoutVAT;
           }
           else
           {
@@ -610,6 +620,7 @@ namespace Dna.Ecommerce.LiveIntegration
             {
               orderLine.Price.PriceWithoutVAT = dAux.Value * multiplier;
               orderLine.Price.PriceWithVAT = orderLine.Price.PriceWithoutVAT + orderLine.Price.VAT;
+              orderLine.Price.VAT = orderLine.Price.PriceWithVAT - orderLine.Price.PriceWithoutVAT;
             }
           }
 

@@ -47,7 +47,7 @@ namespace Dna.Ecommerce.LiveIntegration
               || !Settings.Instance.LiveProductInfoForAnonymousUsers && user == null
               || user != null && user.IsLivePricesDisabled
               || !Connector.IsWebServiceConnectionAvailable()
-              || product == null || product.Id == "" || product.Number == "")
+              || product == null || product.Id == "" || product.Number == "" || product.Number  == null)
                 return null;
 
             try
@@ -103,7 +103,7 @@ namespace Dna.Ecommerce.LiveIntegration
                     ? null
                     : new PriceRaw
                         {
-                            Price = priceValue.Value * product.GetUnitPriceMultiplier().GetValueOrDefault(1),
+                            Price = priceValue.Value * product.GetUnitPriceMultiplier(),
                             Currency = currency
                         };
 
@@ -142,7 +142,7 @@ namespace Dna.Ecommerce.LiveIntegration
               && Global.IsIntegrationActive
               && Global.IsIntegrationEnabledForShop)
             {
-                FetchProductInfos(products.ToList());
+                FetchProductInfos(products.Where(p => !string.IsNullOrEmpty(p.Number)).ToList());
             }
         }
 
@@ -294,7 +294,7 @@ namespace Dna.Ecommerce.LiveIntegration
 
                     FillProductPrices(product, productInfo);
 
-                    double? priceValue = SelectPrice(productInfo, quantity) * product.GetUnitPriceMultiplier().GetValueOrDefault(1);
+                    double? priceValue = SelectPrice(productInfo, quantity) * product.GetUnitPriceMultiplier();
 
                     product.Price.PriceWithoutVAT = priceValue.GetValueOrDefault(); // NOTE accessing the Price property, will trigger the price provider to kick in
                     product.Price.PriceWithVAT = priceValue.GetValueOrDefault();
@@ -321,7 +321,7 @@ namespace Dna.Ecommerce.LiveIntegration
                 product.Prices.Add(new Price
                 {
                     Id = price.Id,
-                    Amount = price.Amount.GetValueOrDefault() * product.GetUnitPriceMultiplier().GetValueOrDefault(1),
+                    Amount = price.Amount.GetValueOrDefault() * product.GetUnitPriceMultiplier(),
                     Quantity = price.Quantity.GetValueOrDefault(),
                     ProductId = price.ProductId,
                     VariantId = price.ProductVariantId,

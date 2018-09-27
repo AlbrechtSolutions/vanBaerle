@@ -25,17 +25,18 @@ namespace Dna.Ecommerce.LiveIntegration.Configuration
 		{
 			get
 			{
-				string siteShopId = "";
-				var pv = Dynamicweb.Frontend.PageView.Current();
-				if (!string.IsNullOrEmpty(pv?.Area?.EcomShopId))
-				{
-					siteShopId = pv.Area.EcomShopId;
-				}
-				else
-				{
-					Logger.Instance.Log(ErrorLevel.Error, "AreaEcomShopId not found in Area settings");
-				}
-				return IntegrationEnabledFor(siteShopId);
+                return true;
+				//string siteShopId = "";
+				//var pv = Dynamicweb.Frontend.PageView.Current();
+				//if (!string.IsNullOrEmpty(pv?.Area?.EcomShopId))
+				//{
+				//	siteShopId = pv.Area.EcomShopId;
+				//}
+				//else
+				//{
+				//	Logger.Instance.Log(ErrorLevel.Error, "AreaEcomShopId not found in Area settings");
+				//}
+				//return IntegrationEnabledFor(siteShopId);
 			}
 		}
 
