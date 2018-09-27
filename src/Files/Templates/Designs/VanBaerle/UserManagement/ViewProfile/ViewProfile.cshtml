@@ -1,0 +1,92 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb;
+@using Dynamicweb.Frontend;
+@using Dynamicweb.Rendering;
+@{
+  
+    string urlAddresses = GetString("UserManagement:User.ManageAddressesUrl"),
+           urlEdit = GetString("UserManagement:User.EditUrl"),
+           editLogin = urlEdit + "&login=1",
+           editProfile = urlEdit + "&profile=1",          
+           gender = GetString("UserManagement:User.AccessUser_Gender");         
+   
+  
+    string userEmail = GetString("UserManagement:User.Email"),
+			userUsername = GetString("UserManagement:User.UserName"),
+			userCompany = GetString("UserManagement:User.Company"),
+			userAddress = GetString("UserManagement:User.Address"),
+			userZipcode = GetString("UserManagement:User.Zip"),
+			userCity = GetString("UserManagement:User.City"),
+			userFullName = GetString("UserManagement:User.Name");
+		   
+    
+}
+
+<div class="row">
+        <div class="col-md-12 form-account-detail">
+            <div class="row form-account">
+                <form class="form-horizontal ">
+					<div class="form-group">
+                        <label class="control-label col-sm-2" for="full-name">@Translate("company", "Company")</label>
+                        <div class="col-sm-7 col-md-4">
+                            <input type="text" class="form-control" id="full-name" disabled value="@userCompany">
+                        </div>
+                    </div>
+					<div class="form-group">
+                        <label class="control-label col-sm-2" for="full-name">@Translate("address", "Address")</label>
+                        <div class="col-sm-7 col-md-4">
+                            <input type="text" class="form-control" id="full-name" disabled value="@userAddress">
+                        </div>
+                    </div>
+					<div class="form-group">
+                        <label class="control-label col-sm-2" for="full-name">@Translate("zipcode", "Zipcode") / @Translate("city","City")</label>
+                        <div class="col-sm-7 col-md-4">
+                            <input type="text" class="form-control" id="full-name" disabled value="@userZipcode @userCity">
+                        </div>
+                    </div>
+					<div class="form-group">
+                        <label class="control-label col-sm-2" for="full-name">@Translate("Full Name", "Full Name")</label>
+                        <div class="col-sm-7 col-md-4">
+                            <input type="text" class="form-control" id="full-name" disabled value="@userFullName">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="full-name">@Translate("username", "Username")</label>
+                        <div class="col-sm-7 col-md-4">
+                            <input type="text" class="form-control" id="full-name" disabled value="@userUsername">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">@Translate("Email", "Email")</label>
+                        <div class="col-sm-7 col-md-4">
+                            <input type="email" class="form-control" id="email" disabled value="@userEmail">
+                        </div>
+                    </div>
+                    @* <div class="form-group">
+                        <label class="control-label col-sm-2">@Translate("Gender", "Gender (optional)")</label>
+                        <div class="col-sm-7 col-md-4">
+                            <label class="radio-inline">
+                                <input type="radio" name="genderRadio"  @if (gender == "male") { <text> selected</text>}>Male
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="genderRadio"  @if (gender == "male") { <text> selected</text>}>Female
+                            </label>
+                        </div>
+                    </div> *@          
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <a type="button" class="btn btn-primary save-button" href="@editProfile">@Translate("editProfile", "Edit profile")</a>
+                        </div>
+                    </div>
+
+
+                   
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

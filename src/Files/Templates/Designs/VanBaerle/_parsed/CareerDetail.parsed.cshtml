@@ -1,0 +1,494 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System.Text.RegularExpressions;
+@using Dynamicweb.Core
+
+@{
+  string designFolder = GetString("Template:DesignBaseUrl");
+  string device = Pageview.Device.ToString();
+  string OrSubpage = GetString("DwAreaFirstPageID") == GetString("Global:Page.ID") ? "home" : "subpage";
+  string print = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["print"]) ? "printOrPdf" : "";
+  string resultsPage = GetString("Item.Area.SearchResults");
+  string countryCode = Dna.IP.Frontend.GetCountryCode();
+  string longLang = Pageview.GlobalTags.GetTagByName("Global:Area.LongLang").Value.ToString();
+  string shortLang = Pageview.GlobalTags.GetTagByName("Global:Area.Lang").Value.ToString();
+  string email = GetString("Item.Area.Email");
+  string phone = GetString("Item.Area.Phone");
+	string subscribeToNewsletterAPI = GetString("Item.Area.Newsletter_Subscribe_API");
+
+  bool userIsLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+  bool isPrint = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["print"]);
+  List<LoopItem> socialMedia = GetLoop("Item.Area.SocialNetworks");
+  List<LoopItem> websiteLanguages = GetLoop("WebsiteLanguages");
+	List<LoopItem> languages = GetLoop("Languages");
+
+  string ipCountry = Dna.IP.Frontend.GetCountryCode();
+  string countryCodeModule = !string.IsNullOrEmpty(ipCountry) ? ipCountry : "US";
+  string userCountryCode = (Pageview.User != null && !string.IsNullOrEmpty(Pageview.User.CountryCode)) ? Pageview.User.CountryCode : ipCountry;
+  string userState = Pageview.User != null ? Pageview.User.State : string.Empty;    
+}<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@GetValue("Title")</title>
+@GetValue("MetaTags")
+@GetValue("CopyRightNotice")
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+        WebFont.load({
+            google: {
+                families: [
+                    "Lato:100,300,300i,400,700,700i,900:latin,cyrillic,cyrillic-ext,latin-ext",
+                    "Roboto:400,700",
+                    "Montserrat"
+                ]
+            }
+        });
+    </script>
+
+  <link rel="shortcut icon" href="@(designFolder)images/favicon.ico" type="image/x-icon">
+
+
+  @{
+  var minify = false;
+  var styleBundle = Dna.Optimizer.Renderer.RenderStyles(string.Format("{0}css", designFolder), "-main-styles", new[] { "exceptions" }, minify, true);
+  var scriptBundle = Dna.Optimizer.Renderer.RenderScripts(string.Format("{0}js", designFolder), "-main-scripts", new[] { "exceptions" }, minify, true);
+  }
+  <link rel="stylesheet" href="@styleBundle">
+  <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/css/exceptions/exceptions.css">
+ 
+  
+  <script src="@scriptBundle"></script>
+
+  <script>
+  @RenderSnippet("jsVariables")
+  @SnippetStart("jsVariables") @SnippetEnd("jsVariables")
+
+  var obj_pages = {
+    str_miniCart: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.MiniCart"))',
+    str_login: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.Login"))',
+    str_globalTranslates: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.GlobalTranslates"))',
+    str_contactPopup: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.ContactUs_Popup"))',
+    str_cartInformation: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.Cart_Information"))',
+    str_typeAhead: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.TypeAhead"))'
+  },
+  obj_user = {
+    str_country: '@userCountryCode',
+    str_state: '@userState'
+  },
+  obj_settings = {
+    str_contactTimeout: '@GetString("Item.Area.Time")',
+    str_cartQty: '@GetString("Ecom:Order.OrderLines.TotalProductQuantity")'
+  },
+  obj_translates = {
+    str_seeAll: '@Translate("seeAllThe", "See all the")',
+    str_results: '@Translate("results", "results")'
+  };
+  $(function () {
+
+    @RenderSnippet("jsOnLoadVariables")
+    @SnippetStart("jsOnLoadVariables") @SnippetEnd("jsOnLoadVariables")
+    @RenderSnippet("jsOnLoad")
+    @SnippetStart("jsOnLoad") @SnippetEnd("jsOnLoad")
+  });
+ </script>
+  
+  
+@RenderSnippet("eCommerceTracking")
+
+  <!--Google Tag Manager-->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-MBXRK36');
+  </script>
+  <!--End Google Tag Manager-->
+
+ 
+  
+
+
+  @{
+    var key = System.Web.HttpContext.Current.Items["HideFooter"];
+    var hideFooter = key != null && Convert.ToBoolean(key);
+  }
+@GetValue("Stylesheets")
+@GetValue("Javascripts")
+</head>
+
+
+<body data-page-id='@GetGlobalValue("Global:Page.ID")' data-language="@shortLang">
+<!--Google Tag Manager (noscript)--> 
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MBXRK36" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!--End Google Tag Manager (noscript)-->
+@SnippetStart("eCommerceTracking") @SnippetEnd("eCommerceTracking")
+
+  @{
+    string demo = string.Format("{0}css", designFolder);
+  }
+
+  @inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@helper RenderButton()
+{
+  string url = GetString("Item.Link");
+
+  if (!string.IsNullOrEmpty(url) && GetBoolean("Item.ShowReadMoreButton"))
+  {
+    string target = GetBoolean("Item.OpenInANewWindow") ? "target=\"_blank\"" : "",
+           style = GetBoolean("Item.ShowLinkAsButton") ? "class=\"btn-orange-outline\"" : "";
+
+      <p class="paragraphButton">
+        <a @style="" href="@url" @target="">@GetString("Item.LinkText")</a>
+      </p>
+  }
+}
+@helper RenderHeading()
+{
+  if(GetBoolean("Item.ShowTitle") && GetString("Item.TitleOrder") == "title-first")
+  {
+	  @RenderHeadingHtml()
+	}
+}
+
+@helper RenderHeadingHtml() {
+	if (!string.IsNullOrEmpty(GetString("Item.Title")))
+	{
+	  string headingType = string.IsNullOrEmpty(GetString("Item.HeadingType")) ? "h1" : GetString("Item.HeadingType"),
+	         solidBg = GetBoolean("Item.Solid_Color_Background") ? "header-solid-bg" : "";
+
+	  <header class="paragraphHeader @solidBg">
+	    @string.Format("<{0}>{1}", headingType, GetString("Item.Title"))
+	    @if(!string.IsNullOrEmpty(GetString("Item.Date.Value"))) {
+        DateTime date = GetDate("Item.Date.Value");
+
+        <h3 class="eventDate">@date.Day @date.ToString("MMMM")</h3>
+      }
+	  </header>
+	}
+}
+
+@helper RenderFontAwesomeIcon() {
+	string iconName = GetString("Item.Icon_Name");
+
+	if (!string.IsNullOrEmpty(iconName)){
+    <div class="icon-content-wrapper">
+      <div class="outer-border">
+        <div class="inner-border text-center">
+          <i class="fa fa-5x @iconName"></i>
+        </div>
+      </div>
+    </div>
+	}
+}
+
+@helper RenderText()
+{
+  if(GetString("Item.Order") == "image-left" || GetString("Item.Order") == "image-right"){
+    @RenderImageTag()
+  }
+  if (GetBoolean("Item.ShowTitle") && GetString("Item.TitleOrder") == "title-with-text"){
+    @RenderHeadingHtml()
+  }
+  if (!string.IsNullOrWhiteSpace(GetString("Item.Text"))){
+    <div class="paragraphText">
+      @GetString("Item.Text")
+    </div>
+  }
+}
+
+@helper RenderModule()
+{
+	@GetString("ParagraphModule")
+}
+
+@helper RenderImage()
+{
+  if(GetString("Item.Order") == "image-left-column" || GetString("Item.Order") == "image-right-column" || GetString("Item.Order") == "image-top"){
+    @RenderImageTag()
+  }
+}
+
+@helper RenderImageTag()
+{
+	if (!string.IsNullOrEmpty(GetString("Item.Image")))
+	{
+		if (string.IsNullOrEmpty(GetString("Item.Link")))
+		{
+			@RenderImageWrapper()
+		}
+		else
+		{
+		  string target = GetBoolean("Item.OpenInANewWindow") ? "target='_blank'" : "";
+			<a href="@GetString(" item.link")"="" @target="">
+				@RenderImageWrapper()
+			</a>
+		}
+	}
+}
+
+@helper RenderImageWrapper()
+{
+  string image = System.Web.HttpContext.Current.Server.UrlEncode(GetString("Item.Image")),
+         imageAlt = (!string.IsNullOrEmpty(GetString("Item.ImageTitle"))) ? GetString("Item.ImageTitle") : GetString("Item.Title"),
+         figureWidth = "col-xs-" + GetInteger("Item.ImageWidth"),
+         optimizedWidth = "1280";
+
+  switch (GetString("Item.Order")){
+    case "image-left":
+      figureWidth += " pull-left noPaddingLeft";
+      break;
+    case "image-left-column":
+      figureWidth += " pull-left noPaddingLeft";
+      break;
+    case "image-right":
+      figureWidth += " pull-right noPaddingRight";
+      break;
+    case "image-right-column":
+      figureWidth += " pull-right noPaddingRight";
+      break;
+    case "image-top":
+      figureWidth += " image-top";
+      if(GetInteger("Item.ImageWidth") < 12){
+        figureWidth += " col-xs-offset-" + ((12 - GetInteger("Item.ImageWidth")) / 2);
+      }
+      break;
+  }
+
+  if (Dynamicweb.Frontend.PageView.Current().Device.ToString() == Dynamicweb.Frontend.Devices.DeviceType.Mobile.ToString())
+  {
+    switch (GetString("Item.WidthMobile")){
+      case "12":
+        optimizedWidth = "480";
+        break;
+      case "6":
+        optimizedWidth = "240";
+        break;
+    }
+  }
+  else {
+    switch (GetString("Item.Width")){
+      case "3":
+        optimizedWidth = "722";
+        break;
+      case "4":
+        optimizedWidth = "722";
+        break;
+      case "6":
+        optimizedWidth = "722";
+        break;
+      case "8":
+        optimizedWidth = "960";
+        break;
+      case "9":
+        optimizedWidth = "960";
+        break;
+      default:
+        optimizedWidth = "1280";
+        break;
+    }
+  }
+
+  <figure class='@(GetString("Item.ImageStyle")) @figureWidth'>
+		<img class="img-responsive" src="/Admin/Public/GetImage.ashx?width=@optimizedWidth&crop=0&image=@image" title="@imageAlt" alt="@imageAlt">
+	</figure>
+}
+
+@functions{
+  public string GetItemClass()
+	{
+	  string order = GetString("Item.Order"),
+           paragraphClass = GetInteger("Item.ImageWidth") < 12 && order != "image-top" ? "col-xs-" + ( 12 - GetInteger("Item.ImageWidth")) : "col-xs-12 noPadding";
+
+    if(order == "image-left" || order == "image-right"){
+      paragraphClass = "noPadding";
+    }else if(order != "image-top"){
+    }
+
+    switch (order){
+      case "image-left-column":
+        paragraphClass += " pull-right";
+        break;
+      case "image-right-column":
+        paragraphClass += " pull-left";
+        break;
+    }
+
+    return paragraphClass;
+	}
+}
+@{
+    string jobDate = @GetDate("DwPageCreatedDate").ToString("MMMM") + " " + @GetDate("DwPageCreatedDate").Day.ToString() + ", " + @GetDate("DwPageCreatedDate").Year.ToString();
+    bool jobsForm = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["jobform"]);
+}
+<section class="jobsForm_@jobsForm.ToString()">
+  <div class="col-xs-12 noPadding careerDetail">
+    <div class="col-xs-12 noPadding">
+      <div class="col-xs-12 noPadding">
+        @RenderHeading()
+        @RenderImage()
+
+        <div class="@GetItemClass() headerCareer">
+          @propertyValue(Translate("Date Posted"), "jobDatePosted", jobDate)
+          @if (!string.IsNullOrEmpty(GetString("Item.Title.Value")))
+          {
+            @propertyValue(Translate("jobTitle", "Job Title"), "jobTitle", @GetString("Item.Title.Value"))
+          }
+          @if (!string.IsNullOrEmpty(GetString("Item.Subtitle.Value")))
+          {
+            @propertyValue(Translate("location", "Location"), "jobLocation", @GetString("Item.Subtitle.Value"))
+          }
+          @RenderModule()
+        </div>
+        @if(!string.IsNullOrEmpty(GetString("DwContent(detailContainer)")) ){
+          string link = (!string.IsNullOrEmpty(GetString("Item.ExternalLink.Value"))) ? GetString("Item.ExternalLink.Value") : "",
+                 file = (!string.IsNullOrEmpty(GetString("Item.File.Value"))) ? GetString("Item.File.Value") : "",
+                 formDetailUrl = string.Format("Default.aspx?ID={0}&jobform=true",Pageview.Page.ID);
+
+          <section data-id="@(GetString(" item.id"))"="" data-name="@(GetString(" item.title.value"))"="" class="col-xs-12 noPadding" id="detailContainerSection">
+            <div id="detailContainer" class="row">@GetValue("DwContent(detailContainer)")</div>
+            @if(!jobsForm) {
+              <div class="paragraphButton">
+                <a href="@formDetailUrl" class="btn">@Translate("apply", "Apply")</a>
+              </div>
+            }
+          </section>
+        }
+    </div>
+  </div>
+</div></section>
+
+@helper propertyValue(string translate, string spanId, string value) {
+    <div class="generalMarginBottom">
+        <span class="bold text-right">@translate</span><span id="@spanId">@value</span>
+    </div>
+}
+
+      
+  @if (!hideFooter)
+  {
+   
+<footer class="main-footer">
+  <div class="container">
+    <div class="row">
+      	<div class="main-footer__column col-md-4 col-sm-12 screen-sm">
+            <h5 class="main-footer__heading">@Translate("Stay Tuned", "Stay Tuned")</h5>
+            @*<form action="#">
+              <div class="input-group main-footer__subscribe">
+                <span class="input-group-addon">
+                  <i class="vb-envelope input-group-addon-icon"></i>
+                </span>
+                <input type="email" id="subscriptionEmail" class="form-control" placeholder='@Translate("enterEmail","Enter email addres")'>
+                <span class="input-group-btn">
+                  <button class="btn btn-primary" type="submit">@Translate("subscribe","Subscribe")</button>
+                </span>
+              </div>
+            </form>*@
+          	<form name="NewsletterSubscribe" id="NewsletterSubscribe" method="post" enctype="multipart/form-data" data-api="@subscribeToNewsletterAPI" data-success='@Translate("Subscribe success","You have been subscribed to our latest news about products and promotions")' data-error='@Translate("invalidEmailAddress", "Invalid email address")'>
+          		<input name="UserManagementForm" value="1" type="hidden">
+                <input id="UserManagementForm.DeleteImage" name="UserManagementForm.DeleteImage" type="hidden">
+                <div style="display: none;">
+                    <input name="UserManagement_Form_EmailAllowed" id="UserManagement_Form_EmailAllowed" value="True" checked="checked" type="checkbox">
+                    <input name="UserManagement_Form_EmailAllowed_ApplyValue" id="UserManagement_Form_EmailAllowed_ApplyValue" value="AllowEmail" type="hidden">
+                </div>     
+          		<input class="hidden" placeholder="Name" name="UserManagement_Form_Name" type="text" id="UserManagement_Form_Name2"> 
+          	<div class="input-group main-footer__subscribe"> 
+                  
+                   <span class="input-group-addon">
+                  	<i class="vb-envelope input-group-addon-icon"></i>
+                   </span>
+                  <input type="email" class="form-control" name="UserManagement_Form_Email" id="UserManagement_Form_Email" placeholder='@Translate("enterEmail","Enter email addres")' value=''>
+              	  <span class="input-group-btn">
+                  	<input type="submit" class="btn btn-primary" value='@Translate("subscribe","Subscribe")'>
+              	  </span>
+                 </div>
+            </form>
+          </div>
+      
+      <div class="col-md-2 col-sm-12 screen-sm pull-right">
+        <a href="index.html">
+          <img class="main-footer__logo" src="@logo" alt="vanBaerle">
+        </a>
+      </div>
+         
+      @*<div class="col-md-2 screen-sm">
+        <div class="main-footer__column">
+          <h5 class="main-footer__heading">@Translate("aboutUs", "About Us")</h5>
+          <ul class="main-footer__link-list">
+            <li><a href="/about-us">vanBaerle</a></li>
+            <li><a href="/about-us">Responsibility</a></li>
+            <li><a href="/about-us">Jobs</a></li>
+            <li><a href="/about-us">Contact</a></li>
+            <li><a href="/about-us">Terms</a></li>
+          </ul>
+        </div>
+      </div>*@
+      @*<div class="col-md-2 screen-sm">
+        <div class="main-footer__column">
+          <h5 class="main-footer__heading">@Translate("products","Products")</h5>
+          <ul class="main-footer__link-list">
+            <li><a href="/hygiene">Hygiene</a></li>
+            <li><a href="/silicates">@Translate("silicates", "Silicates")</a></li>
+          </ul>
+        </div>
+      </div>*@
+        
+      <div class="col-lg-3 col-md-4">
+        <div class="main-footer__column--sm">
+          <!-- .main-footer__socialcopy #1 -->
+          <div class="main-footer__socialcopy main-footer__socialcopy--sm">
+            @*<div class="main-footer__social">
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-facebook"></i>
+              </a>
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-twitter"></i>
+              </a>
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-linkedin"></i>
+              </a>
+            </div>*@
+            <span class="main-footer__copyright">&copy; @DateTime.Now.Year. &nbsp;  @GetString("Item.Area.Copyright")</span>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- main-footer__socialcopy #2 -->
+    <div class="main-footer__bottom main-footer__socialcopy">
+      <div class="main-footer__social">
+        @*<a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-facebook"></i>
+        </a>
+        <a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-twitter"></i>
+        </a>
+        <a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-linkedin"></i>
+        </a>*@
+
+        <span class="main-footer__copyright">&copy; @DateTime.Now.Year. &nbsp; @GetString("Item.Area.Copyright")</span>
+      </div>
+      
+      @GetValue("DwNavigation(copyrightMenu)")
+    </div>
+  </div>
+</footer>
+  }
+  
+</body>
+</html>

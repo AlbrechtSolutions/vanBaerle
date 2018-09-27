@@ -1,0 +1,354 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System.Web;
+@using System.Web.Helpers;
+@using System.Web.Script.Serialization;
+@using System.Collections.Generic;
+@using Dynamicweb.Ecommerce.Orders;
+@Include("../../../includes/Razor/GetImage.cshtml")
+@Include("../../../includes/razor/VerifyImage.cshtml")
+@{
+  @Include("Includes/StockValidation.cshtml")
+  double subtotalNum = GetInteger("Ecom:Order.PriceWithoutDiscounts.PricePIP") / 100.0 - GetDouble("Ecom:Order.ShippingFee.PriceWithoutVAT");
+  string errors = "",
+         errorsID = "",
+         customerCountryCode = GetString("Ecom:Order.Customer.Country.Code"),
+         customerCountry = customerCountryCode != "" ? customerCountryCode : GetString("UserManagement:User.DefaultAddress.Country"),
+         customerRegionCode = GetString("Ecom:Order.Customer.Region"),
+         customerRegion = customerRegionCode != "" ? customerRegionCode : GetString("UserManagement:User.DefaultAddress.State"),
+         deliveryEmail = GetString("Ecom:Order.Delivery.Email"),
+         voucherValue = GetString("discountVoucher.Clean"),
+         cartContentDivClass = userIsLoggedIn ? "col-xs-12" : "col-sm-5 col-xs-12",
+         cartContentDiv2Class = userIsLoggedIn ? "col-xs-12" : "col-sm-7 col-xs-12",
+         deliveryAddress = "",
+         customerAddress = "",
+         subtotalString = GetString("Ecom:Order.OrderLines.Total.PriceWithoutVAT"),//subtotalNum.ToString("#,##.00"),
+		 orderVAT = GetString("Ecom:Order.OrderLines.Total.PriceVAT"),
+		 orderTotal = GetString("Ecom:Order.OrderLines.Total.PriceWithVAT"),
+         currencyCode = GetString("Ecom:Order.Price.Currency.Symbol");
+  @Include("Includes/Addresses.cshtml")
+  string showDeliveryAddress = addressesAreDifferent && !string.IsNullOrEmpty(deliveryEmail) ? "" : "hide";
+  customerCountry = customerCountry != "" ? customerCountry : Dna.IP.Frontend.GetCountryCode();
+  Dynamicweb.Content.Items.Item itemArea = Pageview.Area.Item;
+  Dictionary<string, Dictionary<string, string>> addressesId = new Dictionary<string, Dictionary<string, string>>();
+  List<LoopItem> userAddresses = GetLoop("UserManagement:User.UserAddresses");
+
+  if(System.Web.HttpContext.Current.Request.Cookies["checkout"] != null) {
+    System.Web.HttpCookie cookie2 = new System.Web.HttpCookie("checkout");
+    cookie2.Expires = DateTime.Now.AddDays(-1d);
+    System.Web.HttpContext.Current.Response.Cookies.Add(cookie2);
+  }
+
+  foreach (LoopItem userAddress in userAddresses)
+  {
+    Dictionary<string, string> addresses = new Dictionary<string, string>();
+    string selected = !String.IsNullOrEmpty(GetString("Ecom:Order.Customer.Address")) && (GetString("Ecom:Order.Customer.Address") == userAddress.GetString("UserManagement:User.UserAddress.Address")) ? "selected" : userAddress.GetBoolean("UserManagement:User.UserAddress.Default") ? "selected" : "";
+
+   @*  addresses.Add("EcomOrderDeliveryFirstName", userAddress.GetString("UserManagement:User.UserAddress.FirstName"));
+    addresses.Add("EcomOrderDeliverySurname", userAddress.GetString("UserManagement:User.UserAddress.Surname")); *@
+    addresses.Add("EcomOrderDeliveryAddress", userAddress.GetString("UserManagement:User.UserAddress.Address"));
+    addresses.Add("EcomOrderDeliveryAddress2", userAddress.GetString("UserManagement:User.UserAddress.Address2"));
+    addresses.Add("EcomOrderDeliveryZip", userAddress.GetString("UserManagement:User.UserAddress.Zip"));
+    addresses.Add("EcomOrderDeliveryCity", userAddress.GetString("UserManagement:User.UserAddress.City"));
+    addresses.Add("EcomOrderDeliveryCountry", userAddress.GetString("UserManagement:User.UserAddress.Country"));
+    addresses.Add("EcomOrderDeliveryRegion", userAddress.GetString("UserManagement:User.UserAddress.State"));
+    addresses.Add("EcomOrderDeliveryEmail", userAddress.GetString("UserManagement:User.UserAddress.Email"));
+    addresses.Add("EcomOrderDeliveryPhone", userAddress.GetString("UserManagement:User.UserAddress.Phone"));
+    addresses.Add("EcomOrderDeliveryCompany", userAddress.GetString("UserManagement:User.UserAddress.Company"));
+    addressesId.Add(userAddress.GetString("UserManagement:User.UserAddress.ID"), addresses);    
+  }
+
+	@*Translate Strings*@
+	string firstName = Translate("firstName","First Name"),
+			lastName = Translate("lastName","Last Name"),
+			phone = Translate("phone","Phone"),
+			company=Translate("company","Company"),
+			streetAddress=Translate("address","Address"),
+			city=Translate("city","City"),
+			state=Translate("state","State"),
+			zipCode=Translate("zip","Zip code"),
+			country=Translate("country","Country"),
+			email=Translate("email","Email"),
+			requestedDeliveryDate = Translate("requestedDeliveryDate","Requested delivery date"),
+			enterComment = Translate("enterComment","Please enter your comment"),
+			customerComment = Translate("yourComment","Your comment");
+}
+
+<div class="container">
+  <div id="cartFormContainer" class="col-xs-12">
+    <div class="col-sm-9 noPaddingLeft">
+      <div class="col-xs-12 noPadding">
+         <h2 class="checkout-heading">@Translate("reviewAndPlaceOrder", "Review & Place Order")</h2>
+      </div>
+      <div class="col-xs-12 noPadding">
+
+        @if(System.Web.HttpContext.Current.Request.Params["error"] == null && GetInteger("Ecom:Order.OrderLines.TotalProductQuantity") > 0){
+        	<div class="row">
+	          <form class="DMForms" action='/Default.aspx?ID=@Pageview.Page.ID' name="ordersubmit"  method="post">
+	            <input type="hidden" name='@GetString("CartV2.NextStepButtonName")' value="true" />  
+              <input type="hidden" name='EcomOrderDeliveryName' value="@GetString("Ecom:Order.Delivery.FirstName") @GetString("Ecom:Order.Delivery.Surname")" />  
+                @* <input type="hidden" id="EcomOrderCustomerAccepted" name="EcomOrderCustomerAccepted" value="1" />      *@
+              @*  <div class="hidden">
+                <input type="checkbox" id="EcomOrderCustomerAccepted" name="EcomOrderCustomerAccepted" checked /> 
+              </div> *@
+                    
+	            <div class="col-xs-12">
+                <h3 class="review-heading">@Translate("ShippingBillingInfo", "Shipping & Billing Info")    <a href='/Default.aspx?ID=@Pageview.Page.ID&Step=@GetString("CartV2.PreviousStepButtonName")' title="">@Translate("Edit","Edit")</a></h3>
+              </div>
+              <div class="review-details">
+                <div class="user-details">
+                  <div class="col-md-6">
+                    <h4>@Translate("First Name","First Name")</h4>
+                    <p>@GetString("Ecom:Order.Delivery.FirstName")</p>
+                  </div>
+                  <div class="col-md-6">
+                    <h4>@Translate("Last Name","Last Name")</h4>
+                    <p>@GetString("Ecom:Order.Delivery.Surname")</p>
+                  </div>                 
+                </div>
+                <div class="phone-details">                  
+                  <div class="col-xs-12">
+                    <h4>@Translate("Phone Number","Phone Number")</h4>
+                    <p>@GetString("Ecom:Order.Delivery.Phone")</p>
+                  </div>                  
+                </div>
+                <div class="billing-details shipping-details">
+                  <div class="col-md-6">
+                    <h4>@Translate("Billing Address","Billing Address")</h4>
+                    <p>@GetString("Ecom:Order.Customer.Address")</p>
+                    <p>@GetString("Ecom:Order.Customer.Zip") @GetString("Ecom:Order.Customer.City")</p>
+                    @* <p>@GetString("Ecom:Order.Customer.Region")</p> *@
+                    <p>@GetString("Ecom:Order.Customer.Country")</p>     
+                  </div>     
+                  <div class="col-md-6">
+                    <h4>@Translate("Shipping Address","Shipping Address")</h4>
+                    <p>@GetString("Ecom:Order.Delivery.Address")</p>
+                    <p>@GetString("Ecom:Order.Delivery.Zip") @GetString("Ecom:Order.Delivery.City")</p>
+                    @* <p>@GetString("Ecom:Order.Delivery.Region")</p> *@
+                    <p>@GetString("Ecom:Order.Delivery.Country")</p>
+                  </div>
+                </div>
+                <div class="shipping-details">
+                  <div class="col-xs-12">
+          			<h4>@requestedDeliveryDate</h4>
+                    <p>@GetString("RequestedDeliveryDate.Clean")</p>
+                  </div> 
+                  @if(!string.IsNullOrEmpty(GetString("Ecom:Order.Customer.Comment"))){
+                  <div class="col-xs-12">
+          			<h4>@customerComment</h4>
+          			<p>@GetString("Ecom:Order.Customer.Comment")</p>
+                  </div>
+                  }
+                </div>
+              </div>
+	           
+	              
+              <div class="clearfix checkout-footer">
+                	<div class="actions col-xs-12">
+                 		<a href='/Default.aspx?ID=@Pageview.Page.ID&Step=@GetString("CartV2.PreviousStepButtonName")' class="btn btn-border" title="">@Translate("Back","Back")</a>
+                 		<button class="btn btn-primary pull-right" type="submit">@Translate("placeOrder", "Finish the Order")</button>
+                 	</div>
+              </div>  
+	              
+	             
+	            
+	           
+	          </form>
+        	</div>
+          
+        }
+        else if(System.Web.HttpContext.Current.Request.Params["error"] != null){
+          @*Validation errors*@
+          foreach (LoopItem validationError in GetLoop("ValidationErrors")){
+             errors += validationError.GetString("Ecom:Cart.ValidationError.ErrorMessage") + "--";
+             errorsID += validationError.GetString("Ecom:Cart.ValidationError.FieldSystemName") + "--";
+          }
+
+          foreach(LoopItem av in GetLoop("AddressValidators"))
+          {
+            errors += av.GetString("Ecom:Order.AddressValidator.ErrorMessage");
+            errorsID += av.GetString("Ecom:Order.AddressValidator.FieldSystemName") + "--";
+          }
+
+          errors = HttpUtility.JavaScriptStringEncode(errors);
+
+          <div data-errorid="@errorsID" id="error">@errors</div>
+        }
+        else if(GetInteger("Ecom:Order.OrderLines.TotalProductQuantity")==0){
+          System.Web.HttpContext.Current.Response.Redirect("/");
+        }
+      </div>
+     
+    </div>
+    <div class="col-sm-3 noPaddingRight">
+       <div class="col-xs-12 totalValues">
+        <div class="col-xs-12 noPadding">
+           <p class="checkout-heading">@Translate("Summary","Summary")</p>
+        </div>      
+       
+        <div class="summary-list">
+        	<div class="item orderline-list clearfix">
+        		<ul class="col-xs-12">
+        		  @foreach (LoopItem orderLine in orderLines) {
+	              bool productPriceIsZeroBool = orderLine.GetBoolean("Ecom:Order:OrderLine.Price.IsZero");
+	              bool isProduct = orderLine.GetBoolean("Ecom:Order:OrderLine.IsProduct");
+	              bool isDiscount = false;
+	              string url = GetString("Item.Area.ProductDetail") + "&amp;ProductID=" + orderLine.GetString("Ecom:Order:OrderLine.ProductID");
+	              string parentLineId = orderLine.GetString("Ecom:Order:OrderLine.ParentLineID");
+	              string orderType = orderLine.GetString("Ecom:Order:OrderLine.Type");
+	              string productId = orderLine.GetString("Ecom:Order:OrderLine.ProductID");
+	              string discountType = "";
+	              string productName = orderLine.GetString("Ecom:Order:OrderLine.ProductName");
+	              string productPriceIsZero = orderLine.GetString("Ecom:Order.Price.PricePIP");
+	              string productNumber = orderLine.GetString("Ecom:Product.Number");
+	              string pattern = "/Files/Files/" + designName + "/Products/Images/" + productNumber + ".jpg";
+	              string imageUrl = GetImagePathUrl(orderLine.GetString("Ecom:Product.ImageSmall.Default.Clean"), orderLine.GetString("Ecom:Product.ImageMedium.Default.Clean"), orderLine.GetString("Ecom:Product.ImageLarge.Default.Clean"), pattern);
+	              string updateOrderline = "/Default.aspx?CartCmd=updateorderlines&" + orderLine.GetString("Ecom:Order:OrderLine.Quantity.Input.Name") + "=";
+
+	                <li class="clearfix" style="display: block;">
+	                  <figure class="text-center col-xs-2 noPadding">
+	                    <a href="@url">
+	                      <img class="img-responsive" alt="@productName" title="@productName" src="@(GetImage(imageUrl,95,123))" />
+	                    </a>
+	                  </figure>
+	                  <div class="col-xs-4 noPaddingRight">
+	                    <a class="col-xs-12 noPadding" href="@url">
+	                      <b>@orderLine.GetString("Ecom:Order:OrderLine.ProductName")</b>
+	                      @if (!string.IsNullOrEmpty(orderLine.GetString("Ecom:Order:OrderLine.ProductVariantText")))
+	                      {
+	                        <br />
+	                        @orderLine.GetString("Ecom:Order:OrderLine.ProductVariantText")
+	                      }
+	                    </a>	                   
+	                  </div>
+	                  <div class="col-xs-3">
+	                    @* <button type="button" data-update="@updateOrderline" ref="cart-minus">-</button> *@
+	                    <span class="orderline-quantity">@orderLine.GetString("Ecom:Order:OrderLine.Quantity")</span>
+	                    @* <button type="button" data-update="@updateOrderline" ref="cart-plus" data-limit-stock='@orderLine.GetString("Ecom:Product.Stock")'>+</button> *@
+	                  </div>
+	                  <div class="col-xs-3 price text-right">
+	                    @orderLine.GetString("Ecom:Order:OrderLine.Price.PriceWithoutVATFormatted")
+	                  </div>
+	                </li>
+              }
+              </ul>
+
+        	</div>
+          <div class="item summary-subtotal clearfix">
+            <div class="col-xs-6">@Translate("subTotal", "Subtotal")</div>
+            <div class="col-xs-6 pull-right text-right"><b>@subtotalString</b></div>
+          </div>
+          <div class="item summary-subtotal clearfix">
+            <div class="col-xs-6">@Translate("VAT", "VAT")</div>
+            <div class="col-xs-6 pull-right text-right"><b>@orderVAT</b></div>
+          </div>
+          <div class="item summary-total clearfix">
+            <div class="col-xs-6 total"><b>@Translate("Total", "Total")</b></div>
+            <div class="col-xs-6 price total text-right"><b>@orderTotal</b></div>
+          </div>
+        </div>
+      @*   <div class="cart-summary-buttons">
+          <div class="col-xs-12">
+            <a class="btn btn-primary" href="/Default.aspx?ID=175">@Translate("checkout", "Checkout")</a>
+            <a class="btn btn-border" href="/Default.aspx?ID=171">@Translate("Continue Shopping", "Continue Shopping")</a>
+          </div>
+          
+        </div> *@
+      </div>
+    </div>
+ 
+    
+    
+  </div>
+ 
+</div>
+
+
+@helper DisplayCountries(bool firstTime){
+  @RenderSnippet("highlightedContries")
+    foreach (LoopItem country in GetLoop("Countries"))
+    {
+      if(firstTime) {
+        if(country.GetString("Ecom:Country.Code2") == "CA" || country.GetString("Ecom:Country.Code2")== "US"){
+          @SnippetStart("highlightedContries")
+          <option value="@(country.GetString("Ecom:Country.Code2"))">
+            @country.GetString("Ecom:Country.Name")
+          </option>
+          @SnippetEnd("highlightedContries")
+        }
+      }
+      <option value="@(country.GetString("Ecom:Country.Code2"))">
+        @country.GetString("Ecom:Country.Name")
+      </option>
+    }
+    if(firstTime) {
+      @SnippetStart("highlightedContries")
+      <option disabled="disabled" value="">
+        ----------------
+      </option>
+      @SnippetEnd("highlightedContries")
+    }
+}
+
+@helper DisplayRegions(){
+  Dictionary<string, dynamic> locations = new Dictionary<string, dynamic>();
+  string productJSON = "";
+
+  locations.Add("locations", new Dictionary<string, dynamic>());
+  locations["locations"].Add("Countries", new List<dynamic>());
+
+  foreach (LoopItem ct in GetLoop("Countries"))
+  {
+    List<LoopItem> regionsList = ct.GetLoop("Regions");
+    Dictionary<string, dynamic> countryDict = new Dictionary<string, dynamic>();
+    Dictionary<string, dynamic> countryKey = new Dictionary<string, dynamic>();
+
+    countryKey.Add("id", ct.GetString("Ecom:Country.Code2"));
+    countryKey.Add("regions", new List<dynamic>());
+
+    foreach (LoopItem region in regionsList.OrderBy(s => s.GetString("Ecom:Region.Name")))
+    {
+      Dictionary<string, string> regionsDict = new Dictionary<string, string>();
+
+      regionsDict.Add("name", region.GetString("Ecom:Region.Name"));
+      regionsDict.Add("code", region.GetString("Ecom:Region.RegionCode"));
+      countryKey["regions"].Add(regionsDict);
+    }
+    countryDict.Add("country", countryKey);
+    locations["locations"]["Countries"].Add(countryDict);
+  }
+  productJSON = new JavaScriptSerializer().Serialize(locations);
+  @productJSON
+
+}
+@functions {
+  public static string toJson(Dictionary<string, Dictionary<string, string>> obj_dictionary)
+  {
+    var json = new JavaScriptSerializer().Serialize(obj_dictionary);
+
+    return json;
+  }
+}
+@SnippetStart("jsOnLoad")
+onLoadCartStep1( {
+    errors:{
+      str_errors : "@errors",
+      str_errorsID : "@errorsID"
+    },
+    str_alertErrors : "@alertErrors",
+    submitedValues : {
+      str_customerCountry : "@customerCountry",
+      str_deliveryCountry : "@GetString("Ecom:Order.Delivery.Country.Code")",
+      str_customerRegion : "@customerRegion",
+      str_deliveryRegion : "@GetString("Ecom:Order.Delivery.Region")"
+    },
+    regions : '@DisplayRegions()',
+    addresses : '@toJson(addressesId)'
+  });
+@SnippetEnd("jsOnLoad")
+@helper Fieldset(string className, string labelFor, string labelText, string inputType, string value) {
+  <fieldset class="@className">
+    <label  for="@labelFor">@labelText</label>
+    <input type="@inputType"name="@labelFor" id="@labelFor" value="@value" />
+  </fieldset>
+}

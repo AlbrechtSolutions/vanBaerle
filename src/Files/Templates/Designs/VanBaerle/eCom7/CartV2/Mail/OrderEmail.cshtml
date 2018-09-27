@@ -1,0 +1,491 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb.Content.Items;
+
+@Include("../../../includes/Razor/GetImage.cshtml")
+@Include("../../../includes/Razor/VerifyImage.cshtml")
+@Include("../Step/Includes/OrderType.cshtml")
+
+@{
+  Dynamicweb.Content.Items.Item item = Pageview.Area.Item;
+  DateTime dt = (GetDate("Ecom:Order.Completed").ToString().Contains("1/1/0001")) ? GetDate("Ecom:Order.Date")  : GetDate("Ecom:Order.Completed");
+  double subtotalNum = GetDouble("Ecom:Order.PriceWithoutDiscountsOrTaxes.Price") - GetDouble("Ecom:Order.ShippingFee.PriceWithoutVAT");
+  System.Web.HttpCookie cookie = new System.Web.HttpCookie("userAndPass");
+  cookie.Expires = DateTime.Now.AddDays(-1d);
+  System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+  string voucherValue = GetString("discountVoucher.Clean");
+  string subtotalString = subtotalNum.ToString("#,##.00");
+  string currencyCode = GetString("Ecom:Order.Price.Currency.Symbol");
+  string domain = "http://" + System.Web.HttpContext.Current.Request.Url.Host;
+  string receiptUrl = !string.IsNullOrEmpty(GetString("Ecom:Order.ReceiptURL")) ? GetString("Ecom:Order.ReceiptURL") : "//Default";
+  string shippingMethod = GetString("ShippingInstructions.Clean");
+  string giftMessage = GetString("Ecom:Order.Customer.Comment.Clean");
+  string longLang = Pageview.GlobalTags.GetTagByName("Global:Area.LongLang").Value.ToString();
+  string color1 = "#000000;";
+  string color2 = "#ffffff;";
+  string color3 = "white";
+  string fontSize = "font-size:12px;";
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="@longLang" lang="@longLang">
+<head>
+  <title>Email</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <style type="text/css">
+    body {
+      margin-left:   0px;
+      margin-top:    0px;
+      margin-right:  0px;
+      margin-bottom: 0px;
+      font-family:Arial, Tahoma, sans-serif;
+    }
+    div, p, a, li, td, span, td {
+      -webkit-text-size-adjust: none;
+    }
+    body{
+      background-color: @color2
+    }
+    *{
+      color: @color1
+    }
+    a{
+      text-transform: underline;
+      color: @color1
+    }
+    a:hover{
+      color: @color1
+    }
+    /* MOBILE STYLES */
+    @@media screen and (max-width: 525px) {
+
+        /* ALLOWS FOR FLUID TABLES */
+        table[class="wrapper"]{
+          width:100% !important;
+        }
+        /* ADJUSTS LAYOUT OF LOGO IMAGE */
+        td[class="logo"]{
+          text-align: left;
+          padding: 20px 0 20px 0 !important;
+        }
+
+        td[class="logo"] img{
+          margin:0 auto!important;
+        }
+
+        /* USE THESE CLASSES TO HIDE CONTENT ON MOBILE */
+        td[class="mobile-hide"]{
+          display:none;}
+
+        img[class="mobile-hide"]{
+          display: none !important;
+        }
+
+        img[class="img-max"]{
+          max-width: 100% !important;
+          width: 100% !important;
+          height:auto !important;
+        }
+
+        /* FULL-WIDTH TABLES */
+        table[class="responsive-table"],
+        .responsive-table{
+          width:100%!important;
+          display: table;
+        }
+
+        /* UTILITY CLASSES FOR ADJUSTING PADDING ON MOBILE */
+        td[class="padding"]{
+          padding: 10px 5% 15px 5% !important;
+        }
+
+        td[class="padding-copy"]{
+          padding: 10px 5% 10px 5% !important;
+          text-align: center;
+        }
+
+        td[class="padding-meta"]{
+          padding: 30px 5% 0px 5% !important;
+          text-align: center;
+        }
+
+        td[class="no-pad"]{
+          padding: 0 0 20px 0 !important;
+        }
+
+        td[class="no-padding"]{
+          padding: 0 !important;
+        }
+
+        td[class="section-padding"]{
+          padding: 50px 15px 50px 15px !important;
+        }
+
+        td[class="section-padding-bottom-image"]{
+          padding: 10px 15px 0 15px !important;
+        }
+
+        /* ADJUST BUTTONS ON MOBILE */
+        td[class="mobile-wrapper"]{
+            padding: 10px 5% 15px 5% !important;
+        }
+
+        table[class="mobile-button-container"]{
+            margin:0 auto;
+            width:100% !important;
+        }
+
+        a[class="mobile-button"]{
+            width:80% !important;
+            padding: 4px !important;
+            border: 0 !important;
+            font-size: 16px !important;
+            border-radius: 3px;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+        }
+        figure {
+          margin:0 15px 0 0;
+        }
+        .clearLeft {
+          clear: left;
+        }
+        .noPadding {
+          padding-right: 0 !important;
+        }
+
+    }
+
+  </style>
+</head>
+
+<body style="width:100%; height: 100%;">
+<table class="responsive-table" width="800" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td>
+      <table class="responsive-table" width="700" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="text-align:center; color: @color1; @fontSize padding:10px 0;">
+            @Translate("viewReceiptCorrectly","If this email is not being shown properly, click") <a href="@receiptUrl">here</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="@domain">
+              <figure>
+                <img class="img-max" src="@domain/Files/Templates/Designs/@designName/images/logo.png" alt="@item["CompanyName"]" title="@item["CompanyName"]" />
+              </figure>
+            </a>
+          </td>
+        </tr>
+        <tr height="10"><td ></td></tr>
+      </table>
+
+      <table class="responsive-table" width="700" style="background-color:@color3; text-transform:uppercase; padding: 15px 15px;" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tbody>
+          <tr height="10"><td ></td></tr>
+          <tr>
+            <td style="font-size:24px;">
+              @Translate("thankYouForYourOrder", "Thank you for your order!")
+            </td>
+          </tr>
+          <tr height="10"><td ></td></tr>
+        </tbody>
+      </table>
+
+      <table class="responsive-table" width="700" style="background-color:@color3; padding: 15px 15px;" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tbody>
+          <tr height="10"><td ></td></tr>
+          <tr>
+            <td style="color: @color1 font-weight: bold; text-transform: uppercase; padding-bottom:10px; text-align:left; border-bottom:1px solid @color1">
+                @Translate("orderDetails", "Order Details")
+            </td>
+          </tr>
+          <tr height="10"><td ></td></tr>
+          <tr>
+            <td>
+
+              <table style="font-size:14px">
+                  <tr>
+                    <td><b>@Translate("orderNumber", "Order Number"):</b></td>
+                    <td>@GetString("Ecom:Order.ID")</td>
+                  </tr>
+                  <tr>
+                    <td><b>@Translate("orderDate", "Order date"):</b></td>
+                    <td>@dt.ToString("dd/MM/yyyy")</td>
+                  </tr>
+                  <tr>
+                    <td><b>@Translate("paymentMethod", "Payment method"):</b></td>
+                    <td>@GetString("Ecom:Order.PaymentMethod")</td>
+                  </tr>
+                  @if(!String.IsNullOrEmpty(GetString("PONumber.Clean"))) {
+                      <tr>
+                        <td><b>@Translate("poNumber","PO Number"):</b></td>
+                        <td>@GetString("PONumber.Clean")</td>
+                      </tr>
+                  }
+                  <tr>
+                    <td><b>@Translate("shippingMethod", "Shipping Method"):</b></td>
+                    <td>@GetString("Ecom:Order.ShippingMethod")</td>
+                  </tr>
+                  <tr><td colspan="2" height="30"></td></tr>
+                </table>
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+        <table class="responsive-table" width="700"  style="background-color:@color3; padding:0 15px; font-size:14px" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tbody>
+                 <tr><td colspan="2" height="30"></td></tr>
+                <tr>
+                  <td class="responsive-table" valign="top" width="350">
+                    <table style="font-size:14px">
+                      <tr>
+                        <td colspan="2" style="border-bottom:1px solid @color1 color: @color1 font-weight: bold; text-transform: uppercase; padding-bottom:10px; text-align:left;">
+                            @Translate("billingAddress", "Billing Address")
+                        </td>
+                      </tr>
+                      <tr><td colspan="2" height="15"></td></tr>
+                      <tr>
+                        <td class="hidden">@Translate("name", "Name"):</td>
+                        <td>@GetString("Ecom:Order.Customer.Name")</td>
+                      </tr>
+                      <tr>
+                        <td class="hidden">@Translate("address", "Address"):</td>
+                        <td>@GetString("Ecom:Order.Customer.Address") @GetString("Ecom:Order.Delivery.Address2")</td>
+                      </tr>
+                      <tr>
+                        <td class="hidden">@Translate("country", "Country"):</td>
+                        <td>@GetString("Ecom:Order.Customer.City"), @GetString("Ecom:Order.Delivery.Region") @GetString("Ecom:Order.Delivery.Zip") <br/> @GetString("Ecom:Order.Customer.Country")</td>
+                      </tr>
+                      <tr>
+                        <td class="hidden">@Translate("phone", "Phone"):</td>
+                        <td>@GetString("Ecom:Order.Customer.Phone")</td>
+                      </tr>
+                      <tr>
+                        <td class="hidden">@Translate("email", "Email"):</td>
+                        <td>@GetString("Ecom:Order.Customer.Email")</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" height="30">&nbsp;</td>
+                      </tr>
+                    </table>
+                  </td>
+
+                  <td class="responsive-table" valign="top" width="350">
+                    <table style="font-size:14px">
+                      <tr>
+                        <td colspan="2" style="border-bottom:1px solid @color1 color: @color1 font-weight: bold; text-transform: uppercase; padding-bottom:10px; text-align:left;">
+                            @Translate("shippingAddress", "Shipping Address")
+                        </td>
+                      </tr>
+                      <tr><td colspan="2" height="15"></td></tr>
+                      <tr>
+                        <td class="hidden">@Translate("address", "Address"):</td>
+                        <td>@GetString("Ecom:Order.Delivery.Address") @GetString("Ecom:Order.Delivery.Address2")</td>
+                      </tr>
+                      <tr>
+                        <td class="hidden">@Translate("country", "Country"):</td>
+                        <td>@GetString("Ecom:Order.Delivery.City"), @GetString("Ecom:Order.Delivery.Region") @GetString("Ecom:Order.Delivery.Zip") <br/> @GetString("Ecom:Order.Delivery.Country")</td>
+                      </tr>
+                      <tr>
+                        <td class="hidden">@Translate("phone", "Phone"):</td>
+                        <td>@GetString("Ecom:Order.Delivery.Phone")</td>
+                      </tr>
+                      <tr>
+                        <td class="hidden">@Translate("email", "Email"):</td>
+                        <td>@GetString("Ecom:Order.Delivery.Email")</td>
+                      </tr>
+                      <tr>
+                        <td class="hidden">@Translate("requestedDeliveryDate","Requested delivery date"):</td>
+                        <td>@Translate("requestedDeliveryDate","Requested delivery date"): @GetString("RequestedDeliveryDate")</td>
+                      </tr>
+                      <tr>
+                        <td class="hidden">@Translate("comment","Comment"):</td>
+                        <td>@GetString("Ecom:Order.Customer.Comment")</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" height="30">&nbsp;</td>
+                      </tr>
+                    </table>
+                  </td>
+
+                </tr>
+                @if(shippingMethod != "")
+                {
+                  <tr>
+                    <td colspan="2" style="border-bottom:1px solid @color1 color: @color1 font-weight: bold; text-transform: uppercase; padding-bottom:10px; padding-top:15px;">
+                      @Translate("shippingInstructions", "Shipping Instructions")
+                    </td>
+                  </tr>
+                  <tr><td colspan="2" height="10"></td></tr>
+                  <tr>
+                    <td colspan="2">
+                      @shippingMethod
+                    </td>
+                  </tr>
+                  <tr><td colspan="2" height="30"></td></tr>
+                }
+            </tbody>
+        </table>
+      <table class="responsive-table" style="background-color:@color3; padding:15px;" width="700" border="0" align="center" cellpadding="0" cellspacing="0">
+        <thead style="text-transform:uppercase;">
+          <tr>
+            <th colspan="3" style="border-bottom:1px solid @color1 width:150px; text-align:left">
+              @Translate("yourOrder","Your Order")
+            </th>
+          <tr>
+        </thead>
+        <tbody>
+
+        @foreach (LoopItem orderLine in GetLoop("OrderLines"))
+        {
+            bool productPriceIsZeroBool = orderLine.GetBoolean("Ecom:Order:OrderLine.Price.IsZero"),
+                 isProduct = orderLine.GetBoolean("Ecom:Order:OrderLine.IsProduct"),
+                 isDiscount = false;
+            string parentLineId = orderLine.GetString("Ecom:Order:OrderLine.ParentLineID"),
+                   orderType = orderLine.GetString("Ecom:Order:OrderLine.Type"),
+                   productId = orderLine.GetString("Ecom:Order:OrderLine.ProductID"),
+                   discountType = "",
+                   productPriceIsZero = orderLine.GetString("Ecom:Order.Price.PricePIP"),
+                   productName = orderLine.GetString("Ecom:Order:OrderLine.ProductName"),
+                   productNumber = orderLine.GetString("Ecom:Product.Number"),
+                   pattern = domain + "/Files/Files/"+designName+"/Products/" + productNumber + ".jpg",
+                   imageUrl = GetImagePathUrl(orderLine.GetString("Ecom:Product.ImageSmall.Default.Clean"), orderLine.GetString("Ecom:Product.ImageMedium.Default.Clean"), orderLine.GetString("Ecom:Product.ImageLarge.Default.Clean"), pattern),
+                   finalImage = domain + (GetImage(imageUrl,120,120));
+
+            discountType = OrderType(orderType, isProduct, productId, productPriceIsZeroBool, productPriceIsZero, discountType, parentLineId, voucherValue, false );
+
+            if(string.IsNullOrEmpty(discountType) && orderType != "4") {
+                <tr><td colspan="3" height="5"></td></tr>
+                <tr>
+                  <td>
+                    <figure align="left">
+                      <a target="_blank" href="@domain/@item["ProductDetail"]&amp;ProductID=@productId">
+                        <img src="@finalImage" alt="@productName" title="@productName" />
+                      </a>
+                    </figure>
+                  </td>
+                  <td valign="top">
+                    <a target="_blank" href="@domain/@item["ProductDetail"]&amp;ProductID=@productId">
+                      <b>@productName</b>
+                    </a>
+                    <br/>
+                    <b>@Translate("unitPrice","Unit price")</b> @orderLine.GetString("Ecom:Order:OrderLine.UnitPrice")
+                    <br/>
+                    <b>@Translate("quantity","Quantity")</b> @orderLine.GetString("Ecom:Order:OrderLine.Quantity")
+                    <br/>
+                    @if(!orderLine.GetBoolean("Ecom:Product.Discount.TotalAmount.IsZero"))
+                    {
+                      <b>@Translate("discount","Discount")</b> @orderLine.GetString("Ecom:Product.Discount.TotalAmount.PriceWithoutVATFormatted");
+                    }
+                  </td>
+                  <td class="noPadding" valign="top" style="text-align:right; padding-right:90px">
+                    <b>@orderLine.GetString("Ecom:Order:OrderLine.Price.PriceWithoutVATFormatted")</b>
+                  </td>
+                </tr>
+                <tr><td style="border-bottom:1px solid @color1 text-align:left" colspan="3" height="5"></td></tr>
+
+            }
+            else if( discountType == "offerProduct" || discountType == "offerValue") {
+              <tr><td colspan="3" height="5"></td></tr>
+              <tr>
+                <td></td>
+                <td valign="top">
+                    <b>@productName</b>
+                  @if(!orderLine.GetBoolean("Ecom:Product.Discount.TotalAmount.IsZero"))
+                  {
+                    <b>@Translate("discount","Discount")</b> @orderLine.GetString("Ecom:Product.Discount.TotalAmount.PriceWithoutVATFormatted");
+                  }
+                </td>
+                <td class="noPadding" valign="top" style="text-align:right; padding-right:90px">
+                  <b>@orderLine.GetString("Ecom:Order:OrderLine.Price.PriceWithoutVATFormatted").Replace(currencyCode+"-","- "+currencyCode)</b>
+                </td>
+              </tr>
+              <tr><td style="border-bottom:1px solid @color1 text-align:left" colspan="3" height="5"></td></tr>
+            }
+          }
+
+            <tr align="left">
+              <td style="padding-top:15px;">
+                <b>@Translate("price","Price")</b>
+              </td>
+              <td>
+                &nbsp;
+              </td>
+              <td class="noPadding" style="padding-top:15px; padding-right:90px; text-align:right;">
+                 <b>@GetString("Ecom:Order.Currency.Symbol") @subtotalString</b>
+              </td>
+            </tr>
+            <tr><td style="border-bottom:1px solid @color1" height="10" colspan="3"></td></tr>
+            <tr><td height="10" colspan="3"></td></tr>
+            @if (!GetBoolean("Ecom:Order.TotalDiscount.IsZero"))
+            {
+              <tr align="left">
+                <td>
+                  @Translate("discount", "Discount")
+                </td>
+                <td>
+                  &nbsp;
+                </td>
+                <td class="noPadding" style="padding-right:90px; text-align:right;">
+                  @GetString("Ecom:Order.OrderLines.TotalDiscount")
+                </td>
+              </tr>
+            }
+            <tr align="left">
+              <td>
+                @Translate("shippingFee", "Shipping fee") (@GetString("Ecom:Order.ShippingMethod"))
+              </td>
+              <td>
+                &nbsp;
+              </td>
+              <td class="noPadding" style="padding-right:90px; text-align:right;">
+                 @GetString("Ecom:Order.ShippingFee.PriceWithoutVATFormatted")
+              </td>
+            </tr>
+            <tr align="left">
+              <td style="align:right;">
+                @Translate("taxes", "Taxes")
+              </td>
+              <td>
+                &nbsp;
+              </td>
+              <td class="noPadding" style="padding-right:90px; text-align:right;">
+                @GetString("Ecom:Order.Taxes.Total")
+              </td>
+            </tr>
+            <tr><td style="border-bottom:1px solid @color1" height="10" colspan="3"></td></tr>
+            <tr><td height="10" colspan="3"></td></tr>
+            <tr align="left" style="padding-top:10px; font-weight:bold; font-size: 18px;" style="text-align:right;">
+              <td style="padding-top:10px; font-size: 18px; text-align:left;">
+                @Translate("total","Total")
+              </td>
+              <td>
+                &nbsp;
+              </td>
+              <td class="noPadding" style="padding-top:10px; padding-right:90px; font-size: 18px; text-align:right;">
+                @GetString("Ecom:Order.OrderLines.Total.PriceWithoutVAT")
+              </td>
+            </tr>
+        </tbody>
+      </table>
+
+      <table class="responsive-table" style="font-size:14px; padding:15px 0;" width="700" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr><td height="10"></td></tr>
+        <tr><td style="border-bottom:1px solid @color1" height="10"></td></tr>
+        <tr><td height="10"></td></tr>
+        <tr>
+          <td>
+            &copy; @item["Copyright"] - @DateTime.Now.Year @item["CompanyName"] </span>
+          </td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
+</body>
+</html>

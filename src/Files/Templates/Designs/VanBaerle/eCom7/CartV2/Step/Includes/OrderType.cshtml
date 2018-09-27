@@ -1,0 +1,24 @@
+﻿@functions{
+  private string OrderType(string orderType, bool isProduct, string productId, bool productPriceIsZeroBool, string productPriceIsZero, string discountType, string parentLineId, string voucherValue, bool loadedVoucherBool ){
+    bool isDiscount = false;
+
+    if (orderType == "3" || orderType == "1")
+    {
+      isDiscount = true;
+      if (isProduct)
+      {
+        discountType = "offerProduct";
+      }
+      else {
+        discountType = "offerValue";
+      }
+    }
+    if (isDiscount && voucherValue != "" && orderType == "1" && productId == ""  )
+    {
+      discountType = "offerVoucher";
+    }
+
+    return discountType;
+
+  }
+}

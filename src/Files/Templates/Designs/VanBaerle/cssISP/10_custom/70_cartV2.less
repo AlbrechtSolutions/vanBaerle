@@ -1,0 +1,658 @@
+/**
+ * Description: Cart V2
+ * User: ShareIT
+ * Date: 12/Jan/2016
+**/
+
+@import url(configs.less);
+
+#addToCartSubmit,
+.addToCart {
+    i {
+        margin-right: 5px;
+        display: inline-block;
+    }
+}
+
+.showCartHeader {
+  padding: 10px 0;
+  border-top: 1px solid @secondary;
+  border-bottom: 1px solid @secondary;
+  margin-top: 15px;
+}
+
+.cartProductsList > li {
+  margin-top: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid @secondary;
+}
+
+.rightTitle {
+  border-bottom: 1px solid @secondary;
+  margin: 10px 0;
+}
+
+.longContainer > div {
+  margin-bottom: 10px;
+}
+
+.totalValues > div:first-child {
+  border-bottom: 1px solid @secondary;
+  padding: 20px 0;
+}
+
+#totalPriceContainer,
+#totalPriceContainer small {
+  margin: 15px 0;
+}
+
+#totalPriceContainer .price {
+  padding-left: 8px;
+}
+
+.bottomButton {
+  padding: 15px 0;
+  border-bottom: 1px solid @secondary;
+  border-top: 1px solid @secondary;
+}
+
+.addressChange {
+  margin-top: 10px;
+}
+
+#addressValidators {
+  strike {
+    margin-left: 5px;
+  }
+
+  h3 {
+  margin-top: 40px;
+  }
+}
+
+#changeAll {
+  margin: 10px 5px 0 0;
+}
+
+#promoCodeContainer {
+  margin-top: 15px;
+
+  form {
+    margin-top: 10px;
+  }
+
+  input[type=text] {
+    height: 33px;
+  }
+
+  // Voucher code at include file (Step1 and step2)
+  &.DMForms{
+    > span
+    {
+      line-height: 33px;
+    }
+
+    input[type=text]{
+      margin-top:0!important;
+    }
+    .submitVoucher
+    {
+      margin-left: 15px;;
+    }
+  }
+}
+
+.loyaltyPoints {
+  margin-bottom: 10px;
+}
+
+.discountContainer {
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid @secondary;
+}
+
+.removeFromCart {
+  margin-left: 2px;
+}
+
+.cartChange .quantityInput {
+  padding: 1px;
+}
+
+#centralContainer > div.noMarginTop {
+  margin-top: 0;
+}
+
+#returningLogin label,
+#returningLogin .userRelatedForms.DMForms fieldset.TextInput > input {
+  width: 100% !important;
+  line-height: normal;
+}
+
+#returningLogin input {
+  margin-left: 0;
+}
+
+#returningLogin form {
+  padding: 0;
+}
+
+#returningLogin #ExtUserForm.DMForms input[type=submit] {
+  width: 100%;
+  margin: 0;
+}
+
+#returningLogin #forgotPassword {
+  margin: 0;
+}
+
+#returningLogin h2 {
+  border-bottom: 1px solid @secondary;
+  margin-bottom: 20px;
+}
+
+#returningLogin .checkoutWithoutLoginText {
+  margin-bottom: 20px;
+}
+
+#checkoutHeader {
+  margin-top: 20px;
+
+  @media (max-width: @screen-xs-max)
+  {
+    > figure {
+      padding-left: 15px !important;
+    }
+    .welcomeBack {
+      margin-top: 15px;
+    }
+  }
+}
+
+#cartFormContainer fieldset > div.note {
+  width: 25%;
+}
+
+#cartFormContainer form h2 {
+  margin: 0 0 20px 0;
+  padding: 20px 0;
+  width: 100%;
+  border-bottom: 1px solid @secondary;
+}
+
+#cartFormContainer .topButton {
+  margin-top: 20px;
+}
+
+.chooseDelivery {
+  margin: 0 0 40px 22%;
+}
+
+.continueButton {
+  padding: 15px;
+  margin-bottom: 20px;
+
+  .previousButton {
+    margin-right: 15px;
+  }
+
+  @media (max-width: @screen-sm-min)
+  {
+    &:not(.topButton) {
+        input[type=submit] {
+            margin-top: 15px !important;
+        }
+        .previousButton {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 15px;
+            margin-right: 0;
+        }
+    }
+  }
+
+  #promoCodeContainer {
+    margin: 0;
+
+    span {
+        line-height: 33px;
+    }
+
+    input{
+        margin: 0;
+        width: 100%;
+    }
+
+    .submitVoucher {
+        margin-left: 5px;
+    }
+
+    .promoCodeApplied{
+        margin-top: 0;
+
+        span {
+            font-weight: bold;
+        }
+
+        .removeVoucher {
+            margin-left: 15px;
+        }
+    }
+  }
+}
+
+/* Order Summary */
+#cartRightContent {
+  &:not(.gatewaySummary) {
+    margin-top: 20px;
+  }
+
+  h2 {
+    padding: 15px;
+  }
+  margin-bottom: 15px;
+}
+
+.rightColProducts > li {
+  border-bottom: 1px solid @secondary;
+  padding: 5px 0;
+}
+
+#cartRightContent .borderBottom {
+  margin-bottom: 15px;
+  border-bottom: 1px solid @secondary;
+  padding: 5px 15px;
+}
+
+#cartFormContainer small {
+  margin-top: 15px;
+}
+
+#editOrderButton {
+  margin-top: 20px;
+}
+
+
+/* Steps list menu */
+#stepsList {
+  margin-top: 30px;
+
+  > li > div {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+  }
+
+  > li i {
+    text-align: center;
+    margin: 20px;
+  }
+
+  > li > span {
+    width: 140%;
+    margin: 10px 0 0 -20%;
+  }
+}
+
+#updateExistingAddressContainer{
+  margin-top: @gutter;
+}
+
+/* Step2 */
+#shippingInfo fieldset > label {
+  width: 100%;
+  line-height: normal;
+}
+
+#paymentMethod {
+  margin-bottom: 40px;
+}
+
+.shippingBlock {
+  margin: 20px 0;
+}
+
+#expDateIcon {
+    cursor: pointer;
+}
+
+#cartFormContainer textarea {
+  width: 100%;
+  margin-top: 10px;
+  height: 150px;
+}
+
+#cartFormContainer fieldset  {
+  margin-bottom: 20px;
+}
+
+.recurringContainer {
+  label span {
+    width: 12%;
+    margin-right: 5px;
+  }
+  input:not([type=checkbox]), select {
+    width: 150px;
+  }
+  img {
+    margin-left: 5px;
+  }
+}
+
+.previousButton {
+  margin-top: 8px;
+}
+
+#terms {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Step 3 */
+
+#createCartUser {
+  > div {
+    padding: 15px;
+    border: 1px solid @secondary;
+  }
+
+  input[type=password] {
+    width: 100% !important;
+  }
+
+   > div > span {
+    padding: 15px 0;
+  }
+
+}
+
+#orderDetails {
+  margin-bottom: 40px;
+}
+
+#orderDetailContainer {
+  .title {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid @secondary;
+  }
+
+  .continueBottom {
+    margin-top: 40px;
+  }
+
+  .blockContent {
+    margin-bottom: 40px;
+  }
+
+  .usernameContainer {
+    margin-bottom: 20px;
+  }
+}
+
+#shareContainer {
+  z-index: @zIndex1;
+  margin-top: 20px;
+  border: 1px solid @secondary;
+
+  .cartProductsList > li {
+    border-bottom: 0;
+  }
+
+  h2 {
+    margin: 20px 15px;
+  }
+  
+  > a {
+    right: 20px;
+    top: 15px;
+  }
+}
+
+#productContent.lastStepProducts .showCartHeader {
+  border-top: 0;
+}
+
+label[for=EcomOrderSubscribeToNewsletter],
+label[for=SaveUser] {
+  width: 80%;
+  margin-left: 22.2%;
+  text-align: left;
+}
+
+.dwnPdf {
+  margin-left: 5px;
+}
+
+/* Mini Cart */
+#miniCart {
+  z-index: @zIndex9;
+  right: 0;
+  top: 25px;
+  border: 1px solid @secondary;
+}
+
+
+#miniCartContainer{
+  width: 320px;
+  float: left;
+  padding: 15px 0;
+}
+#miniCartContainer ul{
+  padding-bottom: 5px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+#miniCartContainer li{
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+#miniCartContainer li.shipTaxes{
+  padding-top: 3px;
+}
+
+#miniCartContainer footer > span{
+  width: 100%;
+  padding: 5px @spacing 0 @spacing;
+}
+
+#miniCartContainer .miniCartBtns{
+  width: 100%;
+  padding: @spacing;
+}
+
+.discountLine,
+.subTotal,
+.miniCartBtns {
+  border-top: 1px solid @secondary;
+  padding: 5px 0;
+}
+
+/* Gateways */
+#payment-form h2 {
+  margin-bottom: 30px;
+}
+.DMForms .small input:not([type=submit]):not([type=checkbox]):not([type=radio]):not(.fakeInput) {
+  width: 45%;
+}
+
+.DMForms .small span {
+  width: 10%;
+}
+
+
+/* ------------
+        MEDIA QUERIES
+        --------------- */
+
+
+@media (max-width: @screen-xs-max)
+{
+  .cartProductsList .quantity,
+  .cartProductsList .discount,
+  .cartProductsList .totalPrice  {
+    margin-top: 10px;
+  }
+  .cartChange .bootstrap-select.btn-group .btn .caret {
+    right: 2px;
+  }
+  .quantity b,
+  .cartProductsList
+  .totalPrice {
+    line-height: 40px;
+  }
+  .lastStepProducts {
+  .quantity b,
+  .totalPrice {
+    line-height: normal;
+  }
+  }
+  .cartProductsList .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+    width: 40px !important;
+  }
+
+  #returningLogin {
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+  }
+
+  #returningLogin > div:first-child {
+    -webkit-box-ordinal-group: 3;
+    -moz-box-ordinal-group: 3;
+    box-ordinal-group: 3;
+  }
+  #returningLogin > div:last-child {
+    -webkit-box-ordinal-group: 2;
+    -moz-box-ordinal-group: 2;
+    box-ordinal-group: 2;
+    margin-bottom: 30px;
+  }
+
+  #cartRightContent,
+  #cartFormContainer > div {
+    padding: 0;
+  }
+  #customerInfo input[type=submit] {
+    margin: 0;
+  }
+  #stepsList {
+    margin-bottom: 40px;
+  }
+  .chooseDelivery {
+    margin: 20px 0;
+  }
+  label[for=EcomOrderSubscribeToNewsletter],
+  label[for=SaveUser] {
+    margin-left: 0;
+    width: 100%;
+  }
+  #returningLogin .btn.btn-bg {
+    width: 100%;
+  }
+  .recurringContainer {
+    label span {
+      width: 100%;
+      margin-right: 0;
+    }
+    input:not([type=checkbox]), select {
+      width: 100%;
+    }
+    #datepicker {
+      width: 93%;
+    }
+    img {
+      margin-left: 5px;
+    }
+  }
+  .quantityPriceContainer {
+    margin-top: 10px;
+  }
+}
+
+@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max)
+{
+
+}
+
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max)
+{
+
+}
+
+@media (min-width: @screen-xs-max)  {
+  .cartProductsList {
+      .priceForDiscounts  {
+        padding-left: 0;
+      }
+  }
+}
+
+@media (max-width: @screen-sm-max)  {
+  .productCount {
+    top: -10px;
+    left: 14px;
+  }
+  .continueButton input[type=submit] {
+    width: 100%;
+  }
+}
+
+@media (min-width: @screen-sm-min) {
+  .cartProductsList {
+    .bootstrap-select {
+      max-width: 80px;
+    }
+    
+    div.price,
+    div.discount,
+    div.totalPrice {
+      margin-top: 12px;
+    }
+
+    div.prodName h2 {
+      margin-top: 8px;
+    }
+    .cartChange .quantityInput {
+      padding: 0 5px;
+      height: 40px;
+    }
+    .submitQuantity {
+      height: 40px;
+    }
+  }
+  .mdAlignRight {
+    text-align: right;
+    
+    &.quantity {
+      padding: 0;
+    }
+    
+    .quantityInput {
+      float: none;
+      max-width: 48px;
+    }
+    
+   .cartChange  {
+      text-align: right;
+      width: 100%;
+     
+     .bootstrap-select {
+       float: right !important;
+     }
+    }
+  }
+}
+
+@media (min-width: @screen-lg-min)
+{
+
+}
+

@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<NavigationTree>
+  <Settings>
+    <Pageview ID="1110" AreaID="1" MenuText="Shipping Address" Title="Shipping Address" NavigationName="LeftNavigation" AreaName="de-ch" AreaFirstPageID="148" ItemId="3" Sort="0" CompanyName="Company name" Address="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean aliquet tincidunt ornare" Email="tester@dynamicweb.pt" Phone="03 9620 3320" Geo="{&quot;Lat&quot;:0.0,&quot;Lng&quot;:0.0,&quot;IsCustom&quot;:false}" Zoom="12" Time="10000" Copyright="All rights reserved." NoIndex="True" NoFollow="True" ShowQuantityField="True" SocialNetworks="9,11,12,10" GeneralSettings="115" ProductDetail="Default.aspx?ID=28" ProductDownloads="Default.aspx?ID=90" MyProfile="Default.aspx?ID=93" CreateAccount="Default.aspx?ID=91" Login="Default.aspx?Id=159" Checkout="Default.aspx?ID=102" ShowCart="Default.aspx?ID=36" MiniCart="Default.aspx?ID=104" SearchResults="110" GlobalTranslates="Default.aspx?ID=114" ContactUs_Popup="Default.aspx?ID=120" PasswordResetPageId="93" PasswordTokenTimeout="24" Minify_CSS_And_JavaScript="True" Minify_HTML="False" Banner="True" />
+    <LayoutNavigationSettings startlevel="2" endlevel="3" template="LeftNavigation.xslt" sitemapmode="true" />
+    <LayoutNavigationAttributes class="dw-categories" id="leftnavigation" />
+    <GlobalTags>
+      <Global.Server.Date>08.11.2017</Global.Server.Date>
+      <Global.Pageview.Url>/shipping-address?ObjectID=385&amp;Action=ManageAddresses&amp;savexml=true</Global.Pageview.Url>
+      <Global.Pageview.LayoutTemplate>LeftMenu.cshtml</Global.Pageview.LayoutTemplate>
+      <Global.Pageview.Url.Raw>/Default.aspx?ID=1110&amp;ObjectID=385&amp;Action=ManageAddresses&amp;savexml=true</Global.Pageview.Url.Raw>
+      <Global.Page.ID>1110</Global.Page.ID>
+      <Global.Page.Name>Shipping Address</Global.Page.Name>
+      <Global.Area.ID>1</Global.Area.ID>
+      <Global.Area.Name>de-ch</Global.Area.Name>
+      <Global.Area.Lang>de</Global.Area.Lang>
+      <Global.Area.LongLang>de-CH</Global.Area.LongLang>
+      <Global.Area.Culture.DisplayName>German (Switzerland)</Global.Area.Culture.DisplayName>
+      <Global.Area.Culture.DisplayCountryName>Switzerland</Global.Area.Culture.DisplayCountryName>
+      <Global.Area.Culture.NativeName>Deutsch (Schweiz)</Global.Area.Culture.NativeName>
+      <Global.Area.Culture.NativeCountryName>Schweiz</Global.Area.Culture.NativeCountryName>
+      <Global.Area.Culture.Name>de-CH</Global.Area.Culture.Name>
+      <Global.Area.Culture.CountryCode>CH</Global.Area.Culture.CountryCode>
+      <Global.Page.Top.Name>Service menu</Global.Page.Top.Name>
+      <Global.Page.Top.ID>33</Global.Page.Top.ID>
+      <Global.Extranet.UserID>385</Global.Extranet.UserID>
+      <Global.Extranet.UserName>daniel@test.com</Global.Extranet.UserName>
+      <Global.Extranet.ImpersonationMode>Full</Global.Extranet.ImpersonationMode>
+      <Global.Extranet.Password>test</Global.Extranet.Password>
+      <Global.Extranet.Name>Daniel Voicu</Global.Extranet.Name>
+      <Global.Extranet.FirstName>Daniel</Global.Extranet.FirstName>
+      <Global.Extranet.LastName>Voicu</Global.Extranet.LastName>
+      <Global.Extranet.Company>test</Global.Extranet.Company>
+      <Global.Extranet.Address>Street 1, Nr. 11</Global.Extranet.Address>
+      <Global.Extranet.Zip>98101</Global.Extranet.Zip>
+      <Global.Extranet.State>Washington</Global.Extranet.State>
+      <Global.Extranet.City>Seattle</Global.Extranet.City>
+      <Global.Extranet.Country>US</Global.Extranet.Country>
+      <Global.Extranet.Email>daniel.voicu@brandfusion.ro</Global.Extranet.Email>
+      <Global.Extranet.Phone>1111-111-111</Global.Extranet.Phone>
+      <Global.Extranet.CustomerNumber>111</Global.Extranet.CustomerNumber>
+      <Global.Extranet.Groups>363</Global.Extranet.Groups>
+      <Global.Page.IsCurrentUserAllowed>True</Global.Page.IsCurrentUserAllowed>
+      <Global.CookieOptInLevel>Functional</Global.CookieOptInLevel>
+      <Global.Request.UserAgent>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36</Global.Request.UserAgent>
+      <Global.Request.Url>http://moonshot.dw-demo.com/Default.aspx?ID=1110&amp;ObjectID=385&amp;Action=ManageAddresses&amp;savexml=true</Global.Request.Url>
+      <Global.Request.AbsoluteUri>http://moonshot.dw-demo.com/Default.aspx?ID=1110&amp;ObjectID=385&amp;Action=ManageAddresses&amp;savexml=true</Global.Request.AbsoluteUri>
+      <Global.Request.Host>moonshot.dw-demo.com</Global.Request.Host>
+      <Global.Request.OriginalString>http://moonshot.dw-demo.com:80/Default.aspx?ID=1110&amp;ObjectID=385&amp;Action=ManageAddresses&amp;savexml=true</Global.Request.OriginalString>
+      <Global.Request.PathAndQuery>/Default.aspx?ID=1110&amp;ObjectID=385&amp;Action=ManageAddresses&amp;savexml=true</Global.Request.PathAndQuery>
+      <Global.Request.Port>80</Global.Request.Port>
+      <Global.Request.Query>?ID=1110&amp;ObjectID=385&amp;Action=ManageAddresses&amp;savexml=true</Global.Request.Query>
+      <Global.Request.Scheme>http</Global.Request.Scheme>
+      <Global.Device.IsDesktop>True</Global.Device.IsDesktop>
+      <Global.Device.IsOther>True</Global.Device.IsOther>
+      <Global.eCommerce.Currency>Schweizer Franken</Global.eCommerce.Currency>
+      <Global.eCommerce.Currency.Code>CHF</Global.eCommerce.Currency.Code>
+      <Global.eCommerce.Currency.IsDefault>True</Global.eCommerce.Currency.IsDefault>
+      <Global.eCommerce.Currency.IsCurrent>True</Global.eCommerce.Currency.IsCurrent>
+      <Global.eCommerce.Currency.Name>Schweizer Franken</Global.eCommerce.Currency.Name>
+      <Global.eCommerce.Currency.PayGatewayCode>756</Global.eCommerce.Currency.PayGatewayCode>
+      <Global.eCommerce.Currency.Symbol>CHF </Global.eCommerce.Currency.Symbol>
+      <Global.eCommerce.Currency.SymbolPlace>0</Global.eCommerce.Currency.SymbolPlace>
+      <Global.eCommerce.Currency.Rate>100</Global.eCommerce.Currency.Rate>
+      <Global.eCommerce.CurrencyName>Schweizer Franken</Global.eCommerce.CurrencyName>
+      <Global.eCommerce.CurrencyRate>100</Global.eCommerce.CurrencyRate>
+      <Global.eCommerce.CurrencyCode>CHF</Global.eCommerce.CurrencyCode>
+      <Global.eCommerce.ReverseChargeForVatToken>2eeb7330529e80d45f52f807f8ff14a1</Global.eCommerce.ReverseChargeForVatToken>
+      <Global.eCommerce.CartPageID>36</Global.eCommerce.CartPageID>
+      <Global.eCommerce.Cart.CartIsPresent>false</Global.eCommerce.Cart.CartIsPresent>
+    </GlobalTags>
+  </Settings>
+  <Page ID="92" AreaID="1" MenuText="My Account-bak" Href="Default.aspx?ID=92" FriendlyHref="/my-account-bak" Title="My Account-bak" Allowclick="True" Hidden="False" ShowInSitemap="True" ShowInLegend="True" AbsoluteLevel="2" RelativeLevel="1" Sort="1" LastInLevel="False" InPath="True" ChildCount="12" class="L2_Active" Active="False" IsPagePasswordProtected="False" IsPageUserProtected="False" CanAccessPasswordProtectedPage="False" CanAccessUserProtectedPage="True" ItemId="53" ItemSort="0" Icon="fa fa-user" MegaMenu="False" Class="login" Hide3rdLevelMenu="False" Show_Pattern="False">
+    <Page ID="93" AreaID="1" MenuText="Account Detail" Href="Default.aspx?ID=93" FriendlyHref="/account-detail" Title="Account Detail" Allowclick="True" Hidden="False" ShowInSitemap="True" ShowInLegend="True" AbsoluteLevel="3" RelativeLevel="2" Sort="1" LastInLevel="False" InPath="False" ChildCount="0" class="L3" Active="False" IsPagePasswordProtected="False" IsPageUserProtected="True" CanAccessPasswordProtectedPage="False" CanAccessUserProtectedPage="True" ItemId="64" ItemSort="0" Icon="fa fa-user" MegaMenu="False" Hide3rdLevelMenu="False" Show_Pattern="False" />
+    <Page ID="1106" AreaID="1" MenuText="Notifications" Href="Default.aspx?ID=1106" FriendlyHref="/notifications" Title="Notifications" Allowclick="True" Hidden="False" ShowInSitemap="True" ShowInLegend="True" AbsoluteLevel="3" RelativeLevel="2" Sort="2" LastInLevel="False" InPath="False" ChildCount="0" class="L3" Active="False" IsPagePasswordProtected="False" IsPageUserProtected="True" CanAccessPasswordProtectedPage="False" CanAccessUserProtectedPage="True" ItemId="556" ItemSort="0" Icon="fa fa-bell-o" MegaMenu="False" Hide3rdLevelMenu="False" Show_Pattern="True" />
+    <Page ID="94" AreaID="1" MenuText="My Orders" Href="Default.aspx?ID=94" FriendlyHref="/my-orders" Title="My Orders" Allowclick="True" Hidden="False" ShowInSitemap="True" ShowInLegend="True" AbsoluteLevel="3" RelativeLevel="2" Sort="3" LastInLevel="False" InPath="False" ChildCount="0" class="L3" Active="False" IsPagePasswordProtected="False" IsPageUserProtected="True" CanAccessPasswordProtectedPage="False" CanAccessUserProtectedPage="True" ItemId="554" ItemSort="0" Icon="fa fa-shopping-cart" MegaMenu="False" Hide3rdLevelMenu="False" Show_Pattern="True" />
+    <Page ID="1110" AreaID="1" MenuText="Shipping Address" Href="/shipping-address?ObjectID=385&amp;Action=ManageAddresses" FriendlyHref="ObjectID=385&amp;Action=ManageAddresses" Title="Shipping Address" Allowclick="True" Hidden="False" ShowInSitemap="True" ShowInLegend="True" AbsoluteLevel="3" RelativeLevel="2" Sort="4" LastInLevel="False" InPath="True" ChildCount="0" class="L3_Active" Active="True" IsPagePasswordProtected="False" IsPageUserProtected="True" CanAccessPasswordProtectedPage="False" CanAccessUserProtectedPage="True" ItemId="557" ItemSort="0" Icon="fa fa-map-marker" MegaMenu="False" Hide3rdLevelMenu="False" Show_Pattern="True" />
+    <Page ID="96" AreaID="1" MenuText="Wish lists" Href="Default.aspx?ID=96" FriendlyHref="/wish-lists" Title="Wish lists" Allowclick="True" Hidden="False" ShowInSitemap="True" ShowInLegend="True" AbsoluteLevel="3" RelativeLevel="2" Sort="5" LastInLevel="False" InPath="False" ChildCount="0" class="L3" Active="False" IsPagePasswordProtected="False" IsPageUserProtected="True" CanAccessPasswordProtectedPage="False" CanAccessUserProtectedPage="True" ItemId="62" ItemSort="0" Icon="fa fa-heart-o" MegaMenu="False" Hide3rdLevelMenu="False" Show_Pattern="False" />
+    <Page ID="1114" AreaID="1" MenuText="FAQ" Href="Default.aspx?ID=1114" FriendlyHref="/faq" Title="FAQ" Allowclick="True" Hidden="False" ShowInSitemap="True" ShowInLegend="True" AbsoluteLevel="3" RelativeLevel="2" Sort="6" LastInLevel="False" InPath="False" ChildCount="0" class="L3" Active="False" IsPagePasswordProtected="False" IsPageUserProtected="True" CanAccessPasswordProtectedPage="False" CanAccessUserProtectedPage="True" ItemId="558" ItemSort="0" Icon="fa fa-commenting-o" MegaMenu="False" Hide3rdLevelMenu="False" Show_Pattern="True" />
+  </Page>
+  <Page ID="36" AreaID="1" MenuText="My cart" Href="Default.aspx?ID=36" FriendlyHref="/my-cart" Title="My cart" Allowclick="True" Hidden="False" ShowInSitemap="True" ShowInLegend="True" AbsoluteLevel="2" RelativeLevel="1" Sort="2" LastInLevel="False" InPath="False" ChildCount="0" class="L2" Active="False" IsPagePasswordProtected="False" IsPageUserProtected="False" CanAccessPasswordProtectedPage="False" CanAccessUserProtectedPage="True" ItemId="31" ItemSort="0" Icon="fa fa-cart-plus" MegaMenu="False" Class="myCart" />
+  <Page ID="102" AreaID="1" MenuText="Checkout" Href="Default.aspx?ID=102" FriendlyHref="/checkout" Title="Checkout" Allowclick="True" Hidden="False" ShowInSitemap="True" ShowInLegend="True" AbsoluteLevel="2" RelativeLevel="1" Sort="3" LastInLevel="False" InPath="False" ChildCount="0" class="L2" Active="False" IsPagePasswordProtected="False" IsPageUserProtected="False" CanAccessPasswordProtectedPage="False" CanAccessUserProtectedPage="True" ItemId="55" ItemSort="0" />
+  <Page ID="91" AreaID="1" MenuText="Create Account" Href="Default.aspx?ID=91" FriendlyHref="/create-account" Title="Create Account" Allowclick="True" Hidden="False" ShowInSitemap="True" ShowInLegend="True" AbsoluteLevel="2" RelativeLevel="1" Sort="4" LastInLevel="True" InPath="False" ChildCount="1" class="L2" Active="False" IsPagePasswordProtected="False" IsPageUserProtected="False" CanAccessPasswordProtectedPage="False" CanAccessUserProtectedPage="True" ItemId="60" ItemSort="0" MegaMenu="False" Hide3rdLevelMenu="False" />
+</NavigationTree>

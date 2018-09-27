@@ -1,0 +1,16 @@
+﻿<div class="col-xs-12">
+  <h3 id="createTitle" class="hidden">@Translate("createWishlist", "Create Wish list")</h3>
+  <div class="row createSubtitle">@Translate("youCanCreateMultipleWishlists","You can create multiple wish lists and switch between them by setting the default list in Manage Wish lists.")</div>
+  <form class="DMForms" id="@GetString("ParagraphID")AddListForm" name="@GetString("ParagraphID")AddListForm" action='@GetString("Ecom:CustomerCenter.List.CreateList")' method="post">
+    <fieldset class="mandatory">
+      <label>@Translate("wishlistName","Wish list name")</label>
+      @GetString("Ecom:CustomerCenter.List.Name.Input")
+    </fieldset>
+
+    <div class="formButtonsWithReset">
+        <a class="btn btn-border" href="@path">@Translate("cancel", "Cancel")</a>
+        <input class="btn btn-primary" id="Submit1" type="submit" value='@Translate("createList", "Create List")' />
+    </div>
+  </form>
+
+</div>

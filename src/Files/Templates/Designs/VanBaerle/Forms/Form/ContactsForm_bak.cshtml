@@ -1,0 +1,348 @@
+﻿@using System.Web;
+@{
+ 
+  string formCssClass = GetString("Form.CssClass"),
+      formSystemFields = GetString("Form.SystemFields"),
+      formId = GetString("Form.HtmlId"),
+      formOnSubmit = GetString("Form.OnSubmit"),
+      formSpamScript = GetString("Form.SpamScript"),
+      formAction = GetString("Form.Action"),
+      formLabelRequired = GetString("Form.LabelRequired");
+  string designFolder = GetString("Template:DesignBaseUrl");
+    
+}
+
+<div class="container-fluid contact top-margin">
+    <div class="row banner">
+        <div class="col-md-6 col-sm-6 col-xs-12 banner-image">
+
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12 banner-text">
+            <div class="row header">
+                <div class="header-light">Easy to reach</div>
+                <span>easy to be reached</span>
+            </div>
+            <div class="row personal">
+                <div class="col-md-2 col-sm-3 col-xs-3">
+                  <img src="@designFolder/img/contact-2.png" class="img-responsive" alt="avartar">
+                </div>
+                <div class="col-md-10 col-sm-9 col-xs-9 contact-information">
+                    <div class="row name">
+                        Jenny Settembrini
+                    </div>
+                    <div class="row position">
+                        Head of Corporate Communications
+                    </div>
+                    <div class="row email">
+                        jenny.settembrini@vanbaerle.ch
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row contact-info">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="row header">
+                        <div class="col-md-2 header-line full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <div class="row">
+                                <span>Subsidiaries</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-md-offset-2">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 item-contact">
+                            <div class="row name">
+                                Czech Republic
+                            </div>
+                            <div class="row note">
+                                vanBaerle Swiss Hygiene s.r.o.
+                            </div>
+                            <div class="row item-contact-information">
+<img src="@designFolder/img/location-icon.png"/>
+                                Pernerova 168 530 02 Pardubice
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/tel-icon.png"/>
+                                Tel.  +420 466 818 213
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/phone-icon.png"/>
+                                Fax. +420 466 818 215
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/mail-icon.png"/>
+                                info.cz@vanbaerle.com
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-4 item-contact">
+                            <div class="row name">
+                                Singapore
+                            </div>
+                            <div class="row note">
+                                vanBaerle Silicates (S) Pte Ltd 
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/location-icon.png"/>
+                                100 Pasir Panjang Road # 08-04, Singapore 118518
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/tel-icon.png"/>
+                                Tel.  +65 68 99 33 43
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/phone-icon.png"/>
+                                Fax. +65 68 96 01 44
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/mail-icon.png"/>
+                                th.tan@vanbaerle.com.sg 
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-4 col-sm-4 item-contact">
+                            <div class="row name">
+                                Slovakia
+                            </div>
+                            <div class="row note">
+                                vanBaerle VS s.r.o.
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/location-icon.png"/>
+                                Palisàdy 33, 81106 Bratislava, Slovakia
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/tel-icon.png"/>
+                                Tel.  +421 2 32 41 06 21
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/phone-icon.png"/>
+                                Fax. +421 2 32 41 06 22
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row contact-info partner">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="row header">
+                        <div class="col-md-2 header-line full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <div class="row">
+                                <span>Partners</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8 col-sm-12">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 item-contact">
+                            <div class="row name">
+                                Joint Venture Partner
+                            </div>
+                            <div class="row note">
+                                KOMA, spol. s.r.o.
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/location-icon.png"/>
+                                U Tonasa 172/2, 403 31 Ústi nad Labem, Czech Republic
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/web-icon.png"/>
+                                www.koma.cz
+                            </div>
+
+                        </div>
+                        <div class="col-md-3 col-sm-3 item-contact">
+                            <div class="row name">
+                                USA / Canada
+                            </div>
+                            <div class="row note">
+                                Zaclon Inc.
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/location-icon.png"/>
+                                2981 Independence Rd. Cleveland, Ohio 44115, United States of America 
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/tel-icon.png"/>
+                                +1 216 271 1601
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/phone-icon.png"/>
+                                +1 216 271 1792
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/mail-icon.png"/>
+                                zaclon@zaclon.com
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/web-icon.png"/>
+                                www.zaclon.com
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-3 col-sm-3 item-contact">
+                            <div class="row name">
+                                Scandinavia
+                            </div>
+                            <div class="row note">
+                                Renotech Oy
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/location-icon.png"/>
+                                Sampsankatu 4B 20520 Turku, Finnland
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/phone-icon.png"/>
+                                +358 10 830 16 00
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/mail-icon.png"/>
+                                rt@renotech.fi
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/web-icon.png"/>
+                                www.renotech.fi
+                            </div>
+
+                        </div>
+                        <div class="col-md-3 col-sm-3 item-contact">
+                            <div class="row name">
+                                Italy
+                            </div>
+                            <div class="row note">
+                                Tillmanns S.P.A.
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/location-icon.png"/>
+                                Via Benigno Crespi 10/A 20159 Milano, Italy
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/tel-icon.png"/>
+                                +39 02 694 01
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/phone-icon.png"/>
+                                +39 02 668 01 189
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/mail-icon.png"/>
+                                infoindustria@tillmanns.it
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="@designFolder/img/web-icon.png"/>
+                                www.tillmanns.it
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row contact-info get-in-touch">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="row header">
+                        <div class="col-md-2 header-line full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <div class="row">
+                                <span>Get in touch</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-md-offset-2">
+                    <div class="row form-get-in-touch">
+                    <form novalidate method="post" action="@formAction" enctype="multipart/form-data" class="@formCssClass DMForms" id="contact-form" onsubmit="@formOnSubmit">
+                         @formSystemFields
+                      <div class="col-md-6 col-sm-6">
+                                <input type="text" class="form-control" id="Name" name="Name" data-validation="[NOTEMPTY]"  required="required" placeholder="Name *" >
+                                <input type="email" class="form-control" id="Email" name="Email" placeholder="E-Mail address*">
+                                <input type="text" class="form-control" id="Phone" name="Phone" placeholder="Telephone number*">
+                                <button type="button" class="btn btn-primary btn-lg visible-md visible-lg visible-sm" onclick="document.getElementById('btnsubmit').click();">Send</button>
+                                  
+                                
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <input type="text" class="form-control" id="Title" name="Title" placeholder="Title*">
+                                <input type="text" class="form-control" id="Message" name="Message" placeholder="Message*">
+                                <button type="submit" id="btnsubmit" class="hidden">Send</button>                    
+                            </div>
+                        </form>
+                              
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="container-fluid map-wrapper">
+    <div id="map" class="row">
+
+    </div>
+    <div class="map-contact-information visible-lg visible-md">
+        <div class="item-contact">
+            <div class="name">
+                Contacts
+            </div>
+            <div class="note">
+                vanBaerle AG
+            </div>
+            <div class="item-contact-information">
+                <img src="@designFolder/img/location-icon.png"/>
+                Schützenmattstrasse 21 4142 Münchenstein
+            </div>
+            <div class="item-contact-information">
+                <img src="@designFolder/img/tel-icon.png"/>
+                +41 61 415 91 11
+            </div>
+            <div class="item-contact-information">
+                <img src="@designFolder/img/phone-icon.png"/>
+                +41 61 415 92 22
+            </div>
+            <div class="item-contact-information">
+                <img src="@designFolder/img/mail-icon.png"/>
+                info@vanbaerle.ch
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script>
+$(document).ready(function() {   
+    $('#menu-button').click();
+    $('#close-button').hide();
+});
+</script>

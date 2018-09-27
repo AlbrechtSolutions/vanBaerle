@@ -1,0 +1,310 @@
+/**
+ * Description: styles related to paragraphs.
+ * User: ShareIT
+ * Date: 12/Jan/2016
+**/
+
+@import url(configs.less);
+
+
+.btn-outline {
+    border: 1px solid @secondary;
+}
+
+/*
+Bootstrap Paragraph
+*/
+.noPadding{
+  padding-left:0 !important;
+  padding-right:0 !important;
+}
+
+.noPaddingLeft{
+  padding-left:0 !important;
+}
+
+.noPaddingRight{
+  padding-right:0 !important;
+}
+
+figure.image-top img{
+  margin:0 auto;
+}
+
+figure.cover img
+{
+  padding: 8px;
+}
+
+figure.image-top {
+  margin-bottom: 30px;
+}
+
+figure.cover-border img
+{
+  padding: 4px;
+  border: 1px solid #e1e1e1;
+  border-radius: 0px !important;
+}
+
+figure.frame img
+{
+  padding: 6px;
+  border: 1px solid #e1e1e1;
+  border-radius: 0px !important;
+}
+
+figure.rounded img
+{
+  border-radius: 8px !important;
+}
+
+figure.shadow img
+{
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+/*---------------*/
+
+
+.paragraph,
+#centralContainer > div.row,
+#leftMenuContainer,
+.standardList > li
+{
+  margin-top: 30px;
+}
+
+.paragraph header
+{
+  padding-left: @spacing;
+  margin-bottom: @gutter;
+}
+
+.paragraph .paragraphImage
+{
+  overflow: hidden;
+  margin-bottom: 20px;
+  z-index: 1;
+}
+
+.paragraph .paragraphModule
+{
+  margin-bottom: 20px;
+}
+
+.paragraph.imgTop .paragraphImage,
+.paragraph.imgBottom .paragraphImage,
+.paragraph.modTop .paragraphModule,
+.paragraph.modBottom .paragraphModule
+{
+  margin-left: auto;
+  margin-right: auto;
+  clear: both;
+}
+
+.paragraph.imgBottom .paragraphImage,
+.paragraph.modBottom .paragraphModule
+{
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+.paragraph .paragraphImage img
+{
+  max-width: 100%;
+  height: auto;
+}
+
+.generalMarginBottom {
+  margin-bottom: 20px;
+}
+
+// Paragraph Text
+
+article .paragraphHeader {
+  margin-bottom: 15px;
+}
+
+.paragraphText > ul
+{
+  margin-left: 20px;
+  list-style: disc;
+}
+
+.paragraphText ul ul {
+    list-style: circle;
+}
+
+.paragraphText ul ul ul {
+    list-style: square;
+}
+
+.paragraphText ul > li:before
+{
+  //content: "• ";
+}
+.paragraphText ul ul
+{
+  margin-left: @spacing;
+}
+
+.paragraphText ol
+{
+  counter-reset: section;
+}
+
+.paragraphText ol li
+{
+  list-style: none;
+}
+
+.paragraphText ol > li:before
+{
+  counter-increment: section;
+  content: counters(section, ".") ". ";
+}
+
+.paragraphText ol ol
+{
+  margin-left: @spacing;
+}
+
+.paragraphText table
+{
+  width: 100%;
+}
+
+.paragraphText table th,
+.paragraphText table td
+{
+  vertical-align: middle;
+}
+
+tr td,
+tr th {
+  padding: 10px;
+}
+
+thead tr th {
+  border-bottom: 1px solid @secondary;
+  border-top: 1px solid @secondary;
+}
+
+.underlineTitle {
+  border-bottom: 1px solid @secondary;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+}
+
+.standardList > li.col-sm-12.col-xs-12 .col-xs-12.col-xs-0 {
+  padding: 0;
+}
+
+/* paragraph button */
+
+.paragraphButton {
+  margin-top: 20px;
+
+  a {
+    .btn;
+    .btn-default;
+  }
+}
+
+/* Pagination */
+.paginationList {
+    list-style: none !important;
+
+    >li {
+        float: left;
+        margin-left: 5px;
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        &::before {
+            content: "" !important;
+        }
+
+        a {
+            float: left;
+            padding: 5px 10px;
+            background: @thirdtier;
+            color: @primary;
+            text-decoration: none;
+
+            &:hover {
+                background-color: @secondary;
+            }
+        }
+    }
+
+}
+
+
+/* ------------
+        MEDIA QUERIES
+        --------------- */
+
+
+@media (max-width: @screen-xs-max)
+{
+
+}
+
+@media (max-width: @screen-sm-max) {
+    #homeContent > article {
+        margin-bottom: 15px;
+    }
+
+
+    table:not(.noResponsive):not(.ui-datepicker-calendar) {
+        display: block;
+
+        thead, tbody, th, td, tr {
+            display: block;
+        }
+        thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        tr { border: 1px solid #ccc; }
+
+        td, tbody th {
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            //padding-left: 50%;
+        }
+
+        td[data-th]:before, tbody th[data-th]:before {
+            top: 6px;
+            left: 6px;
+            width: 45%;
+            float: left;
+            padding-right: 10px;
+            white-space: nowrap;
+            content: attr(data-th)": ";
+        }
+    }
+
+}
+
+@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max)
+{
+
+}
+
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max)
+{
+
+}
+
+@media (min-width: @screen-lg-min)
+{
+
+}

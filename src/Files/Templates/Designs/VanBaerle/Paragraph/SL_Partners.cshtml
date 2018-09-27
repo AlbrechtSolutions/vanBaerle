@@ -1,0 +1,187 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@* version 1.3 *@
+@Include("/Files/Templates/Designs/LayoutFunctions.cshtml")
+
+@{
+  string slideNrColumn = GetString("Item.Slide_NrColumn");
+  string noBackground = GetBoolean("Item.No_Background")? "no-bg" : "";
+  List<LoopItem> standardList = GetLoop("Item.List");
+  string heightBox = (!string.IsNullOrEmpty(GetString("Item.Height"))) ? GetString("Item.Height") : "";
+} 
+
+@NewRow()
+
+<article class='@GetColumnClass() slides @noBackground @GetString("Item.Custom_CSS")'>
+
+    @RenderParagraphAnchor()
+    @RenderHeading()
+    @RenderImage()
+    @RenderText()
+    @RenderModule()
+    @RenderButton()
+    @EndParagraphWrapper()
+
+    
+    @if(standardList.Any()) {
+      <div class="section__slider general_slide partners" data-nr="6">
+        @foreach(LoopItem list in standardList) {
+          string listImage = list.GetString("Item.List.Image"),
+                 listTitle = list.GetString("Item.List.Title"),
+                 listLink = list.GetString("Item.List.Link");
+          string target = list.GetBoolean("Item.List.OpenInNewWindow") ? "target='_blank'" : "";
+
+          <div class="col-xs-12 @heightBox">
+            <div class="card__img">
+                @if(!string.IsNullOrEmpty(listLink)) {
+                  <a href='@listLink' class="card__more" @target>
+                    <img src="@listImage" alt="" />
+                  </a>
+                } else {
+                  <img src="@listImage" alt="" />
+                }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+
+</article>
+
+@helper RenderParagraphAnchor()
+{
+  if(Convert.ToBoolean(Dynamicweb.Configuration.SystemConfiguration.Instance.GetValue("/Globalsettings/Settings/Performance/DeactivateParagraphAnchor")))
+  {
+    <a id='@GetString("ParagraphID")' class="pidlink"></a>
+  }
+}
+@helper RenderHeading()
+{
+  if(GetBoolean("Item.ShowTitle") && GetString("Item.TitleOrder") == "title-first")
+  {
+	  @RenderHeadingHtml()
+  }
+}
+@helper RenderHeadingHtml()
+{
+  if (!string.IsNullOrEmpty(GetString("Item.Title")))
+  {
+    string headingType = string.IsNullOrEmpty(GetString("Item.HeadingType")) ? "h1" : GetString("Item.HeadingType");
+    <header class="paragraphHeader">
+	  @string.Format("<{0}>{1}</{0}>", headingType, GetString("Item.Title"))
+	</header>
+  }
+}
+@helper RenderText()
+{
+  if(GetString("Item.Order") == "image-left" || GetString("Item.Order") == "image-right")
+  {
+	@CheckForParagraphWrapper()
+    @RenderImageTag()
+  }
+  if (GetBoolean("Item.ShowTitle") && GetString("Item.TitleOrder") == "title-with-text")
+  {
+	@CheckForParagraphWrapper()
+    @RenderHeadingHtml()
+  }
+  if (!string.IsNullOrWhiteSpace(GetString("Item.Text")))
+  {
+	@CheckForParagraphWrapper()
+    <div class="paragraphText">
+      @GetString("Item.Text")
+    </div>
+  }
+}
+@helper RenderModule()
+{
+  if(!string.IsNullOrEmpty(GetString("ParagraphModule"))){
+    @CheckForParagraphWrapper()
+    @GetString("ParagraphModule")
+  }
+}
+@helper RenderImage()
+{
+  string itemOrder = (GetString("Item.Order") == "") ? "image-top" : GetString("Item.Order");
+  if(itemOrder == "image-left-column" || itemOrder == "image-right-column" || itemOrder == "image-top")
+  {
+    @RenderImageTag()
+  }
+}
+@helper RenderImageTag()
+{
+  if (!string.IsNullOrEmpty(GetString("Item.Image")))
+  {
+    if (string.IsNullOrEmpty(GetString("Item.Link")))
+    {
+      @RenderImageWrapper()
+    }
+    else
+    {
+      string target = GetBoolean("Item.OpenInANewWindow") ? "target='_blank'" : "";
+      <a href="@GetString("Item.Link")" @target>
+        @RenderImageWrapper()
+      </a>
+    }
+  }
+}
+@helper RenderImageWrapper()
+{
+  string image = System.Web.HttpContext.Current.Server.UrlEncode(GetString("Item.Image"));
+  string imageAlt = (!string.IsNullOrEmpty(GetString("Item.ImageTitle"))) ? GetString("Item.ImageTitle") : GetString("Item.Title");
+  string figureWidth = "col-xs-" + GetString("Item.ImageWidth");
+  string optimizedWidth = "1280";
+  string figureClass = "";//GetString("Item.ImageStyle") ;
+
+  switch (GetString("Item.Order")){
+    case "image-left":
+	case "image-left-column":
+      figureWidth += " pull-left noPaddingLeft";
+      break;
+    case "image-right":
+    case "image-right-column":
+      figureWidth += " pull-right noPaddingRight";
+      break;
+    case "image-top":
+	default:
+      figureWidth += " image-top noPadding";
+      if(GetInteger("Item.ImageWidth") < 12){
+        figureWidth += " col-xs-offset-" + ((12 - GetInteger("Item.ImageWidth")) / 2);
+      }
+      break;
+  }
+  figureClass = (figureClass == "none") ? figureWidth : figureClass + " " + figureWidth;
+
+  if (Dynamicweb.Frontend.PageView.Current().Device.ToString() == Dynamicweb.Frontend.Devices.DeviceType.Mobile.ToString())
+  {
+    switch (GetString("Item.WidthMobile")){
+      case "12":
+        optimizedWidth = "480";
+        break;
+      case "6":
+        optimizedWidth = "240";
+        break;
+    }
+  }
+  else {
+    switch (GetString("Item.Width")){
+      case "3":
+	  case "4":
+	  case "6":
+        optimizedWidth = "722";
+        break;
+      case "8":
+	  case "9":
+        optimizedWidth = "960";
+        break;
+      default:
+        optimizedWidth = "1280";
+        break;
+    }
+  }
+  <figure class="@figureClass">
+    <img class="img-responsive" src="/Admin/Public/GetImage.ashx?width=@optimizedWidth&image=@image" title="@imageAlt" alt="@imageAlt" />
+  </figure>
+}
+
+@Include("../includes/PageTemplates/ItemDetailHelpersRenderButton.cshtml")

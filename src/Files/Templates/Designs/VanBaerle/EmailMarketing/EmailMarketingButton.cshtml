@@ -1,0 +1,35 @@
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@helper CreateButton(string link, string text, string style = "width:120px;height:40px;line-height:40px;background:#333333;color:#ffffff;font-family:sans-serif;font-size:14px;text-align:center;text-decoration:none;", Dictionary<string, string> options = null){
+  string rect = style,
+         anchor = style;
+
+  if(string.IsNullOrEmpty(style)){
+    string width = options != null && options.ContainsKey("width") ? options["width"].ToString() : "120px",
+           height = options != null && options.ContainsKey("height") ? options["height"].ToString() : "40px",
+           background = options != null && options.ContainsKey("background") ? options["background"].ToString() : "#256F9C",
+           border = options != null && options.ContainsKey("border") ? options["border"].ToString() : "1px solid ffffff",
+           color = options != null && options.ContainsKey("color") ? options["color"].ToString() : "#ffffff",
+           fontFamily = options != null && options.ContainsKey("font-family") ? options["font-family"].ToString() : "Helvetica, Arial, sans-serif",
+           fontSize = options != null && options.ContainsKey("font-size") ? options["font-size"].ToString() : "14px",
+           fontStyle = options != null && options.ContainsKey("font-style") ? options["font-style"].ToString() : "normal",
+           textAlign = options != null && options.ContainsKey("text-align") ? options["text-align"].ToString() : "center",
+           textDecoration = options != null && options.ContainsKey("text-decoration") ? options["text-decoration"].ToString() : "none";
+
+    rect = "style=\"width:" + width + ";height:" + height + ";border:" + border + ";color:" + color + ";v-text-anchor:middle; \" fillcolor=\"" + background + "\"";
+    anchor = "width:" + width + ";height:" + height + ";line-height:" + height + ";background:" + background + ";border:" + border + ";color:" + color + ";font-family:" + fontFamily + ";font-size:" + fontSize + ";font-style:" + fontStyle + ";text-align:" + textAlign + ";text-decoration:" + textDecoration + ";";
+  }
+
+  <div>
+    <!--[if mso]>
+      <v:rect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="@link" @rect>
+        <w:anchorlock/>
+        <center>
+    <![endif]-->
+          <a class="mobile-button" target="_blank" href="@link" style="-webkit-text-size-adjust:none;display:inline-block;@anchor">@text</a>
+    <!--[if mso]>
+        </center>
+      </v:rect>
+    <![endif]-->
+  </div>
+}

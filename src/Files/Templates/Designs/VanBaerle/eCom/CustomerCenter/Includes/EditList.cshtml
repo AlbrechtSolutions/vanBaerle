@@ -1,0 +1,23 @@
+﻿string cancelEdit = path+"?showLists=true";
+
+<div class="col-xs-12">
+  <h3 id="createTitle" class="hidden">@Translate("editWishlist", "Edit Wish list")</h3>
+
+  <form class="DMForms" id="@GetString("ParagraphID")EditListForm" name="@GetString("ParagraphID")AddListForm" action='@GetString("Ecom:CustomerCenter.List.EditList")' method="post">
+    <fieldset class="mandatory">
+      <label>@Translate("setDefault","Set as default list")</label>
+      @GetString("Ecom:CustomerCenter.List.IsDefault.Input")
+    </fieldset>
+
+    <fieldset class="mandatory">
+      <label>@Translate("wishlistName","Wish list name")</label>
+      @GetString("Ecom:CustomerCenter.List.Name.Input")
+    </fieldset>
+
+    
+    
+    <input class="btn btn-primary" id="Submit1" type="submit" value='@Translate("save","Save")' />
+    <a class="btn btn-border" href="@cancelEdit">@Translate("cancel", "Cancel")</a>
+  </form>
+
+</div>

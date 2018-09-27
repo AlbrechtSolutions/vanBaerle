@@ -1,0 +1,14 @@
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@functions{
+  public static string GetImage(string source, int widthNum = 600, int heightNum = 200, string format = "jpg", int num_compression = 85, int num_crop = 5){
+    Dynamicweb.Frontend.PageView obj_currentPageview = Dynamicweb.Frontend.PageView.Current();
+    string alternativeImage = obj_currentPageview.Area.Item["NoImage"] != null ? obj_currentPageview.Area.Item["NoImage"].ToString() : "",
+           width = widthNum != 0 ? "&amp;Width=" + widthNum.ToString() : "",
+           height = heightNum != 0 ? "&amp;Height=" + heightNum.ToString(): "";
+    format = format != "jpg" ? "&amp;Format=" + format : "";
+
+    string output = "/Admin/Public/GetImage.ashx?Image=" + source + width + height + "&amp;altFmImage_path=" + alternativeImage + format + "&amp;Compression=" + num_compression + "&amp;Crop=" + num_crop;
+    return output.ToString();
+  }
+}

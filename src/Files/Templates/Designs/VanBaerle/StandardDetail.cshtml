@@ -1,0 +1,24 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@MasterPageFile("Master.cshtml")
+@Title("Detail Page")
+@Description("Model for detail page")
+
+@Include("includes/PageTemplates/ItemDetailHelpers.cshtml")
+@{
+	string contentCenter = GetBoolean("Item.Center_This_Content") ? "text-center" : "";
+}
+
+<h1>@GetString("Title")</h1>
+<div class="col-xs-12 noPadding @contentCenter">
+
+  @RenderHeading()
+  @RenderImage()
+  @RenderFontAwesomeIcon()
+  <div class="@GetItemClass()">
+    @RenderText()
+    @RenderModule()
+    @RenderButton()
+  </div>
+
+</div>

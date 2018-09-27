@@ -1,0 +1,82 @@
+﻿<div class="dynamicweb-map" id="@GetValue("ElementID")" data-list-position="@GetValue("ListPosition")">
+	<form class="search">
+		<div>
+			<label for="dynamicweb-map-adr"><!--@Translate(Address, 'Address')--></label>
+			<input type="text" size="70" id="dynamicweb-map-adr" name="adr" placeholder="Address …" value='@if(Dynamicweb.Core.Converter.ToBoolean(GetValue("Server:Request.adr"))){<text>@GetValue("Server:Request.adr")</text>}'/>
+			<label for="dynamicweb-map-dst"><!--@Translate(Distance, 'Distance')--></label>
+			<select id="dynamicweb-map-dst" name="dst">
+				<option value="1000">1 km</option>
+				<option value="2000">2 km</option>
+				<option value="4000">4 km</option>
+				<option value="8000">8 km</option>
+				<option value="16000">16 km</option>
+				<option value="32000">32 km</option>
+			</select>
+			<button type="submit" data-search="distance"><!--@Translate(Search, 'Search')--></button>
+			<button type="submit" data-search="content"><!--@Translate(Search_content, 'Search content')--></button>
+			<button type="submit" data-search="nearest"><!--@Translate(Search_nearest, 'Search nearest')--></button>
+			<button type="reset"><!--@Translate(Reset_search, 'Reset search')--></button>
+			<button type="button" class="show-all-locations"><!--@Translate(Show_all_locations, 'Show all locations')--></button>
+		</div>
+	</form>
+
+	@foreach (LoopItem i in GetLoop("GroupGroups")){
+	@i.GetValue("HeaderStart")
+	<div class="locations-filter">
+		@i.GetValue("HeaderEnd")
+		<button data-filter-value="@i.GetValue("ID")">@i.GetValue("Name")</button>
+		@i.GetValue("FooterStart")
+		<button data-filter-value="*"><!--@Translate(Show_all_groups, "Show all groups")--></button>
+	</div>
+	@i.GetValue("FooterEnd")
+	}
+
+	@foreach (LoopItem i in GetLoop("UserGroups")){
+	@i.GetValue("HeaderStart")
+	<div class="locations-filter">
+		@i.GetValue("HeaderEnd")
+		<button data-filter-value="@i.GetValue("ID")">
+			@if(Dynamicweb.Core.Converter.ToBoolean(i.GetValue("Icon"))){<text><img class="icon" src="@i.GetValue("Icon")" /></text>}
+			@i.GetValue("Name")</button>
+		@i.GetValue("FooterStart")
+		<button data-filter-value="*"><!--@Translate(Show_all, "Show all")--></button>
+	</div>
+	@i.GetValue("FooterEnd")
+	}
+
+	<div class="map" style="width: @GetValue("MapWidth"); height: @GetValue("MapHeight");">
+		<div id="@GetValue("MapElementID")"></div>
+	</div>
+
+	<div class="list">
+		<div class="no-matches"><!--@Translate(No_matches, "No matches")--></div>
+		<ol id="@GetValue("ListElementID")" data-sort-order="desc">
+			@foreach (LoopItem i in GetLoop("Locations")){
+			<li data-lat="@i.GetValue("Lat")" data-lng="@i.GetValue("Lng")" data-title="@i.GetValue("Name")"
+				data-filter-values="@i.GetValue("GroupID"),@i.GetValue("ParentGroupID"),@i.GetValue("GroupIDList")"
+				@if(Dynamicweb.Core.Converter.ToBoolean(i.GetValue("Icon"))){<text> data-icon="@i.GetValue("Icon")"</text>}
+				data-sort-value="@i.GetValue("Name")">
+				<div class="name">@i.GetValue("Name")</div>
+
+				<!--@If LoopDefined(Groups)-->
+				<!--@If(0=1)-->All on one line to prevent whitespace popping up<!--@EndIf-->
+				@foreach (LoopItem i2 in GetLoop("Groups")){@i2.GetValue("HeaderStart")<div class="groups">(@i2.GetValue("HeaderEnd")<!--@If(Groups.LoopCounter>1)-->, <!--@EndIf--><span class="group">@i2.GetValue("Group.Name")</span>@i2.GetValue("FooterStart"))</div>@i2.GetValue("FooterEnd")}
+				<!--@EndIf(Groups)-->
+
+				
+				<div class="adr">
+					<div class="street-address">@i.GetValue("Address")</div>
+					<div class="extended-address">@i.GetValue("Address2")</div>
+					<span class="postal-code">@i.GetValue("Zip")</span>
+					<span class="locality">@i.GetValue("City")</span>
+					<div class="country-name">@i.GetValue("Country")</div>
+				</div>
+			</li>
+			}
+		</ol>
+</div>
+
+<!--@If(NumberOfLocations=0)-->
+<div class="info"><!--@Translate(No_locations_found, 'No locations found')--></div>
+<!--@EndIf-->
+</div>

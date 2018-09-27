@@ -1,0 +1,28 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@MasterPageFile("Master_ISP.cshtml")
+@Title("Normal Page")
+@Description("Model for every normal page")
+@Include("Includes/PageTemplates/LayoutHelpers_ISP.cshtml")
+@Breadcrumb()
+@if (!GetBoolean("Item.Page.Hide3rdLevelMenu.Value") && !string.IsNullOrEmpty(GetString("DwNavigation(subMenu)")))
+{
+  string parentPageName = Pageview.Page.Parent.MenuText;
+  <h2 class="h1">@parentPageName</h2>
+  <nav class="navbar navbar-default" id="subMenuNav">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar4" aria-expanded="false" aria-controls="navbar4">
+        <i class="fa fa-bars"></i>
+      </button>
+    </div>
+    <div id="navbar4" class="navbar-collapse collapse">
+      <ul id="subMenu" class="dwnavigation" settings="startlevel:3;endlevel:5;template:liClean.xslt;expandmode:inPath;id:subMenu;"></ul>
+    </div>
+  </nav>
+  <div class="h2 col-xs-12 noPadding">@GetString("DwPageName")</div>
+}
+else
+{
+  @PageTitle()
+}
+@CentralContent()

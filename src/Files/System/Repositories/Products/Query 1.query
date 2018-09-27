@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Query ID="a6a756ba-9110-4db1-964a-418bc6bbd6dd" Name="Query 1.query">
+  <Settings />
+  <Parameters>
+    <Parameter Name="GroupID" Type="System.String[]" DefaultValue="" />
+    <Parameter Name="Group" Type="System.String[]" DefaultValue="" />
+    <Parameter Name="q" Type="System.String" DefaultValue="" />
+    <Parameter Name="Shop" Type="System.String" DefaultValue="SHOP1" />
+  </Parameters>
+  <Source Repository="Products" Item="Products.index" Type="Dynamicweb.Indexing.Queries.IndexQueryProvider, Dynamicweb.Indexing" />
+  <Expressions>
+    <GroupExpression Operator="And">
+      <BinaryExpression Operator="Equal">
+        <Left>
+          <FieldExpression Field="Active" />
+        </Left>
+        <Right>
+          <ConstantExpression Value="True" Type="System.Boolean" />
+        </Right>
+      </BinaryExpression>
+      <BinaryExpression Operator="Equal">
+        <Left>
+          <FieldExpression Field="LanguageID" />
+        </Left>
+        <Right>
+          <MacroExpression Lookup="Dynamicweb.Ecommerce.Context:LanguageID" />
+        </Right>
+      </BinaryExpression>
+      <BinaryExpression Operator="MatchAny">
+        <Left>
+          <FieldExpression Field="GroupIDs" />
+        </Left>
+        <Right>
+          <ParameterExpression Name="GroupID" />
+        </Right>
+      </BinaryExpression>
+      <GroupExpression Operator="Or">
+        <BinaryExpression Operator="Contains">
+          <Left>
+            <FieldExpression Field="Name_sortable" />
+          </Left>
+          <Right>
+            <ParameterExpression Name="q" />
+          </Right>
+        </BinaryExpression>
+        <BinaryExpression Operator="Equal">
+          <Left>
+            <FieldExpression Field="ID" />
+          </Left>
+          <Right>
+            <ParameterExpression Name="q" />
+          </Right>
+        </BinaryExpression>
+        <BinaryExpression Operator="Equal">
+          <Left>
+            <FieldExpression Field="Number" />
+          </Left>
+          <Right>
+            <ParameterExpression Name="q" />
+          </Right>
+        </BinaryExpression>
+        <BinaryExpression Operator="Contains">
+          <Left>
+            <FieldExpression Field="ShortDescription" />
+          </Left>
+          <Right>
+            <ParameterExpression Name="q" />
+          </Right>
+        </BinaryExpression>
+        <BinaryExpression Operator="Contains">
+          <Left>
+            <FieldExpression Field="LongDescription" />
+          </Left>
+          <Right>
+            <ParameterExpression Name="q" />
+          </Right>
+        </BinaryExpression>
+      </GroupExpression>
+      <BinaryExpression Operator="MatchAny">
+        <Left>
+          <FieldExpression Field="ShopIDs" />
+        </Left>
+        <Right>
+          <ParameterExpression Name="Shop" />
+        </Right>
+      </BinaryExpression>
+      <BinaryExpression Operator="MatchAny">
+        <Left>
+          <FieldExpression Field="IsVariant" />
+        </Left>
+        <Right>
+          <ConstantExpression Value="False" Type="System.Boolean" />
+        </Right>
+      </BinaryExpression>
+    </GroupExpression>
+  </Expressions>
+  <ViewFields />
+  <ViewLanguages />
+</Query>

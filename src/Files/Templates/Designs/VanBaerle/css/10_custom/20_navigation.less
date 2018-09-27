@@ -1,0 +1,205 @@
+/**
+ * Description: styles related to navigation.
+ * User: Manuel Nogueira
+ * Date: 12/Jan/2016
+**/
+
+@import url(configs.less);
+
+#subMenuNav,
+#subMenuNav li a
+{
+  width: 100%;
+}
+
+.dropdown-menu.pageLevel3 {
+  top: -6px;
+  margin: 0;
+  left: 158px;
+}
+
+#topMenu > li {
+  margin-left: 15px;
+  padding-bottom: 10px;
+}
+
+.subMenuHolder {
+  left: 0;
+  margin-left: -15px;
+  z-index: @zIndex8;
+}
+
+.subMenuHolder a,
+#leftMenu a {
+  margin-bottom: 5px;
+}
+
+.subMenuHolder > div {
+  padding: 15px;
+}
+
+.subMenuHolder > div,
+.dropdown-menu {
+  border: 1px solid gray;
+}
+
+#bottomMenuContainer > ul > li {
+  width: 50%;
+}
+
+#mainNavContainer {
+  button {
+    margin-left: 10px;
+  }
+  li:not(.dropdown) a {
+    width: 100%;
+  }
+}
+
+#menuMainContainer {
+  > .f-nav {
+    top:0;
+  }
+}
+
+/* BreadCrumb menu */
+#breadMenuContainer {
+  margin-bottom: 30px;
+}
+
+
+/* Submenu horizontal */
+
+
+/* ------------
+        MEDIA QUERIES
+        --------------- */
+
+@media (max-width: @screen-xs-min)
+{
+  #topMenu > li {
+    margin-left: 5px;
+  }
+}
+
+@media (max-width: @screen-xs-max)
+{
+
+}
+
+@media (max-width: @screen-sm-max)
+{
+  #bottomMenuContainer > ul > li {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  #topMenuContainer a {
+    width: 22px;
+    height: 22px;
+  }
+  #topMenuContainer {
+    min-height: 0;
+    margin-top: 15px;
+  }
+  #mainNavContainer {
+     nav {
+      width: 100%;
+    }
+    button {
+      left: 0;
+    }
+    .navbar-collapse {
+      margin-top: 45px;
+    }
+    #searchForm {
+      right: 0;
+    }
+    a {
+      width: 85%;
+
+      &.dropdown-toggle {
+        width: 15%;
+      }
+    }
+    .dropdown-menu {
+      width: 100%;
+      left: 0;
+      top: 0;
+
+      a {
+        width: 85%;
+
+        &.dropdown-toggle {
+          width: 15%;
+        }
+      }
+      
+      li {
+        width: 100%;
+      }
+
+      &.pageLevel3 li{
+        padding-left: 25px;
+      }
+      
+    }
+  }
+  #menuMainContainer {
+    > .f-nav {
+      width: 100%;
+    }
+  }
+  #subMenuNav {
+    li {
+      a {
+        width: 100%;
+        padding: 5px;
+      }
+    }
+
+    .navbar-toggle {
+      margin: -32px 0 0 0;
+    }
+
+    .navbar-collapse {
+      margin-top: 15px;
+      padding: 0;
+    }
+  }
+  #topMenu > li {
+    margin-left: 15px;
+  }
+}
+
+@media (min-width: @screen-md-min) {
+  #subMenuNav {
+    border: 1px solid @secondary;
+    margin-top: 20px;
+  }
+  #subMenuNav li a {
+    border-left: 1px solid @secondary;
+    padding: 16px 0;
+  }
+  #subMenuNav ul > li:first-child a {
+    border-left: 0;
+  }
+  #navbar4 {
+    padding: 0;
+  }
+  #subMenuNav li {
+    width: 12.50%;
+  }
+
+}
+
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max)
+{
+
+}
+
+@media (min-width: @screen-lg-min)
+{
+  #subMenuNav li {
+    width: 12.50%;
+  }
+}

@@ -1,0 +1,18 @@
+﻿@{
+string shortBanner = "";
+
+if (@GetValue("Item.Short_Banner") == "True") {
+  shortBanner = "banner--short";
+}
+}
+
+<section class="banner @shortBanner @GetValue("Item.Custom_CSS")">
+  <div class="banner__half banner__half--image" style="background-image:url(@GetValue("Item.Image"))"></div>
+  <div class="banner__half banner__half--content">
+    <div class="banner__text">
+      <h1 class="banner__heading">@GetValue("Item.Heading")</h1>
+      <div class="banner__description">@GetValue("Item.Description")</div>
+    </div>
+    <div class="banner__line"></div>
+  </div>
+</section>

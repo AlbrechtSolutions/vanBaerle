@@ -1,0 +1,48 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@Include("../../includes/razor/getimage.cshtml")
+@{
+	List<LoopItem> slideshow = GetLoop("ItemPublisher:Items.List");
+}
+@if (slideshow.Any())
+{
+  <aside id="slideShowContainer" class="col-xs-12 noPadding">
+    <ul class="col-xs-12 noPadding">
+      @foreach (LoopItem slide in slideshow)
+      {
+        bool isVideo = slide.GetString("ItemPublisher:Item.TypeOfMedia") == "Video";
+        string title = slide.GetString("ItemPublisher:Item.Title");
+        string slideLink = !isVideo ? (!string.IsNullOrEmpty(slide.GetString("ItemPublisher:Item.Link")) ? slide.GetString("ItemPublisher:Item.Link") : "javascript:void(0)") : (!string.IsNullOrEmpty(slide.GetString("ItemPublisher:Item.Embed")) ? slide.GetString("ItemPublisher:Item.Embed") : "javascript:void(0)");
+        string text = slide.GetString("ItemPublisher:Item.Text");
+        string target = slide.GetBoolean("ItemPublisher:Item.OpenInNewWindow") ? "_blank" : "";
+        string image = GetImage(slide.GetString("ItemPublisher:Item.Image"), 1300, 0);
+
+        <li>
+          <a @(isVideo ? "class=\"fancybox\"" : "") href="@slideLink" target="@target">
+            @if(isVideo){
+              <i class="fa fa-play-circle-o slideshowVideoIcon"></i>
+            }
+            <div class="col-sm-4 hidden-xs slideText">
+              @if (!string.IsNullOrEmpty(title))
+              {
+                <h2>@title</h2>
+              }
+              @if (!string.IsNullOrEmpty(text))
+              {
+                <div>
+                  @text
+                </div>
+              }
+            </div>
+            <img class="img-responsive" src="@image" alt="@title" title="@title"/>
+          </a>
+        </li>
+      }
+    </ul>
+  </aside>
+  <text>
+  @SnippetStart("jsOnLoad")
+  onLoadPageSlideshow()
+  @SnippetEnd("jsOnLoad")
+  </text>
+}

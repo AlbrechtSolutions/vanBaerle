@@ -1,0 +1,300 @@
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@Include("../../includes/Razor/GetImage.cshtml")
+@{
+  Dynamicweb.Content.Items.Item item = Pageview.Area.Item;
+  string path = "/Default.aspx?ID=" + GetGlobalValue("Global:Page.ID");
+  string template = GetString("Ecom:CustomerCenter.RMA.HasAddContent") != "" ? "create" : GetString("Ecom:CustomerCenter.RMA.HasCancelContent") != "" ? "cancel" : "view";
+  string pidString = GetString("ParagraphID");
+  string detailsTitle = template == "create" ? Translate("createNewRequest", "Create new request") : template == "cancel" ? Translate("cancelRequest", "Cancel request") : Translate("returnDetails", "Return Details");
+  string formName = pidString + "AddRmaForm";
+  string formAction = Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(Pageview.Page.ID) + "?CC" + GetString("ParagraphID") + "=CreateRMA";
+  string submitButtonText = Translate("createRequest", "Create Request");
+  string commentsTitle = Translate("additionalInfo", "Additional Info");
+  string returnth = "";
+  string noOrdersLastDays = Translate("noOrdersUnderXXX", "No orders under XXX days were found");
+  int isCreate = 0;
+  int num_ordersIndex = 0;
+  int lastDaysOrders = 30;
+  int lastDaysOrdersArea = Pageview.Area.Item["InvoicesDays"] != null ? Dynamicweb.Base.ChkInteger(Pageview.Area.Item["InvoicesDays"]) : 0;
+  DateTime dat_today = DateTime.Now;
+
+  var secondaryUser = Pageview.User.CurrentSecondaryUser;
+  if(secondaryUser!= null && SecondaryUserSalesRep(secondaryUser.ID))
+  {
+    lastDaysOrders = lastDaysOrdersArea > 0 ? lastDaysOrdersArea : 30;
+  }
+
+  noOrdersLastDays.Replace("XXX", lastDaysOrders.ToString());
+
+}
+
+<div class="col-xs-12 row" >
+  <h3 class="hidden">@detailsTitle</h3>
+
+  @if(template == "create"){
+    isCreate = 1;
+    returnth = "<th><labe for='all'><input id='all' type='checkbox' value='' name='all' />" + Translate("all","All") + "</label></th>";
+  }else{
+    <dl id="RMAdata" class="col-xs-12 col-md-8">
+      <dt class="col-xs-4 text-right">
+        <b>@Translate("returnId","Return ID"):</b>
+      </dt>
+      <dd class="col-xs-8">
+        @GetString("Ecom:RMA.ID")
+      </dd>
+      <dt class="col-xs-4 text-right">
+        <b>@Translate("Orderid","Order ID"):</b>
+      </dt>
+      <dd class="col-xs-8">
+        @GetString("Ecom:RMA.OrderID")
+      </dd>
+      <dt class="col-xs-4 text-right">
+        <b>@Translate("status","Status"):</b>
+      </dt>
+      <dd class="col-xs-8">
+        @GetString("Ecom:RMA.Status")
+      </dd>
+      <dt class="col-xs-4 text-right">
+        <b>@Translate("returnDate","Return Date"):</b>
+      </dt>
+      <dd class="col-xs-8">
+        @GetString("Ecom:RMA.Date")
+      </dd>
+      <dt class="col-xs-4 text-right">
+        <b>@Translate("type","Type"):</b>
+      </dt>
+      <dd class="col-xs-8">
+        @GetString("Ecom:RMA.Type.Name")
+      </dd>
+    </dl>
+    if(template == "cancel"){
+      formName = pidString + "CancelRmaForm";
+      formAction = GetString("Ecom:RMA.CancelURL");
+      submitButtonText = Translate("cancelRequest","Cancel Request");
+    }else{
+      formName = pidString + "AddRmaCommentForm";
+      formAction = GetString("Ecom:CustomerCenter.RMA.AddCommentURL");
+      submitButtonText = Translate("addComment","Add Comment");
+      commentsTitle = Translate("customerComment","Customer Comment");
+    }
+  }
+</div>
+
+<form enctype="multipart/form-data" class="rmaDetailsForm" id="@formName" name="@formName" action="@formAction" method="post" data-isCreate="@isCreate" data-PID="@pidString">
+  <input type="hidden" name="@(pidString)RMAID" id="@(pidString)RMAID" value="@(GetString("Ecom:RMA.ID"))">
+  <input type="hidden" name="@(pidString)HasSubmit" id="@(pidString)HasSubmit" value="0">
+  @if(template == "create"){
+    <div id="requestContainer" class="col-xs-12 noPadding">
+      <fieldset class="Select col-xs-12 col-sm-6 noPaddingLeft">
+        <label class="col-xs-12 noPadding text-left" for="@(pidString)RMATypeID">@Translate("requestType","Request Type")</label>
+        <select data-width="100%" id="@(pidString)RMATypeID" name="@(pidString)RMATypeID">
+          <option value="">@Translate("selectRequest","Select request type")</option>
+          @foreach(LoopItem type in GetLoop("RMATypes")){
+            <option value="@(type.GetString("Ecom:RMA.Type.ID"))" @type.GetString("Ecom:RMA.Type.Selected") >@type.GetString("Ecom:RMA.Type.Name")</option>
+          }
+        </select>
+      </fieldset>
+
+      @if(!GetBoolean("Ecom:RMA.OrderID.IsSetFromRequest")){
+        <fieldset class="Select col-xs-12 col-sm-6 noPaddingRight">
+          <label class="col-xs-12 noPadding text-left" for="@(pidString)RMAOrderID">@Translate("Select order")</label>
+          <select data-width="100%" id="@(pidString)RMAOrderID" name="@(pidString)RMAOrderID" data-size="10">
+            <option value="">@Translate("selectOrder","Select order")</option>
+            @foreach(LoopItem o in GetLoop("Orders")){
+              DateTime dat_rmaDate = o.GetDate("Ecom:Order.Completed");
+
+              if((dat_today - dat_rmaDate).TotalDays < lastDaysOrders){
+                <option value="@(o.GetString("Ecom:Order.ID"))" @o.GetString("Ecom:Order.Selected") >@o.GetString("Ecom:Order.Date"), #@o.GetString("Ecom:Order.ID")</option>
+                num_ordersIndex++;
+              }
+
+            }
+            @if(num_ordersIndex == 0){
+              <option value="" disabled="disabled">@noOrdersLastDays</option>
+            }
+          </select>
+        </fieldset>
+      }
+    </div>
+  }
+  <div class="col-xs-12 noPadding text-center prodList">
+      <table id="myOrdersTable" name="UserManagementEditForm" class="ordersTable text-left" width="100%">
+          <thead class="hidden-xs">
+              <tr>
+                  @returnth
+                  @*<th>&nbsp;</th>*@
+                  <th>@Translate("description", "Description")</th>
+                  <th>@Translate("quantity", "Quantity")</th>
+                  <th nowrap>@Translate("totalPrice", "Total price")</th>
+              </tr>
+          </thead>
+
+          @if (!GetBoolean("Ecom:CustomerCenter.RMA.HasRMAOrderLines"))
+          {
+              <tr style="height: 25px;">
+                  <td colspan="6"><strong>@Translate("noProductsInOrder", "There are no available products on this order.")</strong></td>
+              </tr>
+          }
+          else {
+              string prodID = "";
+              int ordersCount = 0;
+              var rmaOrderLines = GetLoop("RMAOrderLines").OrderByDescending(p => p.GetString("Ecom:RMA:OrderLine.ProductID"));
+
+              foreach (LoopItem rmaOrder in rmaOrderLines)
+              {
+                  ordersCount++;
+                  if (prodID != rmaOrder.GetString("Ecom:RMA:OrderLine.ProductID")) {
+
+                      // If you want the product image..
+                      //Dynamicweb.Ecommerce.Products.Product dWProduct = Dynamicweb.Ecommerce.Products.Product.GetProductByID(rmaOrder.GetString("Ecom:RMA:OrderLine.ProductID"));
+                      string productName = rmaOrder.GetString("Ecom:RMA:OrderLine.ProductName");
+                      string productID = rmaOrder.GetString("Ecom:RMA:OrderLine.ProductID");
+                      string orderID = rmaOrder.GetString("Ecom:RMA:OrderLine.ID");
+                      string productNumber = rmaOrder.GetString("Ecom:RMA:OrderLine.ProductNumber") != "" ? rmaOrder.GetString("Ecom:RMA:OrderLine.ProductNumber") : rmaOrder.GetString("Ecom:RMA:OrderLine.ProductNumber");
+                      // If you want the product image..
+                      @*
+                      pattern = "/Files/Files/"+designName+"/Products/Images/" + productNumber + "_1.jpg",
+                      imageUrl = !string.IsNullOrEmpty(dWProduct.ImageSmall.ToString()) ? dWProduct.ImageSmall.ToString() : !string.IsNullOrEmpty(dWProduct.ImageMedium.ToString()) ? dWProduct.ImageMedium.ToString() : !string.IsNullOrEmpty(dWProduct.ImageLarge.ToString()) ? dWProduct.ImageLarge.ToString() : pattern;
+                      *@
+
+                      var equalOrderLines = rmaOrderLines.Where(p => p.GetString("Ecom:RMA:OrderLine.ProductID") == rmaOrder.GetString("Ecom:RMA:OrderLine.ProductID"));
+                      var numberOfOrderLines = equalOrderLines.Count();
+
+                      prodID = productID;
+
+                      <tr class="rmaOrderRow">
+                          @if (template == "create")
+                          {
+                              <td width="10%" valign="middle" class="checkboxRMACont">
+                                  <fieldset class="checkboxes">
+                                      <label for="@(pidString)OrderLineID@(orderID)">
+                                          @{
+                                              bool first = true;
+                                              foreach(var o in equalOrderLines){
+                                                string orderIdRepeted = o.GetString("Ecom:RMA:OrderLine.ID");
+                                                if(!first){
+                                                    <input class="hidden" data-id="@orderIdRepeted" type="checkbox" id="@(pidString)OrderLineID@(orderIdRepeted)" name="@(pidString)OrderLineID@(orderIdRepeted)" value="1" data-serial='@(pidString)SerNumber@(orderIdRepeted)' data-productComment='@(pidString)ProductCommentContainer@(orderIdRepeted)' />
+                                                }
+                                                first = false;
+                                              }
+                                          }
+                                          <input class="primary" data-prodid="@prodID" data-id="@orderID" type="checkbox" id="@(pidString)OrderLineID@(orderID)" name="@(pidString)OrderLineID@(orderID)" value="1" data-serial='@(pidString)SerNumber@(orderID)' data-productComment='@(pidString)ProductCommentContainer@(orderID)' />
+                                      </label>
+                                  </fieldset>
+                              </td>
+                          }
+                          <td>
+                              <h3><a href="/@item["ProductDetail"]&amp;ProductID=@productID"><b>@productName</b></a></h3>
+                              @Translate("item", "Item"): @productNumber
+                          </td>
+                          <td>
+                              @if(equalOrderLines.Count() > 1) {
+                                  <select name="fakeSelect" data-prodid="@prodID">
+                                      @{
+                                          string orderConcat = "";
+                                          int quantityNum = 0;
+                                          foreach(var o in equalOrderLines){
+                                            string orderIdOptions = o.GetString("Ecom:RMA:OrderLine.ID");
+                                            orderConcat += (orderConcat != "") ? "," + orderIdOptions : orderIdOptions;
+                                            quantityNum = ++quantityNum;
+                                            <option value="@orderConcat">@quantityNum</option>
+                                          }
+                                      }
+                                  </select>
+                              }
+                              else{
+                                <span class="qtyRma">@(rmaOrder.GetInteger("Ecom:RMA:OrderLine.Quantity") * Int32.Parse(numberOfOrderLines.ToString()))</span>
+                              }
+                          </td>
+                          <td>
+                             @Convert.ToDecimal((rmaOrder.GetDouble("Ecom:RMA:OrderLine.TotalPriceWithoutSymbol") * Int32.Parse(numberOfOrderLines.ToString()))).ToString("C")
+                          </td>
+                      </tr>
+                      if( GetString("Ecom:RMA.Status") != "Closed" && !GetBoolean("Ecom:CustomerCenter.RMA.HasAddComment") ) {
+                          int count = 0;
+
+                          <tr prodid="@productID" class="productsComment prodComment hide">
+                            <td colspan="4">
+                                 @foreach(var o in equalOrderLines){
+                                    count++;
+                                    string orderIdRepeted = o.GetString("Ecom:RMA:OrderLine.ID");
+
+                                    <div class="item_@count hidden">
+                                        <label class="col-xs-12 noPadding text-left">#@count</label>
+                                        <textarea prodid="@productID" data-pid="@(pidString)ProductComment" rows="6" id="@(pidString)ProductComment@(orderIdRepeted)" name="@(pidString)ProductComment@(orderIdRepeted)"></textarea>
+                                    </div>
+                                  }
+                            </td>
+                          </tr>
+                      }
+                  }
+
+              }
+          }
+      </table>
+  </div>
+  @if(template != "create"){
+    <div class="col-xs-12 historyRMA noPadding">
+      <h3 class="underlineTitle">@Translate("history","History")</h3>
+      <dl class="col-xs-12 col-sm-6 col-md-6">
+        @foreach(LoopItem c in GetLoop("RMAComments")){
+          <dt class="col-xs-4 text-right"><b>@c.GetDate("Ecom:RMA:Comment.Date").ToString("MM/dd/yyyy"):</b></dt>
+          <dd class="col-xs-8">
+            @c.GetString("Ecom:RMA:Comment.Event.Description") @if(c.GetString("Ecom:RMA:Comment.State.Name") != ""){<text>"@c.GetString("Ecom:RMA:Comment.State.Name")"</text>}<br/>
+            @if(c.GetString("Ecom:RMA:Comment.Text") != "")
+            {
+              <span>@c.GetString("Ecom:RMA:Comment.Text")</span>
+            }
+            <br/><br/>
+          </dd>
+        }
+      </dl>
+    </div>
+  }
+
+  @if( GetString("Ecom:RMA.Status") != "Closed" && !String.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["RMAID"+pidString]) || (!String.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params[pidString+"RMAOrderID"]) && !String.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params[pidString+"RMATypeID"]) && GetBoolean("Ecom:CustomerCenter.RMA.HasRMAOrderLines")) ) {
+    <div class="row">
+        @if(GetBoolean("Ecom:CustomerCenter.RMA.HasAddComment")){
+          <fieldset class="Textarea col-xs-12 mandatory">
+            <label for="@(pidString)RMAComment" class="col-xs-12 noPadding text-left">
+              @commentsTitle
+            </label>
+                <textarea rows="6" id="@(pidString)RMAComment" name="@(pidString)RMAComment" class="col-xs-12"></textarea>
+          </fieldset>
+        }
+
+    </div>
+  }
+  @if( GetString("Ecom:RMA.Status") != "Closed") {
+      <div class="formButtonsWithReset topMargin20 col-xs-12 noPadding">
+        <a class="btn btn-bg2" href="javascript:history.back();">@Translate("cancel", "Cancel")</a>
+        <input type="submit" class="btn btn-bg" value="@submitButtonText" />
+      </div>
+  }
+</form>
+
+@SnippetStart("jsOnLoad")
+  onLoadRMADetails(
+    {
+      str_formID : '@formName',
+      str_requestType : '@Translate("pleaseSpecifyRequestType","Please specify Request type")',
+      str_select : '@Translate("selectRmaProducts","Select RMA products")',
+      str_comment : '@Translate("pleaseSpecifyCustomerVomment","Please specify Customer comment")',
+      str_additionalInfo : '@Translate("pleaseSpecifyAdditionalInfoProductComment","Please specify Additional info or Product Comment")'
+    }
+  );
+@SnippetEnd("jsOnLoad")
+
+@functions{
+  private bool SecondaryUserSalesRep(int userId)
+  {
+    bool isSaleRep = false;
+    if(userId > 0)
+    {
+      var currentUser = Dynamicweb.Security.UserManagement.User.GetUserByID(userId);
+      isSaleRep = Convert.ToBoolean(currentUser.CustomFieldValues.Find(g => g.CustomField.SystemName == "AccessUser_SalesRep").Value.ToString());
+    }
+    return isSaleRep;
+  }
+}

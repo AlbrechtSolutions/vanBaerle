@@ -1,0 +1,88 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+
+  string designFolder = GetString("Template:DesignBaseUrl");
+  System.Web.HttpContext.Current.Items["HideFooter"] = true;
+  List<LoopItem> standardList = GetLoop("Item.Slides");
+  var items = standardList.Select(i => new { 
+       listImage = i.GetString("Item.Slides.Image"),
+       listIcon = i.GetString("Item.Slides.Icon"),
+       listTitle = i.GetString("Item.Slides.Title"),
+       listText = i.GetString("Item.Slides.Text"),
+       listLinkText = i.GetString("Item.Slides.LinkText"),
+       listLink = i.GetString("Item.Slides.Link")
+  });
+
+}
+
+<main class="landing">
+  <div class="landing__slides">
+  @foreach(var list in items) {
+	if(string.IsNullOrEmpty(list.listLink)){
+    <div class="landing__slide landing__slide--half" style="background-image:url(@list.listImage)">
+      <div class="landing__gradient">
+        <h1 class="landing__headline">@list.listTitle</h1>
+      </div>
+      @*<div class="landing__background"></div>
+      <div class="landing__foreground"></div>*@
+    </div>
+	}else{
+    <div class="landing__slide landing__slide--half" style="background-image:url(@list.listImage)">
+      <div class="slide-half__content">
+        <div class="slide-half__inner">
+          <h1 class="slide-half__title">@list.listTitle</h1>
+          <div class="slide-half__content-wrapper">
+            <div class="slide-half__line"></div>
+            <div class="slide-half__content-right">
+              @if(!string.IsNullOrEmpty(list.listText)) {
+                 <h2 class="slide-half__subtitle">@list.listText</h2>
+              }
+              
+              @if(!string.IsNullOrEmpty(list.listIcon)) {
+              <div class="slide-half__icons">
+					        <img src="@list.listIcon"/>
+
+                  @* <div class="icon-wrapper">
+                      <img class="icon" src="@designFolder/assets/images/hands.svg">
+                  </div>
+                  <div class="icon-wrapper">
+                      <img class="icon" src="@designFolder/assets/images/restaurant.svg">
+                  </div>
+                  <div class="icon-wrapper">
+                      <img class="icon" src="@designFolder/assets/images/hotel.svg">
+                  </div>
+                  <div class="icon-wrapper">
+                      <img class="icon" src="@designFolder/assets/images/hospital.svg">
+                  </div>
+                  <div class="icon-wrapper">
+                      <img class="icon" src="@designFolder/assets/images/factory.svg">
+                  </div> *@
+              </div>
+              }
+              <a class="slide-half__more" href="@list.listLink">@list.listLinkText <i class="icon vb-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+	}
+   }
+    
+  </div>
+  <div class="landing__bottom">
+    <div class="scroll-indicator">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <div class="progress landing-progress">
+      <div class="progress-bar landing-progress-bar"></div>
+    </div>
+  </div>
+</main>
+
+
+
+
+

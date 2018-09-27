@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Index>
+  <Settings />
+  <Instances Balancer="Dynamicweb.Indexing.Balancing.ActivePassive">
+    <Instance Name="A" Type="Dynamicweb.Indexing.Lucene.LuceneIndexProvider, Dynamicweb.Indexing.Lucene">
+      <Folder>A</Folder>
+    </Instance>
+    <Instance Name="B" Type="Dynamicweb.Indexing.Lucene.LuceneIndexProvider, Dynamicweb.Indexing.Lucene">
+      <Folder>B</Folder>
+    </Instance>
+  </Instances>
+  <Builds Type="Dynamicweb.Ecommerce.Indexing.ProductIndexBuilder, Dynamicweb.Ecommerce">
+    <Build Name="Full Catalogue" Action="Full">
+      <Notification SendLog="false" NotificationType="Never" />
+    </Build>
+  </Builds>
+  <Schema>
+    <Fields>
+      <Extension Type="Dynamicweb.Ecommerce.Indexing.ProductIndexSchemaExtender, Dynamicweb.Ecommerce" Stored="false" Analyzed="false" Indexed="false" />
+      <Field Source="ProductName" Name="Name (sortable)" SystemName="Name_sortable" Type="System.String" Stored="true" Analyzed="true" Indexed="true" />
+    </Fields>
+    <FieldTypes />
+  </Schema>
+</Index>

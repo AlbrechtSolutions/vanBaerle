@@ -1,0 +1,70 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System.Web;
+@using System.Text;
+@using System.Text.RegularExpressions;
+@Title("Checkout Page")
+@Description("Model for the checkout page")
+@Include("includes/razor/getimage.cshtml")
+@Include("includes/razor/GetCurrentUrl.cshtml")
+@Include("includes/PageTemplates/MasterHelpers.cshtml")
+@{
+    int step = GetInteger("Ecom:Checkout.CurrentStep.Index");
+    string firstStep = (step == 0) ? "active" : "",
+           secondStep = (step == 1) ? "active" : "",
+           thirdStep = (step == 2) ? "active" : "",
+           longLang = Pageview.GlobalTags.GetTagByName("Global:Area.LongLang").Value.ToString(),
+           hideClass = (string.IsNullOrEmpty(firstStep) && string.IsNullOrEmpty(secondStep) && string.IsNullOrEmpty(thirdStep)) ? "hidden" : "",
+           isIE11 = GetGlobalValue("Global:Request.UserAgent") == "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" ? "isIE" : "isNotIe";
+}
+
+<!DOCTYPE HTML>
+<!--[if lt IE 8 ]><html class="ie7" lang="@(longLang)"><![endif]--><!--[if IE 8 ]><html class="ie8" lang="@(longLang)"><![endif]--><!--[if IE 9 ]><html class="ie9" lang="@(longLang)"><![endif]--><!--[if (gt IE 9)|!(IE)]><!-->
+<html lang="@(longLang)"><!--<![endif]-->
+@HtmlHead(designName)
+<body class="step_@step @isIE11">
+    <div class="wrap">
+      <header id="checkoutHeader" class="container">
+        @Logo("col-xs-12 col-sm-4 noPaddingLeft", GetString("Item.Area.CompanyName"), designName)
+        <div class="col-xs-12 col-sm-7">
+          <ul id="stepsList">
+              @Step("1", firstStep, hideClass, @Translate("customerDetails", "Customer details"))
+              @StepBreak()
+              @Step("2", secondStep, hideClass, @Translate("chooseShippingAndPayment", "Choose shipping & payment"))
+              @StepBreak()
+              @Step("3", thirdStep, hideClass, @Translate("payment", "Payment"))
+          </ul>
+        </div>
+      </header>
+
+      @if(!string.IsNullOrEmpty(GetString("DwContent(centralContentDw)"))){
+        <section id="centralContainer" class="container">
+          <div id="centralContent" class="subpage col-xs-12 noPadding">
+            <div id="centralContentDw"  class="dwcontent row" title="Page content" settings="sort:2;template:StandardParagraph.cshtml;limit:StandardParagraph.cshtml;id:homeContent"></div>
+          </div>
+        </section>
+      }
+    @ContentPlaceholder()
+  </div>
+    @Copyright()
+    @DemoBanner()
+</body>
+</html>
+
+<!--  @Pageview.GlobalTags.GetTagByName("Global:Request.PathAndQuery").Value -->
+<!--  @Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value -->
+
+@helper Step(string number, string stepCssClass, string hideCssClass, string text) {
+    <li class="@stepCssClass col-xs-12 col-sm-2 headerNumbers @hideCssClass">
+        <div>
+            @number
+        </div>
+        <span class="hidden-xs">@text</span>
+    </li>
+}
+
+@helper StepBreak() {
+    <li class="col-xs-2 hidden-xs">
+        <i class="fa fa-arrow-right"></i>
+    </li>
+}

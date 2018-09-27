@@ -1,0 +1,21 @@
+﻿@{
+    string voucherCodeErrorMessage = GetString("Ecom:Cart.ValidationError.EcomOrderVoucherCode.ErrorMessage");
+}
+<div id="promoCodeContainer" class="col-md-7 col-xs-12 noPadding" data-error="@voucherCodeErrorMessage">
+    @if(String.IsNullOrEmpty(GetString("Ecom:Order.Customer.VoucherCode")) || !String.IsNullOrEmpty(voucherCodeErrorMessage)) {
+        <span class="col-md-4 col-xs-12 noPadding">@Translate("voucherCodeText", "Enter a Voucher Code:")</span>
+        <div class="col-md-4 col-xs-9 noPadding">
+          <input type="text" name="EcomOrderVoucherCode" value="@(GetString("Ecom:Order.Customer.VoucherCode"))" />
+        </div>
+
+        <a class="submitVoucher btn btn-bg">
+          @Translate("apply", "Apply")
+        </a>
+    }
+    else {
+        <div class="promoCodeApplied pull-left col-xs-12">
+            @Translate("promoCode", "Promo Code"): <span>@GetString("Ecom:Order.Customer.VoucherCode")</span>
+            <a class="removeVoucher" href="javascript:void(0)"><i class="fa fa-close"></i> @Translate("remove", "Remove")</a>
+        </div>
+    }
+</div>

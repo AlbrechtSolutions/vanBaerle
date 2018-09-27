@@ -1,0 +1,186 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb.Security.UserManagement;
+
+@functions {
+  private int FormatInteger(object value)
+  {
+    int num;
+    if (value == null)
+    {
+      value = "";
+    }
+    if (int.TryParse(value.ToString(), out num))
+    {
+      return num;
+    }
+    return 0;
+  }
+}
+
+@{
+  bool bol_showButton = GetBoolean("Item.ShowReadMoreButton");
+  string str_title = GetBoolean("Item.ShowTitle") ? GetString("Item.Title") : "";
+  string str_titleHeading = GetString("Item.HeadingType") != "" ? GetString("Item.HeadingType") : "h2";
+  string str_titleOrder = GetString("Item.TitleOrder");
+  string str_image = GetString("Item.Image");
+  string str_imageTitle = GetString("Item.ImageTitle");
+  string str_text = GetString("Item.Text");
+  string str_imageAlignment = GetString("Item.Order");
+  string str_backgroundColor = GetString("Item.Background");
+  string str_link = GetString("Item.Link");
+  string str_linkText = GetString("Item.LinkText");
+  string str_imageAnchorStart = str_link != "" ? "<a target=\"_blank\" href=\"" + str_link + "\">" : "";
+  string str_imageAnchorEnd = str_link != "" ? "</a>" : "";
+  string str_titleAlignment = str_imageAlignment != "image-top" || str_image == "" ? "left" : "center";
+  string str_fontFamily = "font-family: Helvetica, Arial, sans-serif; color:#666666; font-weight:normal;";
+  int num_width = GetInteger("Item.Width");
+  string str_col = num_width == 50 ? "250" : "500";
+  bool bol_break = FormatInteger(System.Web.HttpContext.Current.Items["currentColumns"]) == 100;
+
+
+  User user = null;
+
+  string resetLink = "";
+  string loginName = "";
+  string name = "";
+  string website = "";
+int resetPageID = 159;//int.Parse(Pageview.Area.Item["Login"].ToString().Replace("Default.aspx?ID=", ""));
+
+
+  if (Pageview.Context != null)
+  {
+
+    user = Pageview.Context.GetValue("User") as User;
+    //Security token related
+    if (user != null)
+    {
+      loginName = user.UserName;
+      name = !String.IsNullOrWhiteSpace(user.Name) ? user.Name : user.FirstName + " " + user.LastName;
+//int resetPageID = int.Parse(Pageview.Area.Item["Login"].ToString().Replace("Default.aspx?ID=", ""));
+      string token = System.Guid.NewGuid().ToString();
+      resetLink = (System.Web.HttpContext.Current.Request.IsSecureConnection ? "https://" : "http://") + System.Web.HttpContext.Current.Request.Url.Host + Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(resetPageID) + "?Username=" + loginName + "&RecoveryToken=" + token;
+      user.PasswordRecoveryTokenExpirationTime = DateTime.UtcNow.AddHours(168);
+      user.PasswordRecoveryToken = token;
+      user.Save();
+    }
+  }
+  //variable options
+  str_text = str_text.Replace("{{UserId}}", loginName);
+  str_text = str_text.Replace("{{ResetLink}}", resetLink);
+  str_text = str_text.Replace("{{UserName}}", name);
+  str_text = str_text.Replace("{{Website}}", website);
+
+
+  if (GetBoolean("ParagraphContainerIsFirst"))
+  {
+    System.Web.HttpContext.Current.Items["currentColumns"] = 0;
+  }
+  System.Web.HttpContext.Current.Items["currentColumns"] = FormatInteger(System.Web.HttpContext.Current.Items["currentColumns"]) + num_width;
+  if (FormatInteger(System.Web.HttpContext.Current.Items["currentColumns"]) > 100)
+  {
+    System.Web.HttpContext.Current.Items["currentColumns"] = num_width;
+  }
+  Dictionary<string, string> dict_buttonBlue = new Dictionary<string, string>
+  {
+    {"width", "210px"},
+    {"height", "45px"},
+    {"background", "#6FAE47"},
+    {"color", "#ffffff"},
+    {"font-size", "16px"},
+    {"font-style", "normal"}
+  };
+  string str_tableStart = (bol_break || FormatInteger(System.Web.HttpContext.Current.Items["currentColumns"]) == 0 || GetBoolean("ParagraphContainerIsFirst")) ? "<tr align='center' border='0' cellspacing='0' cellpadding='0' width='100%' bgcolor='" + str_backgroundColor + "' style='" + str_fontFamily + "'><td align='center'><table class='responsive-table clearLeft' border='0' cellspacing='0' cellpadding='0' width='500'><tr>" : "";
+  string str_tableEnd = (FormatInteger(System.Web.HttpContext.Current.Items["currentColumns"]) == 50) ? "</tr><tr><td height='30'></td></tr></table></td></tr>" : "";
+  System.Web.HttpContext.Current.Items["oldColumns"] = System.Web.HttpContext.Current.Items["currentColumns"];
+  string endHeading = "</" + str_titleHeading + ">";
+}
+
+@if(!GetBoolean("ParagraphContainerIsFirst")) {
+  @str_tableEnd
+}
+
+
+@str_tableStart
+
+      <td border="0" cellspacing="0" cellpadding="0" width="@str_col" bgcolor="@str_backgroundColor" style="@str_fontFamily" class="responsive-table">
+        <table border="0" cellspacing="0" cellpadding="0" width="@str_col" bgcolor="@str_backgroundColor" style="@str_fontFamily" class="responsive-table">
+        @if(str_title != "" && (str_titleOrder == "title-first" || str_titleOrder == "" )){
+          <tr>
+            <td align="@str_titleAlignment" valign="top">
+              <@str_titleHeading style="font-size: 24px; padding:0; margin:0;  @str_fontFamily color:#333333;">@str_title @endHeading 
+
+            </td>
+            <td width="10" height="10" style="@str_fontFamily">&nbsp;</td>
+          </tr>
+        }
+        @if(str_image != "" && str_imageAlignment == "image-top"){
+          str_imageTitle = str_imageTitle != "" ? str_imageTitle : str_title;
+          <tr>
+            <td align="center" valign="top">
+              @str_imageAnchorStart
+                <img class="img-max" src="@GetImage(str_image, 600, 0)" alt="@str_imageTitle" title="@str_imageTitle" />
+              @str_imageAnchorEnd
+            </td>
+          </tr>
+          <tr>
+            <td width="10" height="20">&nbsp;</td>
+          </tr>
+        }
+
+        @if(str_text != "" || str_imageAlignment != "image-top"){
+	      <tr>
+            <td width="10" height="10">&nbsp;</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top">
+              <table class="imageAside" colspan="2" border="0" cellspacing="0" cellpadding="0" width="100%" style="@str_fontFamily">
+                <tr>
+                  @if(str_image != "" && str_imageAlignment == "image-left-column"){
+                    str_imageTitle = str_imageTitle != "" ? str_imageTitle : str_title;
+                    <td align="left" valign="top">
+                      @str_imageAnchorStart
+                        <img class="img-max" src="@GetImage(str_image, 300, 0)" alt="@str_imageTitle" title="@str_imageTitle" />
+                      @str_imageAnchorEnd
+                    </td>
+                    <td width="10" height="30">&nbsp;</td>
+                  }
+                  @if(str_text != ""){
+                    <td align="@str_titleAlignment" valign="top" style="font-size: 14px; line-height: 20px; @str_fontFamily">
+                      @if( str_title != "" && str_titleOrder == "title-with-text" ){
+                        <div><@str_titleHeading align="@str_titleAlignment" style="font-size: 24px; margin:0; padding:0; @str_fontFamily color:#333333;">@str_title @endHeading </div>
+                        <br/>
+                      }
+                      @str_text
+                      @if(str_link != "" && str_linkText != "" && bol_showButton){
+                        <br/>
+                        @CreateButton(str_link, str_linkText, null, dict_buttonBlue)
+                      }
+                    </td>
+                  }
+                  @if(str_image != "" && str_imageAlignment == "image-right-column"){
+                    str_imageTitle = str_imageTitle != "" ? str_imageTitle : str_title;
+                    <td width="10" height="10">&nbsp;</td>
+                    <td align="right" valign="top">
+                      @str_imageAnchorStart
+                        <img class="img-max" src="@GetImage(str_image, 300, 0)" alt="@str_imageTitle" title="@str_imageTitle" />
+                      @str_imageAnchorEnd
+                    </td>
+                  }
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td width="10" height="45">&nbsp;</td>
+          </tr>
+        }
+      </table>
+    </td>
+
+@if(GetBoolean("ParagraphContainerIsLast")) {
+  @str_tableEnd
+}
+
+@Include("../EmailMarketingButton.cshtml")
+@Include("../EmailMarketingGetImage.cshtml")

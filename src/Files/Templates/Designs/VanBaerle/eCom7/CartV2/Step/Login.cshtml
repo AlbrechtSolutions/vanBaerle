@@ -1,0 +1,31 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+    string nextURL = Pageview.Area.Item["Checkout"].ToString();
+
+    if(Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn())
+    {
+        System.Web.HttpContext.Current.Response.Redirect(nextURL);
+    }
+    else {
+	<main class="page-common page-products">
+      <div class="container">
+        <div class="row">
+            <div class="col-md-3 noPadding"></div>
+            <div class="col-md-9 noPadding">
+              <div class="col-xs-12 noPadding">
+                  <p class="checkout-heading">@Translate("returningVisitor?","Returning Visitor?")</p>       
+                </div>
+        		@Include("../../../UserManagement/Login/login.cshtml")
+            </div>
+        </div>
+      </div>
+    </main>
+
+    @SnippetStart("jsOnLoad")
+      @:onLoadCartLogin();
+    @SnippetEnd("jsOnLoad")
+  }
+}
+
+@TemplateTags()

@@ -1,0 +1,201 @@
+/**
+ * Description: User Management
+ * User: ShareIT
+ * Date: 12/Jan/2016
+**/
+
+@import url(configs.less);
+
+.userRelatedForms.DMForms fieldset.TextInput > input,
+.userRelatedForms.DMForms fieldset.File > .fakefile,
+.userRelatedForms.DMForms .checkBoxContainer {
+  width: 45% !important;
+}
+
+.userRelatedForms.DMForms .checkBoxContainer {
+  margin-left: 21%;
+}
+
+.userRelatedForms.DMForms .fieldInfoContainer {
+  margin-left: 22%;
+  margin-top: 0;
+}
+
+#AddressForm.DMForms input[type=submit] {
+  margin-left: 2px;
+}
+
+#AddressForm.DMForms #State_2 {
+  margin-left: 15px;
+  width: 30.8% !important;
+}
+
+#AddressForm .Select.mandatory .col-md-4.col-sm-12{
+
+}
+
+#AddressForm.DMForms > a {
+  margin-left: 21.3%;
+}
+
+/* header login */
+li.login > form {
+  width: 261px;
+  top: 25px;
+  z-index: @zIndex1;
+  border: 1px solid @secondary;
+  padding-top:10px;
+
+  &.userRelatedForms.DMForms fieldset input:not([type=submit]) {
+    width: 100% !important;
+    margin-left: 0;
+  }
+
+  fieldset {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  input[type=submit] {
+    margin-left: 0 !important;
+    width: 100%;
+  }
+
+  #forgotPassword {
+    margin-left: 0;
+  }
+  
+
+}
+
+
+/* Login */
+.forgotButtons  {
+  margin-top: 15px;
+}
+
+#dontHaveAnAccount {
+  padding: 20px 0;
+  margin-top: 20px;
+  border-top: 1px solid @secondary;
+}
+
+.DMForms .noStyle input[type=text] {
+  border: 0;
+}
+
+/* Account information*/
+.accountInfoList > * {
+  margin-bottom: 10px;
+}
+
+.viewAddresses {
+  margin-bottom: 20px;
+}
+
+.viewAddresses thead {
+  border-top: 1px solid @secondary;
+  border-bottom: 1px solid @secondary;
+}
+
+.DMForms.addAddress fieldset.Select .bootstrap-select {
+  width: 100% !important;
+  margin-left: 0;
+}
+
+/* My subscriptions */
+#newsletterGroups {
+  margin-top: 25px;
+}
+
+#newsletterGroups label {
+  padding-left: 2%;
+  line-height: normal;
+}
+
+#newsletterGroups > li {
+  margin-bottom: 20px;
+}
+
+#UserManagementEditForm button {
+  margin-left: 2%;
+}
+
+/* ------------
+        MEDIA QUERIES
+        --------------- */
+
+
+@media (max-width: @screen-xs-max)
+{
+  .userRelatedForms.DMForms fieldset.TextInput > input,
+  .userRelatedForms.DMForms fieldset.File > .fakefile,
+  .userRelatedForms.DMForms fieldset.Select .bootstrap-select,
+  .userRelatedForms fieldset > label,
+  .userRelatedForms.DMForms .checkBoxContainer {
+    width: 100% !important;
+  }
+
+  article > .userRelatedForms,
+  .accountInfoList dd > a,
+  .accountInfoList > * {
+    padding: 0;
+  }
+  .userRelatedForms.DMForms .checkBoxContainer {
+    margin-left: 0;
+  }
+  .accountInfoList > dt {
+    margin: 10px 0 0 0;
+  }
+
+  form[name=UserManagementEditForm].DMForms fieldset > input:not([type=submit]):not([type=checkbox]):not([type=radio]) {
+    width: 100% !important;
+  }
+  .DMForms .Text, .DMForms input[type=submit] {
+    margin-left: 0;
+  }
+
+
+}
+
+@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max)
+{
+
+}
+
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max)
+{
+  #AddressForm.DMForms #State_2 {
+    width: 30% !important;
+  }
+}
+
+@media (min-width: @screen-sm-min)  {
+  #forgotPassword,
+  #forgotPasswordID,
+  #ExtUserForm.DMForms input[type=submit],
+  #ExtUserForm .searchButton button {
+    margin-left: 22%;
+  }
+  .accountInfoList dd {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: @screen-sm-max)  {
+  .addAddress fieldset > div {
+    padding: 0;
+  }
+  #AddressForm.DMForms #State_2 {
+    width: 100% !important;
+  }
+}
+
+@media (min-width: @screen-sm-min) {
+
+}
+
+@media (min-width: @screen-lg-min)
+{
+
+}

@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Facets>
+  <Settings />
+  <Source Repository="Products" Item="Query 1.query" />
+  <Facet Name="Category" Type="Field" Field="GroupIDs" QueryParameter="Group" />
+</Facets>

@@ -1,0 +1,26 @@
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb;
+@using Dynamicweb.Frontend;
+@{
+  var item = Pageview.Area.Item;
+  // SORT AND ORDER
+  string sortBy = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["sortby"]) ? System.Web.HttpContext.Current.Request.Params["sortby"] : "",
+         sortOrder = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["SortOrder"]) ? System.Web.HttpContext.Current.Request.Params["SortOrder"] : "",
+         qString = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["q"]) ? System.Web.HttpContext.Current.Request.Params["q"] : "" ;
+  bool noResults = true;
+}
+
+<!-- filters -->
+<div id="filtersContainer" class="col-xs-12 col-sm-3 noPaddingLeft">
+  @Include("includes/filters.cshtml")
+</div>
+
+<div id="listContainer" class="col-xs-12 col-sm-9 noPaddingRight">
+  <h2>@Translate("noProductsFound", "No products found.")</h2>
+  <div>@Translate("modifyYourSearch", "Please modify your search or filter criteria to view more products.")</div>
+</div>
+
+@SnippetStart("jsOnLoad")
+  onLoadProductList("0", "0", "0,0");
+@SnippetEnd("jsOnLoad")

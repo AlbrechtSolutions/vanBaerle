@@ -1,0 +1,8 @@
+@functions{
+    public string GetCurrentUrl()
+    {
+        string currentUrl = Pageview.GlobalTags.GetTagByName("Global:Request.Scheme").Value.ToString() + "://" + Pageview.GlobalTags.GetTagByName("Global:Request.Host").Value.ToString() + Pageview.GlobalTags.GetTagByName("Global:Pageview.Url").Value.ToString();
+
+        return currentUrl;
+    }
+}

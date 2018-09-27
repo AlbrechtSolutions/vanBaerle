@@ -1,0 +1,14 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Ecommerce.International
+@using Dynamicweb.Content
+@using Dynamicweb.Rendering
+@{
+  @Include("../Includes/razor/GeneralSettings.cshtml")
+  @Include("includes/SelectCountryAndRegion.cshtml")
+}
+@Include("../Includes/razor/Getimage.cshtml")
+@Include("includes/StoreHeader.cshtml")
+<div class="dynamicweb-map" id="Maps-85" data-list-position="hidden">
+    @Include("includes/ZipLocator.cshtml")
+    @Include("includes/Map.cshtml")
+</div>

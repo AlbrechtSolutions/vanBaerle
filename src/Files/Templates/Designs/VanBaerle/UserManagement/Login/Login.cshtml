@@ -1,0 +1,71 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  bool userIsLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+  Dynamicweb.Content.Items.Item areaItem = Pageview.Area.Item;
+
+  if(userIsLoggedIn) {
+	System.Web.HttpContext.Current.Response.Redirect("/"+areaItem["MyProfile"].ToString());
+  }
+
+string checkoutPage = "";//(string)areaItem["Checkout"] ?? "";
+string myCartPage = "";//(string)areaItem["ShowCart"] + "&CartV2.GotoStep1=true" ?? "";
+string loginPage = (string)areaItem["Login"] ?? "";
+string contactUs = (string)areaItem["ContactUs"] ?? "";
+string error = GetString("DW_extranet_error_uk");
+string redirectURL = GetString("UserManagement:User.Login.SuccessRedirectToPage");
+}
+
+
+@if(!userIsLoggedIn) {
+ 
+<div class="center-text">
+  <div class="login">
+    <div class="row">
+      <div class="h1">@Translate("Login")</div>
+      
+      @if(!string.IsNullOrEmpty(error)) {   
+      <div class="col-xs-12">
+    	<p class="message-error col-md-6 col-md-offset-3"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> @error</p>
+      </div>
+  	  }
+      
+      
+      <form data-mycart="@myCartPage" data-checkoutpage='@checkoutPage' id="ExtUserForm" class="col-xs-12 DMForms userRelatedForms" action="/" method="post">
+        @*<input type="hidden" name="redirect" value='@("Default.aspx?ID=" + GetGlobalValue("Global:Page.ID"))'>
+        <input type="hidden" name="ID" value='@(GetGlobalValue("Global:Page.ID"))'>*@
+        <input type="hidden" name="redirect" value='@redirectURL'/>
+        <fieldset class="mandatory TextInput">
+          <label  for="Username">@Translate("usernameEmail","Username / Email")</label>
+          <input type="text" id="Username" name="username" value="" tabindex="1">
+        </fieldset>
+        <fieldset class="mandatory TextInput">
+          <label for="Password">@Translate("password","Password")</label>
+          <input autocomplete="off" type="password" id="Password" name="password" value="" tabindex="2">
+        </fieldset>
+
+        <div class="col-xs-12 noPadding">
+          <input class="btn btn-primary" name="LoginAction" type="submit" value='@Translate("Login", "Login")'>
+        </div>
+        <div class="forgotButtons col-xs-12 noPadding">
+          <div class="col-md-3 col-md-offset-2">
+          <a id="forgotPassword" href="@loginPage&amp;LoginAction=Recovery">@Translate("forgotYourPassword","Forgot your password?")</a>
+          </div>
+          <div class="col-md-6">
+            @Translate("dontHaveAnAccount","Don't have an account?")
+            <a href="@contactUs">@Translate("contactUs", "Contact us")</a>
+          </div>
+        </div>
+        @*<div id="dontHaveAnAccount" class="col-xs-12 noPadding">
+          
+        </div>*@
+      </form>
+    </div>
+  </div>
+</div>
+
+}
+
+@SnippetStart("jsOnLoad")
+onLoadLoginForm("#ExtUserForm");
+@SnippetEnd("jsOnLoad")

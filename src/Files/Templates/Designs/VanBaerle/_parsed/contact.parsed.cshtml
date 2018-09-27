@@ -1,0 +1,753 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System.Text.RegularExpressions;
+@using Dynamicweb.Core
+
+@{
+  string designFolder = GetString("Template:DesignBaseUrl");
+  string device = Pageview.Device.ToString();
+  string OrSubpage = GetString("DwAreaFirstPageID") == GetString("Global:Page.ID") ? "home" : "subpage";
+  string print = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["print"]) ? "printOrPdf" : "";
+  string resultsPage = GetString("Item.Area.SearchResults");
+  string countryCode = Dna.IP.Frontend.GetCountryCode();
+  string longLang = Pageview.GlobalTags.GetTagByName("Global:Area.LongLang").Value.ToString();
+  string shortLang = Pageview.GlobalTags.GetTagByName("Global:Area.Lang").Value.ToString();
+  string email = GetString("Item.Area.Email");
+  string phone = GetString("Item.Area.Phone");
+	string subscribeToNewsletterAPI = GetString("Item.Area.Newsletter_Subscribe_API");
+
+  bool userIsLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+  bool isPrint = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["print"]);
+  List<LoopItem> socialMedia = GetLoop("Item.Area.SocialNetworks");
+  List<LoopItem> websiteLanguages = GetLoop("WebsiteLanguages");
+	List<LoopItem> languages = GetLoop("Languages");
+
+  string ipCountry = Dna.IP.Frontend.GetCountryCode();
+  string countryCodeModule = !string.IsNullOrEmpty(ipCountry) ? ipCountry : "US";
+  string userCountryCode = (Pageview.User != null && !string.IsNullOrEmpty(Pageview.User.CountryCode)) ? Pageview.User.CountryCode : ipCountry;
+  string userState = Pageview.User != null ? Pageview.User.State : string.Empty;    
+}<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@GetValue("Title")</title>
+@GetValue("MetaTags")
+@GetValue("CopyRightNotice")
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+        WebFont.load({
+            google: {
+                families: [
+                    "Lato:100,300,300i,400,700,700i,900:latin,cyrillic,cyrillic-ext,latin-ext",
+                    "Roboto:400,700",
+                    "Montserrat"
+                ]
+            }
+        });
+    </script>
+
+  <link rel="shortcut icon" href="@(designFolder)images/favicon.ico" type="image/x-icon">
+
+
+  @{
+  var minify = false;
+  var styleBundle = Dna.Optimizer.Renderer.RenderStyles(string.Format("{0}css", designFolder), "-main-styles", new[] { "exceptions" }, minify, true);
+  var scriptBundle = Dna.Optimizer.Renderer.RenderScripts(string.Format("{0}js", designFolder), "-main-scripts", new[] { "exceptions" }, minify, true);
+  }
+  <link rel="stylesheet" href="@styleBundle">
+  <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/css/exceptions/exceptions.css">
+ 
+  
+  <script src="@scriptBundle"></script>
+
+  <script>
+  @RenderSnippet("jsVariables")
+  @SnippetStart("jsVariables") @SnippetEnd("jsVariables")
+
+  var obj_pages = {
+    str_miniCart: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.MiniCart"))',
+    str_login: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.Login"))',
+    str_globalTranslates: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.GlobalTranslates"))',
+    str_contactPopup: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.ContactUs_Popup"))',
+    str_cartInformation: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.Cart_Information"))',
+    str_typeAhead: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.TypeAhead"))'
+  },
+  obj_user = {
+    str_country: '@userCountryCode',
+    str_state: '@userState'
+  },
+  obj_settings = {
+    str_contactTimeout: '@GetString("Item.Area.Time")',
+    str_cartQty: '@GetString("Ecom:Order.OrderLines.TotalProductQuantity")'
+  },
+  obj_translates = {
+    str_seeAll: '@Translate("seeAllThe", "See all the")',
+    str_results: '@Translate("results", "results")'
+  };
+  $(function () {
+
+    @RenderSnippet("jsOnLoadVariables")
+    @SnippetStart("jsOnLoadVariables") @SnippetEnd("jsOnLoadVariables")
+    @RenderSnippet("jsOnLoad")
+    @SnippetStart("jsOnLoad") @SnippetEnd("jsOnLoad")
+  });
+ </script>
+  
+  
+@RenderSnippet("eCommerceTracking")
+
+  <!--Google Tag Manager-->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-MBXRK36');
+  </script>
+  <!--End Google Tag Manager-->
+
+ 
+  
+
+
+  @{
+    var key = System.Web.HttpContext.Current.Items["HideFooter"];
+    var hideFooter = key != null && Convert.ToBoolean(key);
+  }
+@GetValue("Stylesheets")
+@GetValue("Javascripts")
+</head>
+
+
+<body data-page-id='@GetGlobalValue("Global:Page.ID")' data-language="@shortLang">
+<!--Google Tag Manager (noscript)--> 
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MBXRK36" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!--End Google Tag Manager (noscript)-->
+@SnippetStart("eCommerceTracking") @SnippetEnd("eCommerceTracking")
+
+  @{
+    string demo = string.Format("{0}css", designFolder);
+  }
+
+  @inherits RazorTemplateBase<RazorTemplateModel<Template>>
+
+
+    <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/libs/animate-3.5.2/animate.css">
+    <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/libs/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/libs/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/Files/Templates/Designs/VanBaerle/libs/slick-1.6.0/slick.css">
+    <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/css/style.css">
+    <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/css/navbar/style.css">
+    <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/css/hygiene/style.css">
+	<link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/css/contact/style.css">
+    <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/css/custom-slick-theme/slick-theme-custom.css">
+    <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/css/footer/style.css">
+
+    <script src="/Files/Templates/Designs/VanBaerle/libs/jquery-3.2.1/jquery-3.2.1.min.js"></script>
+    <script src="/Files/Templates/Designs/VanBaerle/libs/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="/Files/Templates/Designs/VanBaerle/libs/fullpage-2.9.4/jquery.fullpage.js"></script>
+    <script type="text/javascript" src="/Files/Templates/Designs/VanBaerle/libs/slick-1.6.0/slick.min.js"></script>
+    <script src="/Files/Templates/Designs/VanBaerle/js/mobile-nav.js"></script>
+    <script src="/Files/Templates/Designs/VanBaerle/js/hygiene.js"></script>
+
+
+<div class="container-fluid contact">
+        <div class="row banner">
+            <div class="col-md-6 col-sm-6 col-xs-12 banner-image">
+
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 banner-text">
+                <div class="row header">
+                    <div class="header-light">Leicht zu erreichen</div>
+                    <span>Leicht zu erreichen</span>
+                </div>
+                <div class="row personal">
+                    <div class="col-md-2 col-sm-3 col-xs-3">
+                        <img src="/Files/Templates/Designs/VanBaerle/img/contact-2.png" class="img-responsive" alt="avartar">
+                    </div>
+                    <div class="col-md-10 col-sm-9 col-xs-9 contact-information">
+                        <div class="row name">
+                            Jenny Settembrini
+                        </div>
+                        <div class="row position">
+                            Head of Corporate Communications
+                        </div>
+                        <div class="row email">
+                            jenny.settembrini@vanbaerle.ch
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="contact-info">
+
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <div class="row header">
+                        <div class="col-md-2 full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-1.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                vanBaerle-Gruppe
+                            </div>
+                            <div class="row note">
+                                Schützenmattstrasse 21
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/location-icon.png">
+                                4142 Münchenstein
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +41 61 415 91 11
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                info.cz@vanbaerle.com
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+
+            <div class="container-fluid row">
+                <div class="col-md-6">
+                    <div class="row header">
+                        <div class="col-md-2  full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-2.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                Service Center Hygiene
+                            </div>
+                            <div class="row note">
+                                Service Center Team
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +41 61 415 XX  XX
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                servicecenter@vanbaerle.com
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <div class="row header">
+                        <div class="col-md-2 full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-3.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                Service Center Hygiene
+                            </div>
+                            <div class="row note">
+                                Service Center Team
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +41 61 415 XX  XX
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                servicecenter@vanbaerle.com
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <div class="row header">
+
+                        <div class="col-md-2   full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-1.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                Service Center Silikate
+                            </div>
+                            <div class="row note">
+                                Service Center Team
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +41 61 415 XX  XX
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                servicecenter@vanbaerle.com
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <div class="row header">
+                        <div class="col-md-2   full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-2.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                Investoren
+                            </div>
+                            <div class="row note">
+                                Markus Staub
+                            </div>
+                            <div class="row item-contact-information">
+                                Chief Financial Officer
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +41 61 415 92 03
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                markus.staub@vanbaerle.ch
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <div class="row header">
+                        <div class="col-md-2   full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-3.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                Medien
+                            </div>
+                            <div class="row note">
+                                Ellen Brugger
+                            </div>
+                            <div class="row item-contact-information">
+                                Head Corporate Communications
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +41 61 415 92 38
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                ellen.brugger@vanbaerle.ch
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+
+            <div class="container-fluid">
+                <h1>Tochtergesellschaften</h1>
+            </div>
+
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <div class="row header">
+                        <div class="col-md-2   full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-1.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                vanBaerle Silicates (S) Pte Ltd
+                            </div>
+                            <div class="row note">
+                                100 Pasir Panjang Road
+
+                            </div>
+                            <div class="row note">
+
+                                # 08-04
+                            </div>
+                            <div class="row item-contact-information">
+                                Singapore 118518
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +65 68 99 33 43
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                th.tan@vanbaerle.com.sg
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <div class="row header">
+                        <div class="col-md-2   full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-2.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                vanBaerle VS s.r.o.
+                            </div>
+                            <div class="row note">
+                                Palisàdy 33
+                            </div>
+                            <div class="row note">
+                                81106 Bratislava
+                            </div>
+                            <div class="row item-contact-information">
+                                Slowakei
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +421 2 32 41 06 21
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                email@vanbaerle.com.sg
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <div class="row header">
+                        <div class="col-md-2   full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-3.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                vanBaerle Swiss Hygiene s.r.o.
+                            </div>
+                            <div class="row note">
+                                Pernerova 168
+                            </div>
+                            <div class="row note">
+                                530 02 Pardubice
+                            </div>
+                            <div class="row item-contact-information">
+                                Tschechische Republik
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +420 466 818 213
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                info.cz@vanbaerle.com
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <div class="row header">
+                        <div class="col-md-2   full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-1.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                vanBaerle France S.A.S.
+                            </div>
+                            <div class="row note">
+                                3 Boulevard de l’europe
+                            </div>
+                            <div class="row note">
+                                68100 Mulhouse
+                            </div>
+                            <div class="row item-contact-information">
+                                Frankreich
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +41 61 415 92 15
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                email@vanbaerle.com
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <div class="row header">
+                        <div class="col-md-2   full-height visible-md visible-lg">
+
+                        </div>
+                        <div class="col-md-9 col-sm-12 col-xs-12">
+                            <img src="/Files/Templates/Designs/VanBaerle/img/contact-image-2.png" class="img-responsive" alt="avartar">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="item-contact">
+                            <div class="row name">
+                                vanBaerle Silicates Taiwan Co Ltd
+
+                            </div>
+                            <div class="row note">
+                                No.99-1, Sec 2, Nanti Rd, Wuqi Dist
+                            </div>
+                            <div class="row item-contact-information">
+                                Taichung City 43500 Taiwan (R.O.C.)
+                            </div>
+
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/tel-icon.png">
+                                Tel.  +88 642 639 98 09
+                            </div>
+                            <div class="row item-contact-information">
+                                <img src="/Files/Templates/Designs/VanBaerle/img/mail-icon.png">
+                                email@vanbaerle.com
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+      
+  @if (!hideFooter)
+  {
+   
+<footer class="main-footer">
+  <div class="container">
+    <div class="row">
+      	<div class="main-footer__column col-md-4 col-sm-12 screen-sm">
+            <h5 class="main-footer__heading">@Translate("Stay Tuned", "Stay Tuned")</h5>
+            @*<form action="#">
+              <div class="input-group main-footer__subscribe">
+                <span class="input-group-addon">
+                  <i class="vb-envelope input-group-addon-icon"></i>
+                </span>
+                <input type="email" id="subscriptionEmail" class="form-control" placeholder='@Translate("enterEmail","Enter email addres")'>
+                <span class="input-group-btn">
+                  <button class="btn btn-primary" type="submit">@Translate("subscribe","Subscribe")</button>
+                </span>
+              </div>
+            </form>*@
+          	<form name="NewsletterSubscribe" id="NewsletterSubscribe" method="post" enctype="multipart/form-data" data-api="@subscribeToNewsletterAPI" data-success='@Translate("Subscribe success","You have been subscribed to our latest news about products and promotions")' data-error='@Translate("invalidEmailAddress", "Invalid email address")'>
+          		<input name="UserManagementForm" value="1" type="hidden">
+                <input id="UserManagementForm.DeleteImage" name="UserManagementForm.DeleteImage" type="hidden">
+                <div style="display: none;">
+                    <input name="UserManagement_Form_EmailAllowed" id="UserManagement_Form_EmailAllowed" value="True" checked="checked" type="checkbox">
+                    <input name="UserManagement_Form_EmailAllowed_ApplyValue" id="UserManagement_Form_EmailAllowed_ApplyValue" value="AllowEmail" type="hidden">
+                </div>     
+          		<input class="hidden" placeholder="Name" name="UserManagement_Form_Name" type="text" id="UserManagement_Form_Name2"> 
+          	<div class="input-group main-footer__subscribe"> 
+                  
+                   <span class="input-group-addon">
+                  	<i class="vb-envelope input-group-addon-icon"></i>
+                   </span>
+                  <input type="email" class="form-control" name="UserManagement_Form_Email" id="UserManagement_Form_Email" placeholder='@Translate("enterEmail","Enter email addres")' value=''>
+              	  <span class="input-group-btn">
+                  	<input type="submit" class="btn btn-primary" value='@Translate("subscribe","Subscribe")'>
+              	  </span>
+                 </div>
+            </form>
+          </div>
+      
+      <div class="col-md-2 col-sm-12 screen-sm pull-right">
+        <a href="index.html">
+          <img class="main-footer__logo" src="@logo" alt="vanBaerle">
+        </a>
+      </div>
+         
+      @*<div class="col-md-2 screen-sm">
+        <div class="main-footer__column">
+          <h5 class="main-footer__heading">@Translate("aboutUs", "About Us")</h5>
+          <ul class="main-footer__link-list">
+            <li><a href="/about-us">vanBaerle</a></li>
+            <li><a href="/about-us">Responsibility</a></li>
+            <li><a href="/about-us">Jobs</a></li>
+            <li><a href="/about-us">Contact</a></li>
+            <li><a href="/about-us">Terms</a></li>
+          </ul>
+        </div>
+      </div>*@
+      @*<div class="col-md-2 screen-sm">
+        <div class="main-footer__column">
+          <h5 class="main-footer__heading">@Translate("products","Products")</h5>
+          <ul class="main-footer__link-list">
+            <li><a href="/hygiene">Hygiene</a></li>
+            <li><a href="/silicates">@Translate("silicates", "Silicates")</a></li>
+          </ul>
+        </div>
+      </div>*@
+        
+      <div class="col-lg-3 col-md-4">
+        <div class="main-footer__column--sm">
+          <!-- .main-footer__socialcopy #1 -->
+          <div class="main-footer__socialcopy main-footer__socialcopy--sm">
+            @*<div class="main-footer__social">
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-facebook"></i>
+              </a>
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-twitter"></i>
+              </a>
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-linkedin"></i>
+              </a>
+            </div>*@
+            <span class="main-footer__copyright">&copy; @DateTime.Now.Year. &nbsp;  @GetString("Item.Area.Copyright")</span>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- main-footer__socialcopy #2 -->
+    <div class="main-footer__bottom main-footer__socialcopy">
+      <div class="main-footer__social">
+        @*<a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-facebook"></i>
+        </a>
+        <a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-twitter"></i>
+        </a>
+        <a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-linkedin"></i>
+        </a>*@
+
+        <span class="main-footer__copyright">&copy; @DateTime.Now.Year. &nbsp; @GetString("Item.Area.Copyright")</span>
+      </div>
+      
+      @GetValue("DwNavigation(copyrightMenu)")
+    </div>
+  </div>
+</footer>
+  }
+  
+</body>
+</html>

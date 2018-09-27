@@ -1,0 +1,157 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@Include("../emailMarketingButton.cshtml")
+@Include("../emailMarketingGetImage.cshtml")
+
+@functions {
+  private int FormatInteger(object value)
+  {
+    int num;
+    if (value == null)
+    {
+      value = "";
+    }
+    if (int.TryParse(value.ToString(), out num))
+    {
+      return num;
+    }
+    return 0;
+  }
+}
+@{
+  bool showButton = GetBoolean("Item.ShowReadMoreButton");
+  string title = GetBoolean("Item.ShowTitle") ? GetString("Item.Title") : "";
+  string titleHeading = GetString("Item.HeadingType") != "" ? GetString("Item.HeadingType") : "h2";
+  string titleOrder = GetString("Item.TitleOrder");
+  string image = GetString("Item.Image");
+  string imageTitle = GetString("Item.ImageTitle");
+  string text = GetString("Item.Text");
+  string imageAlignment = GetString("Item.Order");
+  string backgroundColor = GetString("Item.Background");
+  string link = GetString("Item.Link");
+  string linkText = GetString("Item.LinkText");
+  string imageAnchorStart = link != "" ? "<a target=\"_blank\" href=\"" + link + "\">" : "";
+  string imageAnchorEnd = link != "" ? "</a>" : "";
+  string titleAlignment = imageAlignment != "image-top" || image == "" ? "left" : "center";
+  string fontFamily = "font-family: Helvetica, Arial, sans-serif; color:#666666; font-weight:normal;";
+  int width = GetInteger("Item.Width");
+  string col = width == 50 ? "250" : "500";
+  bool breakBol = FormatInteger(System.Web.HttpContext.Current.Items["currentColumns"]) == 100;
+
+  if (GetBoolean("ParagraphContainerIsFirst"))
+  {
+    System.Web.HttpContext.Current.Items["currentColumns"] = 0;
+  }
+  System.Web.HttpContext.Current.Items["currentColumns"] = FormatInteger(System.Web.HttpContext.Current.Items["currentColumns"]) + width;
+  if (FormatInteger(System.Web.HttpContext.Current.Items["currentColumns"]) > 100)
+  {
+    System.Web.HttpContext.Current.Items["currentColumns"] = width;
+  }
+  Dictionary<string, string> dict_buttonBlue = new Dictionary<string, string>
+  {
+    {"width", "210px"},
+    {"height", "45px"},
+    {"background", "#256F9C"},
+    {"color", "#ffffff"},
+    {"font-size", "16px"},
+    {"font-style", "normal"}
+  };
+  string tableStart = (breakBol || FormatInteger(System.Web.HttpContext.Current.Items["currentColumns"]) == 0 || GetBoolean("ParagraphContainerIsFirst")) ? "<tr align='center' border='0' cellspacing='0' cellpadding='0' width='100%' bgcolor='" + backgroundColor + "' style='" + fontFamily + "'><td align='center'><table class='responsive-table clearLeft' border='0' cellspacing='0' cellpadding='0' width='500'><tr>" : "";
+  string tableEnd = (FormatInteger(System.Web.HttpContext.Current.Items["currentColumns"]) == 50) ? "</tr><tr><td height='30'></td></tr></table></td></tr>" : "";
+  System.Web.HttpContext.Current.Items["oldColumns"] = System.Web.HttpContext.Current.Items["currentColumns"];
+  string endHeading = "</" + titleHeading + ">";
+}
+
+@if (!GetBoolean("ParagraphContainerIsFirst"))
+{
+  @tableEnd
+}
+
+@tableStart
+
+<td border="0" cellspacing="0" cellpadding="0" width="@col" bgcolor="@backgroundColor" style="@fontFamily" class="responsive-table">
+  <table border="0" cellspacing="0" cellpadding="0" width="@col" bgcolor="@backgroundColor" style="@fontFamily" class="responsive-table">
+    @if (title != "" && (titleOrder == "title-first" || titleOrder == ""))
+    {
+      <tr>
+        <td align="@titleAlignment" valign="top">
+          <@titleHeading style="font-size: 24px; padding:0; margin:0;  @fontFamily color:#333333;">@title @endHeading
+        </td>
+        <td width="10" height="10" style="@fontFamily">&nbsp;</td>
+      </tr>
+    }
+    @if (image != "" && imageAlignment == "image-top")
+    {
+      imageTitle = imageTitle != "" ? imageTitle : title;
+      <tr>
+        <td align="center" valign="top">
+          @imageAnchorStart
+          <img class="img-max" src="@GetImage(image, 600, 0)" alt="@imageTitle" title="@imageTitle" />
+          @imageAnchorEnd
+        </td>
+      </tr>
+          <tr>
+            <td width="10" height="20">&nbsp;</td>
+          </tr>
+    }
+
+    @if (text != "" || imageAlignment != "image-top")
+    {
+      <tr>
+        <td width="10" height="10">&nbsp;</td>
+      </tr>
+          <tr>
+            <td align="left" valign="top">
+              <table class="imageAside" colspan="2" border="0" cellspacing="0" cellpadding="0" width="100%" style="@fontFamily">
+                <tr>
+                  @if (image != "" && imageAlignment == "image-left-column")
+                  {
+                    imageTitle = imageTitle != "" ? imageTitle : title;
+                    <td align="left" valign="top">
+                      @imageAnchorStart
+                      <img class="img-max" src="@GetImage(image, 300, 0)" alt="@imageTitle" title="@imageTitle" />
+                      @imageAnchorEnd
+                    </td>
+                    <td width="10" height="30">&nbsp;</td>
+                  }
+                  @if (text != "")
+                  {
+                    <td align="@titleAlignment" valign="top" style="font-size: 14px; line-height: 20px; @fontFamily">
+                      @if (title != "" && titleOrder == "title-with-text")
+                      {
+                        <div><@titleHeading align="@titleAlignment" style="font-size: 24px; margin:0; padding:0; @fontFamily color:#333333;">@title @endHeading </div>
+                        <br />
+                      }
+                      @text
+                      @if (link != "" && linkText != "" && showButton)
+                      {
+                        <br />
+                        @CreateButton(link, linkText, null, dict_buttonBlue)
+                      }
+                    </td>
+                  }
+                  @if (image != "" && imageAlignment == "image-right-column")
+                  {
+                    imageTitle = imageTitle != "" ? imageTitle : title;
+                    <td width="10" height="10">&nbsp;</td>
+                    <td align="right" valign="top">
+                      @imageAnchorStart
+                      <img class="img-max" src="@GetImage(image, 300, 0)" alt="@imageTitle" title="@imageTitle" />
+                      @imageAnchorEnd
+                    </td>
+                  }
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td width="10" height="45">&nbsp;</td>
+          </tr>
+    }
+  </table>
+</td>
+
+@if (GetBoolean("ParagraphContainerIsLast"))
+{
+  @tableEnd
+}

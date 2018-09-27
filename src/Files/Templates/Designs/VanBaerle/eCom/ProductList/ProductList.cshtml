@@ -1,0 +1,398 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using Dynamicweb;
+@using Dynamicweb.Frontend;
+
+@Include("../../includes/Razor/GetImage.cshtml")
+@Include("../../includes/Razor/VerifyImage.cshtml")
+@{
+  Dynamicweb.Content.Items.Item item = Pageview.Area.Item;
+  bool isLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+  bool isFrontEnd = Dynamicweb.Environment.ExecutingContext.IsFrontEnd();
+  var request = System.Web.HttpContext.Current.Request.Params;
+  List<LoopItem> prodLoop = GetLoop("Products");
+  int totalPagesNum = GetInteger("Ecom:ProductList.TotalPages");
+  int curPage = !string.IsNullOrEmpty(request["PageNum"]) ? Convert.ToInt32(request["PageNum"].ToString()) : 1;
+  bool noResults = false;
+  bool showQuantity = item["ShowQuantityField"].ToString() == "True" ? true : false;
+  string currentPageId = Pageview.Page.ID.ToString();
+  string imagesFolder = "/Files/Files/" + designName + "/Products/";
+  string totalPages = GetString("Ecom:ProductList.TotalPages");
+  string nextPage = GetString("Ecom:ProductList.NextPage");
+  string pagingHref = "";
+  string sortBy = !string.IsNullOrEmpty(request["sortby"]) ? request["sortby"] : "";
+  string sortOrder = !string.IsNullOrEmpty(request["SortOrder"]) ? request["SortOrder"] : "";
+string minPrice = "0";//prodLoop.OrderBy(s => s.GetDouble("Ecom:Product.Price.Price")).First().GetString("Ecom:Product.Price.Price");
+string maxPrice = "0";//prodLoop.OrderByDescending(s => s.GetDouble("Ecom:Product.Price.Price")).First().GetString("Ecom:Product.Price.Price");
+  string qString = !string.IsNullOrEmpty(request["q"]) ? request["q"] : "";
+  string dataView = System.Web.HttpContext.Current.Request.Cookies["dataList"] != null ? System.Web.HttpContext.Current.Request.Cookies["dataList"].Value : "";
+  string groupsIds = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["groupid"]) ? System.Web.HttpContext.Current.Request.Params["groupid"] : "";
+
+
+
+int activeFacetCount = 0;
+  foreach (LoopItem facetGroup in GetLoop("FacetGroups"))
+  {
+    if(facetGroup.GetLoop("Facets").Count() > 0) {
+      foreach (LoopItem facet in facetGroup.GetLoop("Facets")) {
+        if (facet.GetLoop("FacetOptions").Any(r => r.GetBoolean("FacetOption.Selected"))) {     
+          foreach(LoopItem facetOption in facet.GetLoop("FacetOptions")) {
+            activeFacetCount++;
+          }
+        }
+      }
+    }
+  }
+
+  bool facetsAreActive = activeFacetCount > 0 ? true : false;
+
+}
+
+
+<main class="page-common page-products">
+  <div class="container">
+    <div class="row">
+    
+      @* FILTERS *@
+      <div id="filtersContainer" class="col-md-3 noPaddingLeft">
+        @RenderSnippet("Navigation")
+        @* Include("includes/Filters.cshtml") *@
+
+      </div>
+	  
+      
+      <div id="listContainer" class="col-md-9 noPaddingRight" data-amountrequired='@Translate("amountIsRequired","Amount is required.")'>
+        <div class="results-header">
+
+          @* SORT AND ORDER *@
+          @* <div class="result__count">
+            <span class="result__text">
+              Search Results:
+            </span>
+            @prodLoop.Count() @Translate(GetInteger("Ecom:ProductList.PageProdCnt") > 1 ? "products" : "product") @Translate("productFound", "found")
+          </div> *@
+
+          <div class="pagination-box col-xs-12">
+            <span class="col-xs-6 noPadding">@prodLoop.Count() @Translate("of", "of") @GetString("Ecom:ProductList.PageProdCnt") @Translate(GetInteger("Ecom:ProductList.PageProdCnt") > 1 ? "items" : "item")</span>
+            @if (GetInteger("Ecom:ProductList.TotalPages") > 1)
+            {
+              string active = "";
+              string prevPage = GetString("Ecom:ProductList.PrevPage.Clean");
+              string nextListPage = GetString("Ecom:ProductList.NextPage.Clean");
+              string pageText = "&laquo; " + Translate("previous", "Previous") + " ";
+              string requestUrl = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString();
+
+            <ul class="pagination">
+              @if (prevPage != "")
+                {
+                @PageItem("class=\"previous\"", prevPage, pageText)
+                }
+              @if (curPage > 2 && totalPagesNum > 3)
+                {
+                  for (int i = 1; i <= 1; i++)
+                  {
+                    active = curPage == i ? "class=\"active\"" : "";
+                    pagingHref = requestUrl.Contains("PageNum") ? requestUrl.Replace("PageNum=" + curPage, "PageNum=" + i) : requestUrl + "&PageNum=" + i;
+                @PageItem(active, pagingHref, i.ToString())
+                  }
+                @Ellipsis()
+                }
+              @foreach (LoopItem page in GetLoop("Ecom:ProductList.Pages3"))
+                {
+                  string hrefEncoded = page.GetString("Ecom:ProductList.Pages3.Page.UrlHtmlEncoded");
+                  string page3Number = page.GetString("Ecom:ProductList.Pages3.Page.Number");
+
+                  if (page.GetBoolean("Ecom:ProductList.Pages3.Page.IsCurrent"))
+                  {
+                @PageItem("class=\"active\"", hrefEncoded, page3Number)
+                  }
+                  else
+                  {
+                @PageItem("", hrefEncoded, page3Number)
+                  }
+                }
+              @if (curPage < totalPagesNum - 1 && totalPagesNum > 3)
+                {
+                @Ellipsis()
+                  for (int i = totalPagesNum; i <= totalPagesNum; i++)
+                  {
+                    active = curPage == i ? "class=\"active\"" : "";
+                    pagingHref = requestUrl.Contains("PageNum") ? requestUrl.Replace("PageNum=" + curPage, "PageNum=" + i) : requestUrl + "&PageNum=" + i;
+                @PageItem(active, pagingHref, i.ToString())
+                  }
+                }
+              @if (nextListPage != "")
+                {
+                  string nextText = Translate("next", "Next") + "&raquo;";
+
+                @PageItem("class=\"next\"", nextListPage, nextText, "data-numPages=\"" + totalPagesNum + "\"")
+                }
+            </ul>
+            }
+          </div>
+
+         @* @if (qString != "")
+        {
+        <form action="/Default.aspx" id="searchFormList">
+          <input type="hidden" name="ID" value="@(item["SearchResults"])">
+          <fieldset class="TextInput mandatory">
+            <label for="searchSubmitList" class="hide">@Translate("search", "Search")</label>
+            <input id="searchSubmitList" data-error='@Translate("searchText", "Search for something")' type="text" name="q" value="@qString">
+          </fieldset>
+          <button type="submit">
+            <i class="fa fa-search"></i>
+          </button>
+        </form>
+        } *@
+
+        
+        @*   <!-- REMOVE FILTERS -->
+          <div class="keyword-list removeFiltersContainer">
+            @foreach (LoopItem facetGroup in GetLoop("FacetGroups"))
+          {
+            foreach (LoopItem facet in facetGroup.GetLoop("Facets"))
+            {
+              if (facet.GetLoop("FacetOptions").Any(r => r.GetBoolean("FacetOption.Selected")))
+              {
+          <a data-queryname="@(facet.GetString("Facet.QueryParameter"))" class="btn btn-icon keyword__button" href="#">@facet.GetString("Facet.Name") <i class="vb-x-circle icon"></i></a>
+              }
+            }
+          }
+            <a class="removeAll btn btn-link keyword__remove" href="#">@Translate("removeall", "Remove all filters")</a>
+          </div> *@
+
+
+          @if(facetsAreActive == true) {
+
+
+        <div class="removeFiltersContainer">
+          @foreach (LoopItem facetGroup in GetLoop("FacetGroups"))
+          {
+            if(facetGroup.GetLoop("Facets").Count() > 0) {
+
+           
+            
+            foreach (LoopItem facet in facetGroup.GetLoop("Facets"))
+            {
+              if (facet.GetLoop("FacetOptions").Any(r => r.GetBoolean("FacetOption.Selected")))
+              {
+             
+                foreach(LoopItem facetOption in facet.GetLoop("FacetOptions")) {
+                  if(facetOption.GetString("FacetOption.Selected") == "True") {                   
+                    <a data-query-name='@facet.GetString("Facet.QueryParameter")' data-query-value='@facetOption.GetString("FacetOption.Value")' class="filter--active btn btn-icon keyword__button" href="#">
+                      @facetOption.GetString("FacetOption.Label") <i class="vb-x-circle icon"></i>
+                    </a>
+                  }
+
+                 
+                }
+                
+               
+              }
+            }
+
+
+
+             
+
+            }
+          }
+          <a class="removeAll btn btn-link keyword__remove" href="#">@Translate("removeAllFilters", "Remove all filters") <i class="ion-ios-close-empty"></i></a>
+          
+        </div>
+        } 
+
+        </div> @* end results-header *@
+
+        <ul data-maxcompare='@Translate("maxCompare", "Maximum to compare: 3")' data-list="@dataView" id="productsList product-list" class="productsList">
+          @foreach (LoopItem product in prodLoop)
+        {
+          
+
+          string productVOCName = product.GetString("Ecom:Product:Field.VOC.Name");
+          string productVOCValue = product.GetString("Ecom:Product:Field.VOC.Value");
+          string isNewProduct = product.GetString("Ecom:Product:Field.NewProduct");
+          bool isGiftCard = product.GetInteger("Ecom:Product.Type") == 3;
+          string productNumber = product.GetString("Ecom:Product.Number");
+          string imagePattern = imagesFolder + productNumber + ".jpg";
+          string image = GetImagePathUrl(product.GetString("Ecom:Product.ImageSmall.Clean"), product.GetString("Ecom:Product.ImageMedium.Clean"), product.GetString("Ecom:Product.ImageLarge.Clean"), imagePattern);
+          string productName = product.GetString("Ecom:Product.Name");
+          string productID = product.GetString("Ecom:Product.ID");
+          string productVariantID = product.GetString("Ecom:Product.VariantID");
+          string productShortDescription = product.GetString("Ecom:Product.LongDescription");
+          string link = product.GetString("Ecom:Product.LinkGroup.Clean");
+
+          string ecoRating = product.GetString("Ecom:Product:Field.EcoRating");
+          string phValueRaw = product.GetString("Ecom:Product:Field.pHValue");
+		  double phValue = product.GetDouble("Ecom:Product:Field.pHValue");
+          
+  		  string productLanguage = product.GetString("Ecom:Product.LanguageID");
+          string variantDefaultId = product.GetString("Ecom:Product.DefaultVariantComboID");
+          string variantCurrentId = product.GetString("Ecom:Product.VariantID");
+          string variantId = (!string.IsNullOrEmpty(variantCurrentId)) ? variantCurrentId : variantDefaultId;
+          string compareLink = productID + "$" + productLanguage + "$" + productVariantID;
+          bool productIsFavoriteBool = product.GetBoolean("Ecom:Product.IsProductInFavoriteList");
+          string productRemoveFromList = "/Default.aspx?Id=" + currentPageId + "&amp;ProductID=" + productID + "&amp;CCRemoveFromMyLists=" + productID + "&amp;CCRemoveFromListVariantID=" + variantDefaultId + "&amp;CCRemoveFromListLanguageID=" + productLanguage;
+          string productAddToList = "/Default.aspx?Id=" + currentPageId + "&amp;ProductID=" + productID + "&amp;CCAddToMyLists=" + productID + "&amp;CCAddToListVariantID=" + variantDefaultId + "&amp;CCAddToListLanguageID=" + productLanguage;
+          string favoriteUrl = productIsFavoriteBool ? productRemoveFromList : productAddToList;
+          string miniCartPage = (item["MiniCart"] ?? "").ToString();
+          List<LoopItem> variantCombinations = product.GetLoop("VariantCombinations");
+
+        @* Logic: If there is any variant check if there is any selected/default variant to load the price if not load price from first (by order xpto) variant.  *@
+          int productStock = !variantCombinations.Any() ? product.GetInteger("Ecom:Product.AvailableAmount") : variantCombinations.FirstOrDefault(x => x.GetString("Ecom:Product.DefaultVariantComboID").Equals(x.GetString("Ecom:VariantCombination.VariantID"))) == null ? variantCombinations.OrderBy(x => x.GetString("Ecom:VariantCombination.VariantID")).FirstOrDefault().GetInteger("Ecom:Product.AvailableAmount") : variantCombinations.FirstOrDefault(x => x.GetString("Ecom:Product.DefaultVariantComboID").Equals(x.GetString("Ecom:VariantCombination.VariantID"))).GetInteger("Ecom:Product.AvailableAmount");
+          string productPrice = !variantCombinations.Any() ? product.GetString("Ecom:Product.Price") : variantCombinations.FirstOrDefault(x => x.GetString("Ecom:Product.DefaultVariantComboID").Equals(x.GetString("Ecom:VariantCombination.VariantID"))) == null ? variantCombinations.OrderBy(x => x.GetString("Ecom:VariantCombination.VariantID")).FirstOrDefault().GetString("Ecom:Product.Price") : variantCombinations.FirstOrDefault(x => x.GetString("Ecom:Product.DefaultVariantComboID").Equals(x.GetString("Ecom:VariantCombination.VariantID"))).GetString("Ecom:Product.Price");
+          string stockStatus = productStock > 0 ? "fa-check" : "fa-close";
+                  string label1 = product.GetString("Ecom:Product:Field.Label1.Value"),
+                  label2 = product.GetString("Ecom:Product:Field.Label2.Value"),
+                  application1 = product.GetString("Ecom:Product:Field.Application1.Value"),
+                  application2 = product.GetString("Ecom:Product:Field.Application2.Value"),
+                  application3 = product.GetString("Ecom:Product:Field.Application3.Value"),
+                  application4 = product.GetString("Ecom:Product:Field.Application4.Value");
+
+        <li class="product">
+          <div class="product__img">
+
+            @if(isNewProduct == "True") {
+                <span class="product-is-new">@Translate("New" , "New")</span>
+                <a href="@link"><img src="@GetImage(image, 400, 0)" alt="@productName" title="@productName"></a>
+            } else {
+                <a href="@link"><img src="@GetImage(image, 400, 0)" alt="@productName" title="@productName"></a>
+            }
+
+           
+
+          </div>
+          <div class="product__content">
+            <div class="product__text">
+               <a itemprop="name" href="@link"><h4 class="product__heading col-md-10 noPadding">@productName</h4></a>
+                
+                <div class="labels col-md-2 noPadding">
+                    @if(!string.IsNullOrEmpty(label1) || !string.IsNullOrEmpty(label2)) {
+                        if(!string.IsNullOrEmpty(label1)) {
+                            <img src='/Files/Files/VanBaerle/Products/icons/@(label1).png'>
+                        }
+                        if(!string.IsNullOrEmpty(label2)) {
+                            <img src='/Files/Files/VanBaerle/Products/icons/@(label2).png'>
+                        }
+                    }
+                </div>
+                
+                <div class="col-md-12 noPadding tileHide shortDescription product__desc">
+                    @if (!string.IsNullOrEmpty(productShortDescription))
+                    {
+                    <text>@productShortDescription</text>
+                    }
+                </div>
+                <div class="col-md-12 noPadding">
+                    <p><a class="product__more" href="@link">@Translate("viewMore", "View more") <i class="icon vb-arrow-right"></i></a></p>
+                </div>
+            </div>
+            <div class="priceContainer product__info">
+              @if(!string.IsNullOrEmpty(ecoRating)){
+              <div class="product__color ecoRating@(ecoRating)">@ecoRating</div>
+			  }
+			  @if(phValue != 0){
+              <span>@Translate("phValue", "pH-Wert")</span>
+              <div class="product__ph">@phValue.ToString("0.00")</div>
+              }
+              @if(!string.IsNullOrEmpty(application1) || !string.IsNullOrEmpty(application2) || !string.IsNullOrEmpty(application3) || !string.IsNullOrEmpty(application4)) {
+              <span>Anwendung</span>
+              <div class="product__apps">
+                  @if(!string.IsNullOrEmpty(application1)) {
+                  <img src='/Files/Files/VanBaerle/Products/icons/@(application1).png'>
+                  }
+                  @if(!string.IsNullOrEmpty(application2)) {
+                  <img src='/Files/Files/VanBaerle/Products/icons/@(application2).png'>
+                  }
+                  @if(!string.IsNullOrEmpty(application3)) {
+                  <img src='/Files/Files/VanBaerle/Products/icons/@(application3).png'>
+                  }
+                  @if(!string.IsNullOrEmpty(application4)) {
+                  <img src='/Files/Files/VanBaerle/Products/icons/@(application4).png'>
+                  }
+              </div>
+                }
+            </div>
+
+          </div>
+        </li>
+        }
+        </ul>
+
+        <div class="pagination-box col-xs-12">
+            <span class="col-xs-6 noPadding">@prodLoop.Count() @Translate("of", "of") @GetString("Ecom:ProductList.PageProdCnt") @Translate(GetInteger("Ecom:ProductList.PageProdCnt") > 1 ? "items" : "item")</span>
+            @if (GetInteger("Ecom:ProductList.TotalPages") > 1)
+            {
+              string active = "";
+              string prevPage = GetString("Ecom:ProductList.PrevPage.Clean");
+              string nextListPage = GetString("Ecom:ProductList.NextPage.Clean");
+              string pageText = "&laquo; " + Translate("previous", "Previous") + " ";
+              string requestUrl = Pageview.GlobalTags.GetTagByName("Global:Request.Url").Value.ToString();
+
+            <ul class="pagination">
+              @if (prevPage != "")
+                {
+                @PageItem("class=\"previous\"", prevPage, pageText)
+                }
+              @if (curPage > 2 && totalPagesNum > 3)
+                {
+                  for (int i = 1; i <= 1; i++)
+                  {
+                    active = curPage == i ? "class=\"active\"" : "";
+                    pagingHref = requestUrl.Contains("PageNum") ? requestUrl.Replace("PageNum=" + curPage, "PageNum=" + i) : requestUrl + "&PageNum=" + i;
+                @PageItem(active, pagingHref, i.ToString())
+                  }
+                @Ellipsis()
+                }
+              @foreach (LoopItem page in GetLoop("Ecom:ProductList.Pages3"))
+                {
+                  string hrefEncoded = page.GetString("Ecom:ProductList.Pages3.Page.UrlHtmlEncoded");
+                  string page3Number = page.GetString("Ecom:ProductList.Pages3.Page.Number");
+
+                  if (page.GetBoolean("Ecom:ProductList.Pages3.Page.IsCurrent"))
+                  {
+                @PageItem("class=\"active\"", hrefEncoded, page3Number)
+                  }
+                  else
+                  {
+                @PageItem("", hrefEncoded, page3Number)
+                  }
+                }
+              @if (curPage < totalPagesNum - 1 && totalPagesNum > 3)
+                {
+                @Ellipsis()
+                  for (int i = totalPagesNum; i <= totalPagesNum; i++)
+                  {
+                    active = curPage == i ? "class=\"active\"" : "";
+                    pagingHref = requestUrl.Contains("PageNum") ? requestUrl.Replace("PageNum=" + curPage, "PageNum=" + i) : requestUrl + "&PageNum=" + i;
+                @PageItem(active, pagingHref, i.ToString())
+                  }
+                }
+              @if (nextListPage != "")
+                {
+                  string nextText = Translate("next", "Next") + "&raquo;";
+
+                @PageItem("class=\"next\"", nextListPage, nextText, "data-numPages=\"" + totalPagesNum + "\"")
+                }
+            </ul>
+            }
+          </div>
+      </div>
+
+    </div>@* end row *@
+  </div>@* end container *@
+</main>
+@SnippetStart("jsOnLoad")
+onLoadProductList("@minPrice.Replace(",", "")", "@maxPrice.Replace(",", "")", "0", "@groupsIds");
+@SnippetEnd("jsOnLoad")
+
+@helper PageItem(string cssClass, string href, string text, string dataAttr = "")
+{
+  <li @cssClass @dataAttr>
+    <a href="@href">@text</a>
+  </li>
+}
+@helper Ellipsis()
+{
+  <li><span>...</span></li>
+}

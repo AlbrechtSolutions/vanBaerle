@@ -1,0 +1,64 @@
+﻿bool userIsLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+List<LoopItem> orderLines = GetLoop("OrderLines");
+string alertErrors = "";
+@* todo
+  Dictionary<string, double> linesToUpdate = new Dictionary<string, double>();
+  double stockNumber = 0;
+  if(userIsLoggedIn) {
+    foreach (LoopItem ol in orderLines)
+    {
+      double orderlineStock = ol.GetDouble("Ecom:Order:OrderLine.Quantity");
+
+      if (!string.IsNullOrWhiteSpace(ol.GetString("Ecom:Order:OrderLine.ProductVariantID")))
+      {
+          stockNumber = Dynamicweb.Ecommerce.Products.Product.GetProductByID(ol.GetString("Ecom:Order:OrderLine.ProductID"), ol.GetString("Ecom:Order:OrderLine.ProductVariantID")).Stock;
+      }
+      else
+      {
+         stockNumber = Dynamicweb.Ecommerce.Products.Product.GetProductByID(ol.GetString("Ecom:Order:OrderLine.ProductID")).Stock;
+      }
+        // todo stock webservice
+        stockNumber = !string.IsNullOrEmpty(ol.GetString("WebSeviceConnectionStatus")) ? ol.GetInteger("WebSeviceConnectionStatus") : stockNumber;
+
+      if (stockNumber < 1)
+      {
+          linesToUpdate.Add(ol.GetString("Ecom:Order:OrderLine.ID"), 0);
+      }
+      else if (orderlineStock > stockNumber){
+        linesToUpdate.Add(ol.GetString("Ecom:Order:OrderLine.ID"), stockNumber);
+      }
+    }
+
+    if (linesToUpdate.Any())
+    {
+      Order order = Order.GetOrderByID(Dynamicweb.Ecommerce.Common.Context.Cart.ID);
+      List<OrderLine> linesToDelete = new List<OrderLine>();
+      string errorString = "";
+      foreach (OrderLine orderline in order.OrderLines)
+      {
+        if (linesToUpdate.ContainsKey(orderline.ID))
+        {
+          string str_orderlineProductCompleteName = !string.IsNullOrWhiteSpace(orderline.ProductVariantText) ? orderline.ProductName + " " + orderline.ProductVariantText : orderline.ProductName;
+          if (linesToUpdate[orderline.ID] < 1)
+          {
+            linesToDelete.Add(orderline);
+            errorString = Translate("productNoLongerAvalilable", "Sorry '{{CompleteProductName}}' is no longer available").Replace("{{CompleteProductName}}", str_orderlineProductCompleteName);
+            alertErrors += errorString + "<br/>";
+          }
+          else
+          {
+            orderline.Quantity = linesToUpdate[orderline.ID];
+            errorString = Translate("productStockUpdated", "Sorry there are now only '{{Stock}}' available of '{{CompleteProductName}}'. Your cart has been updated with the new amount").Replace("{{Stock}}", linesToUpdate[orderline.ID].ToString()).Replace("{{CompleteProductName}}", str_orderlineProductCompleteName);
+            alertErrors += errorString + "<br/>";
+          }
+        }
+      }
+      if (linesToDelete.Any())
+      {
+        linesToDelete.ForEach(ol => order.OrderLines.Remove(ol));
+      }
+      order.Save();
+      Dynamicweb.Ecommerce.Common.Context.SetCart(order);
+    }
+  }
+*@

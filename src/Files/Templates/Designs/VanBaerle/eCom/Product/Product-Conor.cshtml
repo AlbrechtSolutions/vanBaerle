@@ -1,0 +1,415 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+﻿@using System;
+@using System.IO;
+@using System.Web;
+@using System.Text;
+@using System.Collections.Generic;
+@using System.Text.RegularExpressions;
+@Include("../../includes/Razor/GetImage.cshtml")
+@Include("../../includes/Razor/VerifyImage.cshtml")
+@Include("../../includes/Razor/GetCurrentUrl.cshtml")
+@{
+    // General API
+    Dynamicweb.Content.Items.Item areaItem = Pageview.Area.Item;
+    bool isLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+    bool isFrontEnd = Dynamicweb.Environment.ExecutingContext.IsFrontEnd();
+    string currentPageId = Pageview.Page.ID.ToString();
+    // ----
+    string titleKey = "title";
+    string title = "";
+    string imageKey = "image";
+    string image = "";
+    //Product
+    bool showQuantity = areaItem["ShowQuantityField"].ToString() == "True" ? true : false;
+    bool productIsFavorite = GetBoolean("Ecom:Product.IsProductInFavoriteList");
+    bool isGiftCard = GetInteger("Ecom:Product.Type") == 3;
+    string variantDefaultId = GetString("Ecom:Product.DefaultVariantComboID");
+    string variantCurrentId = GetString("Ecom:Product.VariantID");
+    string variantId = (!string.IsNullOrEmpty(variantCurrentId)) ? variantCurrentId : variantDefaultId;
+    string stockStatus = GetInteger("Ecom:Product.Stock") > 0 ? "fa-check" : "fa-close";
+    string productId = GetString("Ecom:Product.ID");
+    string productLanguage = GetString("Ecom:Product.LanguageID");
+    string productName = GetString("Ecom:Product.Name");
+    string productNumber = GetString("Ecom:Product.Number");
+    string productIntro = GetString("Ecom:Product.LongDescription");
+    string productDescription = GetString("Ecom:Product.LongDescription");
+    string pointPrice = GetString("Ecom:Product.PointPrice");
+    string productDetails = GetString("Ecom:Product:Field.Details.Value.Clean");
+    string productWarranty = GetString("Ecom:Product:Field.Warranty.Value.Clean");
+    string productPrice = GetString("Ecom:Product.Price");
+    int productStock = GetInteger("Ecom:Product.AvailableAmount");
+
+
+    string ecoRating = GetString("Ecom:Product:Field.EcoRating");
+    string phValue = GetString("Ecom:Product:Field.pHValue");   
+     
+    //Image
+    string pattern = productNumber + "*";
+    string productImage = GetImagePathUrl(GetString("Ecom:Product.ImageSmall.Clean"), GetString("Ecom:Product.ImageMedium.Clean"), GetString("Ecom:Product.ImageLarge.Clean"), pattern);
+    string productGetImage = GetImage(productImage, 0, 350);
+    string imagesFolder = "/Files/Files/"+designName+"/Products/";
+    string imagePattern = imagesFolder + productNumber + ".jpg";
+    List<Dictionary<string, string>> imagesList = new List<Dictionary<string, string>>();
+    string folderPath = Path.GetDirectoryName(HttpContext.Current.Server.MapPath("/Files/Files/" + designName+"/Products/" + productNumber + ".jpg"));
+    // Favorites
+    string productRemoveFromList = "/Default.aspx?Id="+currentPageId+ "&amp;ProductID=" + productId +"&amp;CCRemoveFromMyLists="+productId+"&amp;CCRemoveFromListVariantID="+variantId+"&amp;CCRemoveFromListLanguageID="+productLanguage;
+    string productAddToList = "/Default.aspx?Id="+currentPageId+ "&amp;ProductID=" + productId +"&amp;CCAddToMyLists="+productId+"&amp;CCAddToListVariantID="+variantId+"&amp;CCAddToListLanguageID="+productLanguage;
+    string favoriteUrl = productIsFavorite ? productRemoveFromList : productAddToList;
+    // Downloads
+    string downloadsFilter = "Products contains 'p_"+productId+",' or Products contains 'p_"+productId+":' or Products ends with 'p_"+productId+"'";
+    Dictionary<string, string> iconFiles = new Dictionary<string, string>();
+    iconFiles.Add("pdf", "fa-file-pdf-o");
+    iconFiles.Add("jpg", "fa-picture-o");
+    iconFiles.Add("png", "fa-picture-o");
+    iconFiles.Add("zip", "fa-file-archive-o");
+    iconFiles.Add("rar", "fa-file-archive-o");
+    // Loops
+    List<LoopItem> loopVariantCombinations = GetLoop("VariantCombinations");
+    List<LoopItem> loopVariantGroups = GetLoop("VariantGroups");
+    List<LoopItem> loopProdPrices = GetLoop("Product.Prices");
+    List<LoopItem> loopDetails = GetLoop("Details");
+
+    // Get Images from folder
+    if (Directory.Exists(folderPath))
+    {
+        string temp = @"\";
+        foreach (string file in Directory.GetFiles(folderPath, pattern))
+        {
+            Dictionary<string, string> dct_image = new Dictionary<string, string>();
+            image = "/Files/Files/"+designName+"/Products/" + file.Substring((file.LastIndexOf(@temp) + 1), (file.Length - file.LastIndexOf(@temp) - 1));
+            string metafield = "title";
+            var metadata = Dynamicweb.Content.Files.Metadata.EditorFactory.GetMetadataForFile(image);
+            title = metadata != null ? metadata.GetValue(metafield).ToString() : productName;
+            dct_image.Add(titleKey, title);
+            dct_image.Add(imageKey, image);
+            imagesList.Add(dct_image);
+        }
+    }
+}
+@Include("Includes/productJson.cshtml")
+<section class="container contentTop">
+  <div id="product-container" data-amountrequired='@Translate("amountIsRequired","Amount is required.")' data-pageid="@currentPageId" data-productid="@productId" data-variantid="@variantId" data-errorcombination1='@Translate("combinationNotAvailable","Combination not available")'>
+    <article id="product-description" class="col-xs-12 noPadding">
+      <div id="product-images" class="col-sm-4 col-xs-12 noPadding">
+        <div id="product-lg-image" class="col-xs-12 noPaddingLeft">
+          <figure class="text-center">
+            <img class="img-responsive" src="@productGetImage" alt="@productName" title="@productName" />
+            <div class="hidden" id="videoContainer">
+              <a id="playPause" href="#"><i class="fa fa-play"></i></a>
+              <video id="video" width="100%" src="">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </figure>
+        </div>
+
+        <div id="imgThumbs" class="col-xs-12 noPaddingLeft">
+          <ul>
+            @foreach (System.Collections.Generic.Dictionary<String, String> imageStr in imagesList)
+            {
+              bool isAnImage = imageStr["image"].ToString().Contains(".jpg");
+              string getimageImg = GetImage(imageStr["image"].ToString(), 0, 105),
+                     getimageDataImgLarge = isAnImage ? GetImage(imageStr["image"].ToString(), 600, 600) : imageStr["image"].ToString(),
+                     getimageDataImg = isAnImage ? GetImage(imageStr["image"].ToString(), 600, 350) : imageStr["image"].ToString(),
+                     liClass = imagesList.IndexOf(imageStr) == 0 ? "active" : "";
+
+              try
+              {
+                string replaced = imageStr["image"].ToString().Substring(imageStr["image"].ToString().LastIndexOf('/') + 1).Replace(productNumber, "").Replace(".jpg", "").Replace(".mp4", "");
+
+                <li data-type='@replaced' class="@liClass">
+                  @if (isAnImage)
+                  {
+                    <img data-large="@getimageDataImgLarge" data-image="@getimageDataImg" class="img-responsive" src="@getimageImg" title="@imageStr["title"]" alt="@imageStr["title"]" />
+                  }
+                  else
+                  {
+                    <video data-image="@getimageDataImg" width="100%" src="@getimageDataImg">Your browser does not support the video tag.</video>
+                  }
+                </li>
+              }
+              catch { }
+
+            }
+          </ul>
+        </div>
+
+      </div>
+      <div id="product-info-wrapper" class="col-sm-8 col-xs-12">
+        <h2 class="product-title padding-bottom">@productName</h2>
+        <div class="productSplash">
+          <div class="ecoRating ecoRating@(ecoRating)">@ecoRating</div>
+          <div class="phValue">
+            <label>@Translate("phValue", "pH-Wert")</label>
+            <div>@phValue</div>
+          </div>
+        </div>
+        <div class="col-xs-12 noPadding">
+          @if (!string.IsNullOrEmpty(productIntro))
+          {
+            <div class="col-xs-12 noPadding productIntroduction">@productIntro</div>
+          }
+        </div>
+        @if (!isGiftCard)
+        {
+          <div id="stockStatus" class="col-xs-12 hidden noPadding"><i class="fa @stockStatus"></i> @Translate("stock", "Stock")</div>
+        }
+        <div class="order-now">
+
+        @if (loopVariantCombinations.Count > 0)
+        {
+          <div id="variantsContainer" class="col-xs-12 noPadding">
+            <ul class="variantTable tableHead col-xs-12 noPadding">
+              <li>
+                @Translate("artNo", "Art. Nr.")
+              </li>
+              <li>
+                @Translate("gebindeart", "Gebindeart")
+              </li>
+              <li>
+                @Translate("preis", "Preis/kg")
+              </li>
+              <li>
+                @Translate("quantity", "Quantity")
+              </li>
+              <li>
+                @Translate("price", "Price")
+              </li>
+              <li>
+                @Translate("actions", "Actions")
+              </li>
+            </ul>
+
+
+
+            @foreach (LoopItem variant in loopVariantCombinations)
+            {
+              string variantHref = "/" + variant.GetString("Ecom:VariantCombination.Link.Clean") + "?PID=" + Dynamicweb.Frontend.PageView.Current().CurrentParagraph.ID.ToString(),
+              productNumberVariant = variant.GetString("Ecom:Product.Number"),
+              variantPrice = variant.GetString("Ecom:Product.Price"),
+              variantStock = variant.GetString("Ecom:Product.AvailableAmount"),
+              variantSmallImage = variant.GetString("Ecom:Product.ImageSmall.Clean"),
+              variantIdNo = variant.GetString("Ecom:VariantCombination.VariantID"),
+              variantName = variant.GetString("Ecom:VariantCombination.VariantText"),
+              variantShortDescription = variant.GetString("Ecom:VariantCombination.VariantText");
+              <form name="addToCart" class="add-to-cart form-fields" action="@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl((areaItem["MiniCart"] ?? "").ToString())" method="post" data-outofstock='@Translate("outOfStock", "Out of stock")'>
+                <input type="hidden" name="cartcmd" value="add" />
+                <input type="hidden" name="productID" value="@productNumberVariant" />
+                <ul class="variantTable col-xs-12 noPadding">
+                  <li>
+                    @productNumberVariant
+                  </li>
+                  <li>
+                    @variantName
+                  </li>
+                  <li>
+                    -kg-
+                  </li>
+                  <li>
+                    <input id="quantity" data-stock="200000" class="quantityInput" name="quantity" type="number" value="1" />
+                  </li>
+                  <li>
+                    @variantPrice
+                  </li>
+                  <li>
+                    <a class="btn btn-bg addToCartSubmit">
+                      <i class="fa fa-shopping-cart"></i> <span data-add='@Translate("addToCart", "Add to cart")' data-added='@Translate("added", "Added")'>@Translate("addToCart", "Add to Cart")</span>
+                    </a>
+
+                    <input class="hidden" type="submit" value='@Translate("addToCart", "Add to Cart")' />
+                  </li>
+                </ul>
+
+              </form>
+            }
+          </div>
+        }
+
+          <div class="col-xs-12 noPadding">
+            @{
+              string socialMedia = (areaItem["SocialNetworks"] ?? "").ToString();
+
+              if (!string.IsNullOrEmpty(socialMedia))
+              {
+                <div class="shareIcons pull-right">
+                  <ul>
+                    @foreach (var socialID in socialMedia.Split(','))
+                    {
+                      var item = Dynamicweb.Content.Items.ItemManager.Storage.GetById("SocialLinks", socialID);
+                      if (item["ShareURL"] != null && !string.IsNullOrEmpty(item["ShareURL"].ToString()))
+                      {
+                        string socialLink = (item["ShareURL"] ?? "").ToString();
+                        string socialName = (item["Name"] ?? "").ToString();
+                        string className = (item["Icon"] ?? "").ToString();
+
+                        <li>
+                          <a class="fa @className" target="_blank" href="@socialLink@GetCurrentUrl()"><span>@socialName</span></a>
+                        </li>
+                      }
+
+                    }
+                  </ul>
+                </div>
+              }
+            }
+
+
+              <h4>@Translate("download","Download")</h4>
+              @RenderItemList(new
+               {
+                 ItemType = "ProductDownloads",
+                 ListSourceType = "Page",
+                 ListSourcePage = Pageview.Area.Item["ProductDownloads"],
+                 ItemFieldsList = "*",
+                 ListTemplate = "ItemPublisher/List/ProductDownloads.cshtml",
+                 ListPageSize = 99,
+                 IncludeParagraphItems = true,
+                 Filter = downloadsFilter
+               })
+              @if (loopDetails.Any())
+              {
+                <div class="col-xs-12" id="">
+                  <ul>
+
+                    @foreach (LoopItem detail in loopDetails)
+                    {
+                      string file = detail.GetString("Ecom:Product:Detail.Image.Clean");
+                      var metadata = Dynamicweb.Content.Files.Metadata.EditorFactory.GetMetadataForFile(file);
+                      string temp = @".",
+                             metafield = "title",
+                             fileTitle = metadata != null ? metadata.GetValue(metafield).ToString() : Translate("download", "Download"),
+                             substringFile = file.Substring((file.LastIndexOf(temp) + 1), (file.Length - file.LastIndexOf(temp) - 1)),
+                             icon = iconFiles.ContainsKey(substringFile) ? iconFiles[substringFile] : "fa-file-pdf-o";
+
+                      <li>
+                        <a class="downloadFile" href="@file"><i class='fa @icon'></i> @fileTitle</a>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+              </div>
+            </div>
+
+
+            @if (pointPrice != "0")
+            {
+              <div id="prodLoyaltyPoints" class="col-xs-12 noPadding"><i class="fa fa-gift"></i> @Translate("earn", "Earn") @pointPrice @Translate("loyaltyPoints", "loyalty points")</div>
+            }
+            @*
+  <div class="col-xs-12 grayBox">
+    <div class="highlight-content text-right">
+      @if (showQuantity && productStock > 0)
+      {
+        <fieldset class="quantity-container pull-left">
+          <label for="quantity">@Translate("quantity", "Quantity")</label>
+          <input data-stocktranslate='@Translate("currentStock","The current stock is")' class="hidden quantityInput" data-stock='@GetString("Ecom:Product.Stock")' maxlength="5" id="quantity" class="quantity" name="quantity" type="number" value="1" />
+
+          <select data-width="25%" name="quantitySelect">
+            @for (int num = 1; (num < 10) && num <= productStock; num++)
+            {
+              <option value="@num">@num</option>
+            }
+            @if (productStock >= 10)
+            {
+              <option value="10+">10+</option>
+            }
+          </select>
+
+        </fieldset>
+      }
+
+      <a class="btn btn-bg" id="addToCartSubmit">
+        <i class="fa fa-shopping-cart"></i> <span data-add='@Translate("addToCart", "Add to cart")' data-added='@Translate("added", "Added")'>@Translate("addToCart", "Add to Cart")</span>
+      </a>
+
+    </div>
+  </div>
+            *@
+            <div class="col-xs-12 noPadding">
+              @if (isLoggedIn && isFrontEnd)
+              {
+                string icon = productIsFavorite ? "fa-heart" : "fa-heart-o";
+                <p>
+                  <a class="btn-gold-outline" data-favorite="@productIsFavorite" id="favorite" data-user="@Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn()" data-addtext='@Translate("addToWishlist","Add to Wish list")' data-removetext='@Translate("removeFromWishlist","Remove from Wish list")' href="@favoriteUrl"><i class="fa @icon"></i> @Translate(productIsFavorite ? "removeFromWishlist" : "addToWishlist")</a>
+                </p>
+              }
+
+              @if (!string.IsNullOrEmpty(productDetails))
+              {
+                <div id="longDescription" class="hidden">
+                  <b class="lead">@Translate("details", "Details")</b>
+                  @productDetails
+                </div>
+              }
+
+            </div>
+            <input class="hidden" type="submit" value='@Translate("addToCart", "Add to Cart")' />
+          </form>
+        </div>
+
+
+    </article>
+
+    <!-- Related -->
+    @if (GetLoop("ProductRelatedGroups").Count > 0)
+    {
+      <div class="col-xs-12 noPadding" id="relatedContainer">
+        @foreach (LoopItem group in GetLoop("ProductRelatedGroups"))
+        {
+          List<LoopItem> relatedProducts = group.GetLoop("RelatedProducts");
+
+          if (relatedProducts.Count > 0)
+          {
+            <div class="col-xs-12 noPadding relatedContainer">
+              <h4 class="productTitles">@group.GetString("Ecom:Product:RelatedGroup.Name")</h4>
+
+              <ul class="relatedList row">
+                @foreach (LoopItem productItem in relatedProducts)
+                {
+                  string relatedProductId = productItem.GetString("Ecom:Product.ID"),
+                         relatedProductName = productItem.GetString("Ecom:Product.Name"),
+                         relatedProductNumber = productItem.GetString("Ecom:Product.Number"),
+                         relatedProductLink = productItem.GetString("Ecom:Product.PrimaryOrCurrentPageID") != Pageview.Page.ID.ToString() ? "/Default.aspx?ID=" + productItem.GetString("Ecom:Product.PrimaryOrCurrentPageID") + "&ProductID=" + productItem.GetString("Ecom:Product.ID") : "/Default.aspx?ID=" + Pageview.Page.ID.ToString() + "&ProductID=" + productItem.GetString("Ecom:Product.ID"),
+                         relatedImage = (!string.IsNullOrEmpty(productItem.GetString("Ecom:Product.ImageSmall.Clean"))) ? productItem.GetString("Ecom:Product.ImageSmall.Clean") : "/Files/Files/" + designName + "/Products/Images/" + relatedProductNumber + ".jpg";
+
+                  <li class="col-md-3 col-sm-4 col-xs-12">
+                    <figure>
+                      <a href="@relatedProductLink">
+                        <img src="@GetImage(relatedImage, 300, 0, 0, 0, 0, 0, "jpg")" alt="@relatedProductName" title="@relatedProductName" class="img-responsive" />
+                      </a>
+                    </figure>
+                    <h4><a href="@relatedProductLink">@relatedProductName</a></h4>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        }
+      </div>
+    }
+
+  </div>
+</section>
+
+@SnippetStart("OGMeta")
+<meta property="og:title" content='@productName' />
+<meta property="og:image" content='@Pageview.GlobalTags.GetTagByName("Global:Request.Scheme").Value.ToString()://@Pageview.GlobalTags.GetTagByName("Global:Request.Host").Value.ToString()@imagePattern' />
+<meta property="og:site_name" content='@areaItem["CompanyName"]' />
+<meta property="og:url" content='@Pageview.GlobalTags.GetTagByName("Global:Request.Scheme").Value.ToString()://@Pageview.GlobalTags.GetTagByName("Global:Request.Host").Value.ToString()@Pageview.GlobalTags.GetTagByName("Global:Pageview.Url").Value.ToString()' />
+<meta property="og:description" content='@StripHtml(productIntro)' />
+<meta property="og:type" content="article" />
+<meta property="og:locale" content='@Pageview.GlobalTags.GetTagByName("Global:Area.LongLang").Value.ToString().Replace("-", "_")' />
+@SnippetEnd("OGMeta")
+
+@SnippetStart("jsOnLoad")
+onLoadProductDetail({obj_product:@productJSON});
+@SnippetEnd("jsOnLoad")
+
+@functions {
+  public static string StripHtml(string source)
+  {
+    return Regex.Replace(source, "<.*?>", string.Empty);
+  }
+}

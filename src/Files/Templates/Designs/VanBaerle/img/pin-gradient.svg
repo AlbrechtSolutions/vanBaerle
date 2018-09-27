@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="34px" height="48px" viewBox="0 0 34 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45 (43475) - http://www.bohemiancoding.com/sketch -->
+    <title>Pin Icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="100%" x2="50%" y2="0%" id="linearGradient-1">
+            <stop stop-color="#CA3058" offset="0%"></stop>
+            <stop stop-color="#FF9A48" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="desktop" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="5" transform="translate(-933.000000, -1846.000000)" fill="url(#linearGradient-1)">
+            <g id="map" transform="translate(0.000000, 1694.000000)">
+                <g id="Map">
+                    <g id="pin" transform="translate(866.000000, 61.000000)">
+                        <g id="Group-4">
+                            <path d="M99.996,113.832 C96.154,126.754 84,139 84,139 C84,139 71.888,126.786 68.026,113.892 C67.374,112.078 67,110.03 67,107.99 C67,98.552 74.612,91 84,91 C93.388,91 101,98.552 101,107.99 C101,110.008 100.634,112.036 99.996,113.832 L99.996,113.832 Z M84,100.998 C80.134,100.998 77,104.134 77,108 C77,111.864 80.134,115 84,115 C87.866,115 91,111.864 91,108 C91,104.134 87.866,100.998 84,100.998 L84,100.998 Z" id="Pin-Icon"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

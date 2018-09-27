@@ -1,0 +1,114 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+@{
+//Dynamicweb.Ecommerce.International.CountryCollection countries = Dynamicweb.Ecommerce.International.Country.GetCountries();
+//Dynamicweb.Ecommerce.International.CountryCollection regions = Dynamicweb.Ecommerce.International.Country.GetRegions(countries.First().Code2);
+
+	var countries = Dynamicweb.Ecommerce.Services.Countries.GetCountries();
+	var regions = Dynamicweb.Ecommerce.Services.Countries.GetRegions(countries.First().Code2);
+
+  if(countries.Any()){
+    @: @SnippetStart("jsVariables") var countryRegions = {}; @SnippetEnd("jsVariables")
+    foreach(var country in countries){
+      var tempRegions = Dynamicweb.Ecommerce.Services.Countries.GetRegions(country.Code2);
+      if(tempRegions.Any()){
+      @: @SnippetStart("jsVariables") countryRegions.@(country.Code2) = {}; @SnippetEnd("jsVariables")
+        <text>
+          @SnippetStart("jsVariables")
+            countryRegions.@(country.Code2).code = [];
+            countryRegions.@(country.Code2).name = [];
+          @SnippetEnd("jsVariables")
+        </text>
+        foreach(var region in tempRegions){
+          <text>
+            @SnippetStart("jsVariables")
+              countryRegions["@country.Code2"].code.push("@region.RegionCode");
+              countryRegions["@country.Code2"].name.push("@region.CountryText.Name");
+            @SnippetEnd("jsVariables")
+          </text>
+        }
+      }
+    }
+  }
+}
+
+@GetString("UserManagement:User.ManageAddresses.FormStart").Replace("<form ", "<form class='DMForms addAddress'")
+<div class="addAddress">
+  <fieldset class="noLabel">
+    <label for="Default">&nbsp;</label>
+    <div class="col-md-4 col-sm-12">
+      @GetString("UserManagement:User.UserAddress.Default")
+      @Translate("setDefaultAddress","Set as default Address")
+    </div>
+	</fieldset>
+	@Fieldset("", @Translate("description","Description"), @GetString("UserManagement:User.UserAddress.Description"))
+	@Fieldset("mandatory", @Translate("address","Address"), @GetString("UserManagement:User.UserAddress.Address"))
+	@Fieldset("", @Translate("address2","Address 2"), @GetString("UserManagement:User.UserAddress.Address2"))
+	@Fieldset("mandatory", @Translate("city","City"), @GetString("UserManagement:User.UserAddress.City"))
+
+	<fieldset class="Select mandatory">
+    <label for="State">@Translate("stateProvince","State / Province")</label>
+    <div class="col-md-4 col-sm-12">
+      <select data-live-search="true" data-region='@GetString("UserManagement:User.UserAddress.State.Value")' data-size="8" data-text="@Translate("stateProvince","State / Province")" name="State" id="State">
+        <option value="" selected="selected">@Translate("stateProvince","State / Province")</option>
+        @foreach(var r in regions){
+          <option value="@r.RegionCode">
+            @r.CountryText.Name
+          </option>
+        }
+      </select>
+    </div>
+  </fieldset>
+
+  @Fieldset("mandatory", @Translate("zip","Zip"), @GetString("UserManagement:User.UserAddress.Zip"))
+	<fieldset class="Select mandatory">
+    <label for="Country">@Translate("country","Country")</label>
+    <div class="col-md-4 col-sm-12">
+      <select data-live-search="true" data-size="8" name="Country" id="Country">
+        <option data-text="@Translate("country","Country")" value="" selected="selected">@Translate("country","Country")</option>
+        @RenderSnippet("highlightedContries")
+        @foreach(var r in countries){
+          string str_selected = (GetString("UserManagement:User.UserAddress.CountryCode.Value") == r.Code2.ToString()) ? "selected='selected'" : "";
+
+          if(r.Code2 == "CA" || r.Code2 == "US"){
+            @SnippetStart("highlightedContries")
+            <option value="@r.Code2">
+              @r.CountryText.Name
+            </option>
+            @SnippetEnd("highlightedContries")
+          }
+          <option @str_selected value="@r.Code2">
+            @r.CountryText.Name
+          </option>
+        }
+        @SnippetStart("highlightedContries")
+        <option disabled="disabled" value="">
+          ----------------
+        </option>
+        @SnippetEnd("highlightedContries")
+      </select>
+    </div>
+  </fieldset>
+</div>
+
+<a class="btn btn-border" href="@Pageview.Area.Item["Login"]">@Translate("backToAddresses", "Back to Addresses")</a>
+@if(!string.IsNullOrEmpty(GetString("UserManagement:User.ManageAddresses.AddAddress"))){
+  <input class="btn btn-primary" type="submit" id="submitter" value="@Translate("addAddress","Add address")" />
+}
+@if(!string.IsNullOrEmpty(GetString("UserManagement:User.ManageAddresses.UpdateAddress"))){
+  <input class="btn btn-primary" type="submit" id="submit1" value="@Translate("updateAddress","Update address")" />
+}
+@GetString("UserManagement:User.ManageAddresses.FormEnd")
+@SnippetStart("jsOnLoad")
+onLoadAddAddresses();
+@SnippetEnd("jsOnLoad")
+
+@helper Fieldset(string className, string labelText, string input) {
+  <fieldset class="@className">
+		<label>@labelText</label>
+		<div class="col-md-4 col-sm-12">
+		  @input
+		</div>
+	</fieldset>
+}

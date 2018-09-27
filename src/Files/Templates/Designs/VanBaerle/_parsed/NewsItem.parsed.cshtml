@@ -1,0 +1,451 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System.Text.RegularExpressions;
+@using Dynamicweb.Core
+
+@{
+  string designFolder = GetString("Template:DesignBaseUrl");
+  string device = Pageview.Device.ToString();
+  string OrSubpage = GetString("DwAreaFirstPageID") == GetString("Global:Page.ID") ? "home" : "subpage";
+  string print = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["print"]) ? "printOrPdf" : "";
+  string resultsPage = GetString("Item.Area.SearchResults");
+  string countryCode = Dna.IP.Frontend.GetCountryCode();
+  string longLang = Pageview.GlobalTags.GetTagByName("Global:Area.LongLang").Value.ToString();
+  string shortLang = Pageview.GlobalTags.GetTagByName("Global:Area.Lang").Value.ToString();
+  string email = GetString("Item.Area.Email");
+  string phone = GetString("Item.Area.Phone");
+	string subscribeToNewsletterAPI = GetString("Item.Area.Newsletter_Subscribe_API");
+
+  bool userIsLoggedIn = Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn();
+  bool isPrint = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["print"]);
+  List<LoopItem> socialMedia = GetLoop("Item.Area.SocialNetworks");
+  List<LoopItem> websiteLanguages = GetLoop("WebsiteLanguages");
+	List<LoopItem> languages = GetLoop("Languages");
+
+  string ipCountry = Dna.IP.Frontend.GetCountryCode();
+  string countryCodeModule = !string.IsNullOrEmpty(ipCountry) ? ipCountry : "US";
+  string userCountryCode = (Pageview.User != null && !string.IsNullOrEmpty(Pageview.User.CountryCode)) ? Pageview.User.CountryCode : ipCountry;
+  string userState = Pageview.User != null ? Pageview.User.State : string.Empty;    
+}<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@GetValue("Title")</title>
+@GetValue("MetaTags")
+@GetValue("CopyRightNotice")
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+        WebFont.load({
+            google: {
+                families: [
+                    "Lato:100,300,300i,400,700,700i,900:latin,cyrillic,cyrillic-ext,latin-ext",
+                    "Roboto:400,700",
+                    "Montserrat"
+                ]
+            }
+        });
+    </script>
+
+  <link rel="shortcut icon" href="@(designFolder)images/favicon.ico" type="image/x-icon">
+
+
+  @{
+  var minify = false;
+  var styleBundle = Dna.Optimizer.Renderer.RenderStyles(string.Format("{0}css", designFolder), "-main-styles", new[] { "exceptions" }, minify, true);
+  var scriptBundle = Dna.Optimizer.Renderer.RenderScripts(string.Format("{0}js", designFolder), "-main-scripts", new[] { "exceptions" }, minify, true);
+  }
+  <link rel="stylesheet" href="@styleBundle">
+  <link rel="stylesheet" href="/Files/Templates/Designs/VanBaerle/css/exceptions/exceptions.css">
+ 
+  
+  <script src="@scriptBundle"></script>
+
+  <script>
+  @RenderSnippet("jsVariables")
+  @SnippetStart("jsVariables") @SnippetEnd("jsVariables")
+
+  var obj_pages = {
+    str_miniCart: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.MiniCart"))',
+    str_login: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.Login"))',
+    str_globalTranslates: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.GlobalTranslates"))',
+    str_contactPopup: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.ContactUs_Popup"))',
+    str_cartInformation: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.Cart_Information"))',
+    str_typeAhead: '@Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(GetString("Item.Area.TypeAhead"))'
+  },
+  obj_user = {
+    str_country: '@userCountryCode',
+    str_state: '@userState'
+  },
+  obj_settings = {
+    str_contactTimeout: '@GetString("Item.Area.Time")',
+    str_cartQty: '@GetString("Ecom:Order.OrderLines.TotalProductQuantity")'
+  },
+  obj_translates = {
+    str_seeAll: '@Translate("seeAllThe", "See all the")',
+    str_results: '@Translate("results", "results")'
+  };
+  $(function () {
+
+    @RenderSnippet("jsOnLoadVariables")
+    @SnippetStart("jsOnLoadVariables") @SnippetEnd("jsOnLoadVariables")
+    @RenderSnippet("jsOnLoad")
+    @SnippetStart("jsOnLoad") @SnippetEnd("jsOnLoad")
+  });
+ </script>
+  
+  
+@RenderSnippet("eCommerceTracking")
+
+  <!--Google Tag Manager-->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-MBXRK36');
+  </script>
+  <!--End Google Tag Manager-->
+
+ 
+  
+
+
+  @{
+    var key = System.Web.HttpContext.Current.Items["HideFooter"];
+    var hideFooter = key != null && Convert.ToBoolean(key);
+  }
+@GetValue("Stylesheets")
+@GetValue("Javascripts")
+</head>
+
+
+<body data-page-id='@GetGlobalValue("Global:Page.ID")' data-language="@shortLang">
+<!--Google Tag Manager (noscript)--> 
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MBXRK36" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!--End Google Tag Manager (noscript)-->
+@SnippetStart("eCommerceTracking") @SnippetEnd("eCommerceTracking")
+
+  @{
+    string demo = string.Format("{0}css", designFolder);
+  }
+
+  @inherits RazorTemplateBase<RazorTemplateModel<Template>>
+
+@{
+   var mainMenuFloat = GetString("DwPageName") == "Home" ? "main-menu--float" : "";
+	 string webshopLink = GetString("Item.Area.ProductDetail");
+	 string myProfileLink = GetString("Item.Area.MyProfile");
+	 string loginLink = GetString("Item.Area.Login");
+	 string  myCartLink = GetString("Item.Area.ShowCart");
+	 int cartQuantity = GetInteger("Ecom:Order.OrderLines.TotalProductQuantity");
+   string firstPage = "/Default.aspx?ID="+GetString("DwAreaFirstPageID");
+   string currentURL = GetString("DWExtranetAction");
+   string currentPageID = GetString("DwPageID");
+   string logo = GetString("Item.Area.Logo");
+   
+}
+
+
+<header id="js-menu" class="main-menu @mainMenuFloat">
+  <nav id="js-nav-screen" class="nav-fullscreen">
+    <div class="container">
+      <div class="nav-screen__inner">
+        <div id="js-nav-screen-close" class="nav-screen__close">
+          <i class="nav-screen__close-icon vb-x-thick"></i>
+        </div>
+        @GetValue("DwNavigation(menuMainMobile)")
+        @if (languages.Count > 1)
+        {
+
+            <ul class="main-nav__lang">
+              @foreach (LoopItem siteLanguage in languages)
+              {
+                string pageId = siteLanguage.GetString("ID");
+                var siteCulture = siteLanguage.GetString("Culture");
+          string siteName = siteLanguage.GetString("Name");
+                string[] cultureInfo = siteLanguage.GetString("Culture").Split('-');
+          string pageID = siteLanguage.GetString("PageID");
+          string active = siteLanguage.GetBoolean("IsCurrent") ? "active" :"";
+                string languageLink = currentURL.Replace(currentPageID,pageID);
+                <li class="@active">
+                  <a href="@languageLink" title="@siteCulture">
+                  @siteName
+                    @*<img src="/Files/Templates/Designs/VanBaerle/images/icons/@cultureInfo[0]_flag.png" alt="@siteCulture" title="@siteCulture">*@
+                  </a>
+                </li>
+              }
+            </ul>
+        }
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row main-menu__menu">
+      <a class="col-md-3 main-menu__logo" href="@firstPage">
+        <img class="main-menu__logo-img" src="@logo" alt="vanBaerle logo">
+      </a>
+        
+      <form action="/Default.aspx" id="searchForm" class="col-md-4 main-menu__search-form">
+        <div class="form-group">
+                <input type="hidden" name="ID" value="@resultsPage">
+                @*<input type="hidden" name="ProductID" value="">*@
+                <fieldset class="TextInput mandatory">
+                  <label for="searchSubmit" class="hide">@Translate("search", "Search")</label>
+                  <input class="form-control main-menu__search-input" placeholder='@Translate("findSomething", "Find Something")' id="searchSubmit" data-error='@Translate("searchText", "Search for something")' type="text" name="q" value="">
+                </fieldset>
+                <button type="submit" class="main-menu__search-submit">
+                  <i class="vb-glass main-menu__search-input-icon"></i>
+                </button>
+         </div>        
+         <div id="autocompleteWrap">&nbsp;</div>
+       </form>  
+      <div class="col-md-5 col-xs-12 text-right main-menu__right">
+        <div class="main-menu__account">
+          <!-- Return Login button for guests -->
+          
+          @if(userIsLoggedIn)
+          {
+ 			string userName = !string.IsNullOrWhiteSpace(Pageview.User.Name) ? Pageview.User.Name : string.Format("{0}{1}", Pageview.User.FirstName, Pageview.User.LastName);
+           <!-- Return .main-menu__account-user for logged in users -->
+            <div class="main-menu__account-user">
+              <a href="@myProfileLink" class="pull-left">
+                <div class="main-menu__account-greet">@Translate("Welcome","Welcome"), <span class="main-menu__account-name">@userName</span></div>
+              </a>
+              <div class="main-menu__account-dropdown">
+                @GetValue("DwNavigation(account)")
+              </div>
+            </div>
+            <!-- /.main-menu__account-user -->
+          }
+          else{
+            <a class="btn btn-link main-menu__account-button main-menu__account-button--login" href="@loginLink">@Translate("Login","Login")</a>
+          }
+          <a class="btn btn-link main-menu__account-button main-menu__account-button--webshop" href="@webshopLink">@Translate("Webshop","Webshop")</a>
+          
+         
+          <ul id="topMenu">
+            <li class="myCart lastItem">
+              <a class="btn btn-link-secondary main-menu__account-button main-menu__account-button--cart myCart" href="@myCartLink">
+                @Translate("cart", "Cart")
+                <span class="cart-badge">
+                  <i class="vb-cart cart-badge__icon"></i>
+                  <span class="cart-badge__number">@cartQuantity</span>
+                </span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
+        <i id="js-menu-close" class="main-menu__close vb-x-square"></i>
+        @* <i id="js-menu-open" class="main-menu__open main-menu__open--menu vb-hamburger"></i> *@
+        <span id="js-menu-open" class="main-menu__open main-menu__open--menu"><i class="vb-hamburger"></i> @Translate("menu","Menu")</span>
+        <i id="js-nav-screen-open" class="main-menu__open main-menu__open--nav vb-hamburger"></i>
+      </div>
+    </div>
+    <hr class="main-menu__divider">      
+    <nav class="main-nav">
+      <!-- Main navigation -->
+      @GetValue("DwNavigation(menuMain)")
+      <!-- Language chooser -->
+      @* Languages *@
+      @if (languages.Count > 1)
+      {
+
+          <ul class="main-nav__lang">
+            @foreach (LoopItem siteLanguage in languages)
+            {
+              string pageId = siteLanguage.GetString("ID");
+              var siteCulture = siteLanguage.GetString("Culture");
+			  string siteName = siteLanguage.GetString("Name");
+              string[] cultureInfo = siteLanguage.GetString("Culture").Split('-');
+			  string pageID = siteLanguage.GetString("PageID");
+			  string active = siteLanguage.GetBoolean("IsCurrent") ? "active" :"";
+              string languageLink = currentURL.Replace(currentPageID,pageID);
+              <li class="@active">
+                <a href="@languageLink" title="@siteCulture">
+                @siteName
+                  @*<img src="/Files/Templates/Designs/VanBaerle/images/icons/@cultureInfo[0]_flag.png" alt="@siteCulture" title="@siteCulture">*@
+                </a>
+              </li>
+            }
+          </ul>
+      }
+    </nav>
+  </div>
+</header> 
+
+
+<!-- <main id="mainContent" class="dwcontent" title="Main content" settings="id:mainContent"></main> -->
+@{
+		@* string cultureName = GetGlobalValue("Global:Area.Culture.Name");
+		string pageImage = !string.IsNullOrEmpty(GetString("Item.Image.Value")) ? GetString("Item.Image.Value") : GetString("Item.Page.Image");
+		string genericImage = GetString("Item.Area.News_Image");
+		string image = !string.IsNullOrEmpty(pageImage) ? pageImage : genericImage;
+		string title = GetString("Item.Page.Title");
+		string description = GetString("Item.Page.Description").ToString();
+		string link =  GetString("Item.Page.Link").ToString();
+		string textLink = GetString("Item.Page.Link_Text").ToString(); *@
+
+
+		
+		DateTime date = GetDate("Item.Date.Value"); 
+     	string newsDate = date.ToString("MMMM dd, yyyy");
+
+		string newsTitle = GetString("Item.Title.Value"),
+			   newsImage = GetString("Item.Image.Value"),
+			   newsDescription = GetString("Item.Description.Value"),
+			   newsLinkText = GetString("Item.LinkText.Value"),
+			   newsLink = GetString("Item.Link.Value");
+
+		string renderPattern = GetBoolean("Item.Page.Show_Pattern")? "gray-box" : "";
+}
+
+<div class="centralContainer gray-box news-item">
+	<div class="row">
+
+		<article class="col-xs-12 section blue-box height_medium no-margin">
+			<figure class=" col-sm-6 pull-left noPaddingLeft" style="background: url(@newsImage) center center;"> &nbsp;
+			</figure>
+			<div class="col-xs-6 pull-right noPaddingRight">
+				<header class="paragraphHeader">
+			  	    <h1>@newsTitle</h1>
+			  	    <p>@newsDate</p>
+			  	</header>
+			</div>
+		</article>
+		<div class="col-xs-12 section mt-20">
+			<div class="center-text">
+				<div class="paragraphText">
+					@newsDescription
+
+					@if(!string.IsNullOrEmpty(newsLinkText) && !string.IsNullOrEmpty(newsLink)) {
+						<div class="text-center">
+							<div class="paragraphButton"><a href="@newsLink">@newsLinkText</a></div>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+      
+  @if (!hideFooter)
+  {
+   
+<footer class="main-footer">
+  <div class="container">
+    <div class="row">
+      	<div class="main-footer__column col-md-4 col-sm-12 screen-sm">
+            <h5 class="main-footer__heading">@Translate("Stay Tuned", "Stay Tuned")</h5>
+            @*<form action="#">
+              <div class="input-group main-footer__subscribe">
+                <span class="input-group-addon">
+                  <i class="vb-envelope input-group-addon-icon"></i>
+                </span>
+                <input type="email" id="subscriptionEmail" class="form-control" placeholder='@Translate("enterEmail","Enter email addres")'>
+                <span class="input-group-btn">
+                  <button class="btn btn-primary" type="submit">@Translate("subscribe","Subscribe")</button>
+                </span>
+              </div>
+            </form>*@
+          	<form name="NewsletterSubscribe" id="NewsletterSubscribe" method="post" enctype="multipart/form-data" data-api="@subscribeToNewsletterAPI" data-success='@Translate("Subscribe success","You have been subscribed to our latest news about products and promotions")' data-error='@Translate("invalidEmailAddress", "Invalid email address")'>
+          		<input name="UserManagementForm" value="1" type="hidden">
+                <input id="UserManagementForm.DeleteImage" name="UserManagementForm.DeleteImage" type="hidden">
+                <div style="display: none;">
+                    <input name="UserManagement_Form_EmailAllowed" id="UserManagement_Form_EmailAllowed" value="True" checked="checked" type="checkbox">
+                    <input name="UserManagement_Form_EmailAllowed_ApplyValue" id="UserManagement_Form_EmailAllowed_ApplyValue" value="AllowEmail" type="hidden">
+                </div>     
+          		<input class="hidden" placeholder="Name" name="UserManagement_Form_Name" type="text" id="UserManagement_Form_Name2"> 
+          	<div class="input-group main-footer__subscribe"> 
+                  
+                   <span class="input-group-addon">
+                  	<i class="vb-envelope input-group-addon-icon"></i>
+                   </span>
+                  <input type="email" class="form-control" name="UserManagement_Form_Email" id="UserManagement_Form_Email" placeholder='@Translate("enterEmail","Enter email addres")' value=''>
+              	  <span class="input-group-btn">
+                  	<input type="submit" class="btn btn-primary" value='@Translate("subscribe","Subscribe")'>
+              	  </span>
+                 </div>
+            </form>
+          </div>
+      
+      <div class="col-md-2 col-sm-12 screen-sm pull-right">
+        <a href="index.html">
+          <img class="main-footer__logo" src="@logo" alt="vanBaerle">
+        </a>
+      </div>
+         
+      @*<div class="col-md-2 screen-sm">
+        <div class="main-footer__column">
+          <h5 class="main-footer__heading">@Translate("aboutUs", "About Us")</h5>
+          <ul class="main-footer__link-list">
+            <li><a href="/about-us">vanBaerle</a></li>
+            <li><a href="/about-us">Responsibility</a></li>
+            <li><a href="/about-us">Jobs</a></li>
+            <li><a href="/about-us">Contact</a></li>
+            <li><a href="/about-us">Terms</a></li>
+          </ul>
+        </div>
+      </div>*@
+      @*<div class="col-md-2 screen-sm">
+        <div class="main-footer__column">
+          <h5 class="main-footer__heading">@Translate("products","Products")</h5>
+          <ul class="main-footer__link-list">
+            <li><a href="/hygiene">Hygiene</a></li>
+            <li><a href="/silicates">@Translate("silicates", "Silicates")</a></li>
+          </ul>
+        </div>
+      </div>*@
+        
+      <div class="col-lg-3 col-md-4">
+        <div class="main-footer__column--sm">
+          <!-- .main-footer__socialcopy #1 -->
+          <div class="main-footer__socialcopy main-footer__socialcopy--sm">
+            @*<div class="main-footer__social">
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-facebook"></i>
+              </a>
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-twitter"></i>
+              </a>
+              <a class="main-footer__social-link" href="#" target="_blank">
+                <i class="main-footer__social-icon vb-linkedin"></i>
+              </a>
+            </div>*@
+            <span class="main-footer__copyright">&copy; @DateTime.Now.Year. &nbsp;  @GetString("Item.Area.Copyright")</span>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- main-footer__socialcopy #2 -->
+    <div class="main-footer__bottom main-footer__socialcopy">
+      <div class="main-footer__social">
+        @*<a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-facebook"></i>
+        </a>
+        <a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-twitter"></i>
+        </a>
+        <a class="main-footer__social-link" href="#" target="_blank">
+          <i class="main-footer__social-icon vb-linkedin"></i>
+        </a>*@
+
+        <span class="main-footer__copyright">&copy; @DateTime.Now.Year. &nbsp; @GetString("Item.Area.Copyright")</span>
+      </div>
+      
+      @GetValue("DwNavigation(copyrightMenu)")
+    </div>
+  </div>
+</footer>
+  }
+  
+</body>
+</html>

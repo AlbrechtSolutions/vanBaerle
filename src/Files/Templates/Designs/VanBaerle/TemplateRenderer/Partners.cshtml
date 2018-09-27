@@ -1,0 +1,58 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering
+@using Dynamicweb.Content
+@{
+  @Include("../includes/razor/GeneralSettings.cshtml")
+}
+@Include("../includes/razor/getimage.cshtml")
+@Include("includes/StoreHeader.cshtml")
+@Include("includes/SelectCountryAndRegion.cshtml")
+
+<div class="col-xs-12 col-sm-3 partnersFilterContainer" id="findStoreFilter">
+    <h2>@Translate("findYourLocalPartnet", "Find your local partner")</h2>
+    <fieldset class="col-xs-12 noPadding">
+      @CountrySelect(countriesList, countriesNames)
+    </fieldset>
+    <fieldset class="col-xs-12 noPadding">
+      @RegionSelect()
+    </fieldset>
+</div>
+
+<div class="list col-sm-9 col-xs-12">
+  <div class="no-matches hidden">@Translate("noLocationsFound","No locations found")</div>
+  <ol class="partnersList" data-sort-order="desc">
+
+    @foreach (System.Data.DataRow store in dataSet)
+    {
+      var regionTextList = dataRegionsSet.Where(r => r["CountryTextRegionCode"].ToString() == store["AccessUserState"].ToString() ).First();
+      string regionText = regionTextList != null ? regionTextList["CountryTextName"].ToString() : "";
+      string filter = store["AccessUserCountry"].ToString() + " " + regionText;
+      string image = "/Files" + store["AccessUserImage"].ToString();
+
+      <li class="col-xs-12 col-sm-6 col-md-4" data-title="@store["AccessUserName"]"
+        data-filter-values="@filter" data-country="@store["AccessUserCountry"]" data-citycode="@store["AccessUserState"]" data-city="@regionText" data-sort-value="@store["AccessUserName"]">
+        <div>
+          <figure>
+            <img class="img-responsive" src="@GetImage(image, 400, 0)" />
+          </figure>
+          <h2>@store["AccessUserName"]</h2>
+
+          @store["AccessUserAddress"]<br/>
+          @store["AccessUserCity"]
+           @if(!string.IsNullOrEmpty(store["AccessUserState"].ToString())) {
+            @:, @Dynamicweb.Ecommerce.International.CountryText.GetRegionTexts(store["AccessUserCountry"].ToString()).First(c => c.RegionCode == store["AccessUserState"].ToString()).Name
+           }
+           @store["AccessUserZip"]
+        </div>
+      </li>
+    }
+  </ol>
+
+</div>
+
+@SnippetStart("jsOnLoad")
+  onLoadPartners('@regionsString', {
+    str_country : "@countryLogged",
+    str_state : "@stateLogged"
+  });
+@SnippetEnd("jsOnLoad")

@@ -1,0 +1,13 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+@if(!string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["detail"]) && GetInteger("Ecom:Product.PrimaryOrCurrentPageID") != Pageview.Page.ID)
+{
+  string redirect = "/Default.aspx?ID=" + GetString("Ecom:Product.PrimaryOrCurrentPageID") + "&ProductID=" + GetString("Ecom:Product.ID");
+  if(!string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.QueryString["variantID"]))
+  {
+      redirect += "&variantID=" + System.Web.HttpContext.Current.Request.QueryString["variantID"].ToString();
+  }
+  System.Web.HttpContext.Current.Response.Redirect(Dynamicweb.Frontend.SearchEngineFriendlyURLs.GetFriendlyUrl(redirect));
+}
+@Include("product.cshtml")

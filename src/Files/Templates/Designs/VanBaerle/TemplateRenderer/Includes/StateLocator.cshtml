@@ -1,0 +1,18 @@
+﻿<div class="col-xs-12" id="findStoreFilter">
+    <fieldset class="col-sm-3 col-xs-12 noPaddingLeft">
+      @CountrySelect(countriesList, countriesNames)
+    </fieldset>
+    <fieldset class="col-sm-3 col-xs-12 regions">
+       @RegionSelect()
+    </fieldset>
+</div>
+
+@SnippetStart("jsVariables")
+  var obj_loginLocation = {
+    str_country : "@countryLogged",
+    str_state : "@stateLogged"
+  }
+@SnippetEnd("jsVariables")
+@SnippetStart("jsOnLoad")
+  onLoadStoreLocator('@regionsString');
+@SnippetEnd("jsOnLoad")

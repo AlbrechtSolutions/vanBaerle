@@ -1,0 +1,147 @@
+﻿,@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+
+<article class='col-xs-12 slides  height_medium'>
+  @RenderParagraphAnchor()
+  <header class="paragraphHeader">
+      <h2>@GetString("Item.Title")</h2>
+  </header>
+  <figure class=" col-xs-12 image-top noPadding imageMap">
+      <img name="ImageMap" src="/Files/Images/VanBaerle/Silicate/image-map.png" width="1280" height="532" id="ImageMap" usemap="#image-map" alt="" class="img-responsive" />
+      <map name="image-map" id="image-map">
+        @*<area shape="circle" id="singapore" coords="889,331, 12" data-slide="0" alt="singapore" />
+        <area shape="circle" id="taichung" coords="943,272, 12" data-slide="1" alt="taichung" />
+        <area shape="circle" id="bratislava" coords="627,199, 7" data-slide="2" alt="bratislava" />
+        <area shape="circle" id="cleveland" coords="383,210, 12" data-slide="3" alt="cleveland" />
+        <area shape="circle" id="turku" coords="670,143, 12" href="javascript:;" data-slide="4" alt="turku" />
+        <area shape="circle" id="budapest" coords="615,200, 7" data-slide="5" alt="budapest" />
+        <area shape="poly" id="mailand" coords="654,200,655,197,656,195,658,194,661,193,663,194,665,195,666,197,667,200,666,202,665,204,663,205,661,206,658,205,656,204,655,202,654,200,654,200" data-slide="6" alt="mailand" />*@
+        <area shape="circle" coords="664,203, 10" id="bratislava" data-slide="2" alt="bratislava"/>
+        <area shape="circle" coords="655,186, 10" id="mailand" data-slide="6" alt="mailand"/>
+        <area shape="circle" coords="624,198, 10" id="budapest" data-slide="5" alt="budapest"/>
+        <area shape="circle" coords="889,331, 12" id="singapore" data-slide="0" alt="singapore"/>
+        <area shape="circle" coords="943,272, 12" id="taichung" data-slide="1" alt="taichung"/>
+        <area shape="circle" coords="383,210, 12" id="cleveland" data-slide="3" alt="cleveland"/>
+        <area shape="circle" coords="667,147, 12" id="turku" data-slide="4" alt="turku"/>   
+      </map>
+  </figure>
+
+  <div class="section__slider general_slide oneColumn-slider">        
+      @* Group1*@
+      <div class="card-image card-image--horizontal">
+          <div class="card__img" style='background-image:url(@GetString("Item.Image1"))'>&nbsp;</div>
+          <div class="card__text">
+          <div class="card__title">@GetString("Item.Name1")</div>
+          @if(!string.IsNullOrEmpty(GetString("Item.Description1"))) {
+            <div class="card__description" data-more='@Translate("readMore", "Read more")' data-less='@Translate("readLess", "Read less")'>
+              @GetString("Item.Description1")
+            </div>
+          }
+          </div>
+      </div>
+      @* Group1 End*@
+
+      @* Group2*@
+      <div class="card-image card-image--horizontal">
+          <div class="card__img" style='background-image:url(@GetString("Item.Image2"))'>&nbsp;</div>
+          <div class="card__text">
+          <div class="card__title">@GetString("Item.Name2")</div>
+          @if(!string.IsNullOrEmpty(GetString("Item.Description2"))) {
+            <div class="card__description" data-more='@Translate("readMore", "Read more")' data-less='@Translate("readLess", "Read less")'>
+              @GetString("Item.Description2")
+            </div>
+          }
+          </div>
+      </div>
+      @* Group2 End*@
+
+      @* Group3*@
+      <div class="card-image card-image--horizontal">
+          <div class="card__img" style='background-image:url(@GetString("Item.Image3"))'>&nbsp;</div>
+          <div class="card__text">
+          <div class="card__title">@GetString("Item.Name3")</div>
+          @if(!string.IsNullOrEmpty(GetString("Item.Description3"))) {
+            <div class="card__description" data-more='@Translate("readMore", "Read more")' data-less='@Translate("readLess", "Read less")'>
+              @GetString("Item.Description3")
+            </div>
+          }
+          </div>
+      </div>
+      @* Group3 End*@
+
+      @* Group4*@
+      <div class="card-image card-image--horizontal">
+          <div class="card__img" style='background-image:url(@GetString("Item.Image4"))'>&nbsp;</div>
+          <div class="card__text">
+          <div class="card__title">@GetString("Item.Name4")</div>
+          @if(!string.IsNullOrEmpty(GetString("Item.Description4"))) {
+            <div class="card__description" data-more='@Translate("readMore", "Read more")' data-less='@Translate("readLess", "Read less")'>
+              @GetString("Item.Description4")
+            </div>
+          }
+          </div>
+      </div>
+      @* Group4 End*@
+
+      @* Group5*@
+      <div class="card-image card-image--horizontal">
+          <div class="card__img" style='background-image:url(@GetString("Item.Image5"))'>&nbsp;</div>
+          <div class="card__text">
+          <div class="card__title">@GetString("Item.Name5")</div>
+          @if(!string.IsNullOrEmpty(GetString("Item.Description5"))) {
+            <div class="card__description" data-more='@Translate("readMore", "Read more")' data-less='@Translate("readLess", "Read less")'>
+              @GetString("Item.Description5")
+            </div>
+          }
+          </div>
+      </div>
+      @* Group5 End*@
+
+      @* Group6*@
+      <div class="card-image card-image--horizontal">
+          <div class="card__img" style='background-image:url(@GetString("Item.Image6"))'>&nbsp;</div>
+          <div class="card__text">
+          <div class="card__title">@GetString("Item.Name6")</div>
+          @if(!string.IsNullOrEmpty(GetString("Item.Description6"))) {
+            <div class="card__description" data-more='@Translate("readMore", "Read more")' data-less='@Translate("readLess", "Read less")'>
+              @GetString("Item.Description6")
+            </div>
+          }
+          </div>
+      </div>
+      @* Group6 End*@
+
+      @* Group7*@
+      <div class="card-image card-image--horizontal">
+          <div class="card__img" style='background-image:url(@GetString("Item.Image7"))'>&nbsp;</div>
+          <div class="card__text">
+          <div class="card__title">@GetString("Item.Name7")</div>
+          @if(!string.IsNullOrEmpty(GetString("Item.Description7"))) {
+            <div class="card__description" data-more='@Translate("readMore", "Read more")' data-less='@Translate("readLess", "Read less")'>
+              @GetString("Item.Description7")
+            </div>
+          }
+          </div>
+      </div>
+      @* Group7 End*@
+  </div>    
+</article>
+
+<script src="/Files/Templates/Designs/VanBaerle/js/05_custom/image-map.js" type="text/javascript"></script>
+@* <script>
+  $('a[data-slide]').click(function(e) {
+   e.preventDefault();
+   var slideno = $(this).data('slide');
+   $('.section__slider').slick('slickGoTo', slideno - 1);
+ });
+</script> *@
+
+
+@helper RenderParagraphAnchor()
+{
+  if(Convert.ToBoolean(Dynamicweb.Configuration.SystemConfiguration.Instance.GetValue("/Globalsettings/Settings/Performance/DeactivateParagraphAnchor")))
+  {
+    <a id='@GetString("ParagraphID")' class="pidlink"></a>
+  }
+}

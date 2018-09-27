@@ -1,0 +1,45 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  List<LoopItem> itemsList = GetLoop("ItemPublisher:Items.List");
+
+  var paragraphID = GetInteger("ItemPublisher:Global.ParagraphId");
+  var paragraphService = (Dynamicweb.Content.IParagraphService)Dynamicweb.Extensibility.ServiceLocator.Current.GetInstance(typeof(Dynamicweb.Content.IParagraphService));
+  var paragraph = paragraphService.GetParagraph(paragraphID);
+  var paragraphItem = paragraph.Item;
+
+  var value = paragraphItem["Slide_NrColumn"];
+}
+
+
+@if(itemsList.Any()) {
+<article>
+   <div class="section__slider general_slide oneColumn-slider" data-nr="@value">
+    @foreach(LoopItem item in itemsList) {
+
+      DateTime date = item.GetDate("ItemPublisher:Item.Date.Value"); 
+      string newsDate = date.ToString("MMMM dd, yyyy");
+
+      string  newsTitle = item.GetString("ItemPublisher:Item.Title.Value"),
+              newsShortDescription = item.GetString("ItemPublisher:Item.ShortDescription.Value"),
+              newsImage = item.GetString("ItemPublisher:Item.Image.Value"),
+              newsLink = item.GetString("ItemPublisher:Item.Url");
+
+      <div class="col-xs-12"><div class="card-image card-image--horizontal">
+        <div class="card__img" style='background-image:url(@newsImage)'>
+        </div>
+        <div class="card__text">
+          <div class="card__title">@newsTitle</div>
+          <div class="card__date">@newsDate</div>
+          <div class="card__description">@newsShortDescription</div>
+          <a href='@newsLink' class="card__more">@Translate("readMore", "Read more") <i class="arrow vb-arrow-right"></i></a>
+        </div>
+      </div></div>
+    }
+  </div>
+</article>
+}
+
+@SnippetStart("jsOnLoad")
+  onLoadFaqs();
+@SnippetEnd("jsOnLoad")

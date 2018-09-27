@@ -1,0 +1,59 @@
+﻿﻿@using System;
+@using Dynamicweb;
+@using System.Collections.Generic;
+@using System.Web.Script.Serialization;
+
+
+@Include("../../includes/Razor/GetImage.cshtml")
+@Include("../../includes/Razor/VerifyImage.cshtml")
+@{
+    Dictionary<string, dynamic> autocompleteData = new Dictionary<string, dynamic>();
+    List<Product> productsList = new List<Product>();
+    var settings = new settings {TotalOfProducts = GetInteger("Ecom:ProductList.PageProdCnt")};
+
+    foreach (var product in GetLoop("Products"))
+    {
+        string imagesFolder = "/Files/Files/"+designName+"/Products/";
+        string imagePattern = imagesFolder + product.GetString("Ecom:Product.Number") + ".jpg";
+
+        string productImage = GetImagePathUrl(product.GetString("Ecom:Product.ImageSmall.Clean"), product.GetString("Ecom:Product.ImageMedium.Clean"), product.GetString("Ecom:Product.ImageLarge.Clean"), imagePattern);
+        string productGetImage = GetImage(productImage, 95, 123);
+        string productWebTitle = product.GetString("Ecom:Product:Field.WebTitle.Value.Clean");
+        string productName = !string.IsNullOrEmpty(productWebTitle) ? productWebTitle : product.GetString("Ecom:Product.Name");
+
+        productsList.Add(new Product(
+    productName,
+    product.GetString("Ecom:Product.ID"),
+    product.GetString("Ecom:Product.Number"),
+    productGetImage
+));
+    }
+    autocompleteData.Add("Settings", settings);
+    autocompleteData.Add("Products", productsList);
+    var productJSON = new JavaScriptSerializer().Serialize(autocompleteData);
+    @productJSON
+}
+@functions{
+    // Product list settings
+    public class settings
+    {
+        public int TotalOfProducts { get; set; }
+    }
+
+    // Product properties
+    public class Product
+    {
+        public string ProductName { get; set; }
+        public string ProductId { get; set; }
+        public string ProductNumber { get; set; }
+		public string ProductImage { get; set; }
+
+        public Product(string productName, string productId, string productNumber, string productImage)
+        {
+            ProductName = productName;
+            ProductId = productId;
+            ProductNumber = productNumber;
+			ProductImage = productImage;
+        }
+    }
+}

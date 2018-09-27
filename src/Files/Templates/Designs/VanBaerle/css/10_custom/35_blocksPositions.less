@@ -1,0 +1,361 @@
+/**
+ * Description: styles related to blocks, positions and visibility
+ * User: ShareIT
+ * Date: 12/Jan/2016
+**/
+
+@import url(configs.less);
+
+
+/* Positions */
+
+#menuMain li[data-dropdown=True] {
+  position: initial;
+}
+
+.positionFixed,
+#overLoading,
+.f-nav,
+#compareProducts
+{
+  position: fixed;
+}
+
+.positionRelative,
+#gmap,
+#searchForm,
+#searchFormList,
+.gallery figure,
+.accountInfoList dd,
+li.myCart,
+#compareDetailList > li > div
+{
+  position: relative;
+}
+
+.positionAbsolute,
+#overLoading img,
+#searchForm button,
+#searchFormList button,
+.subMenuHolder,
+.slideText,
+body .gallery figure i,
+#shareContainer,
+#shareContainer > a,
+#miniCart,
+.selected a::after,
+.compareButton,
+#highlightDifferences,
+li.login > form,
+#videoContainer a
+{
+  position: absolute;
+}
+
+
+/* Floats */
+
+
+.floatLeft,
+.navbar-default,
+#searchForm,
+#searchFormList,
+#topMenu > li,
+.subMenuHolder > div > ul > li,
+#bottomMenuContainer > ul > li,
+#breadCrumbsMenu li,
+.fakefile,
+#socialMedia > li,
+.pagination > li,
+.paginationContainer > span,
+.bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn),
+.listMode > li,
+.productsList.tile .priceContainer > form > .listPrice,
+.tile .priceContainer .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn),
+.shareIcons ul > li,
+.shareIcons > span,
+#imgThumbs li,
+#tabsContainer > ul > li,
+#tabsContainer > ul > li > a,
+.accountInfoList dt,
+.accountInfoList dd,
+#stepsList > li > div,
+#stepsList > li > span,
+.recurringContainer label span,
+.priceContainer form[name=change] .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn),
+#compareDetailList > li > div,
+.storeList > li > div > b,
+#faqsList > li h2,
+li.login > form fieldset,
+#filtersForm .selectButtons,
+.DMForms .small input:not([type=submit]):not([type=checkbox]):not([type=radio]):not(.fakeInput),
+.DMForms .small span,
+#cartFormContainer form h2,
+.DMForms .CheckBoxList .input-group,
+.DMForms .Radio .input-group
+{
+  float: left;
+}
+
+#floatRight,
+#topMenuContainer > ul,
+.pagination,
+#filtersForm > fieldset > legend::after,
+.listMode,
+.productsList .priceContainer > form > *,
+.priceContainer .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn),
+#forgotPassword,
+#cartFormContainer fieldset > div.note,
+.selectpicker .selected a::after
+{
+  float: right;
+}
+
+#floatNone,
+.DMForms.contactsForm .Submit input,
+#stepsList > li > div
+{
+  float: none;
+}
+
+
+/* Displays */
+
+
+
+.listItem
+{
+  display: list-item;
+}
+
+.inlineBlock,
+nav.navbar,
+.standardList .paragraphButton a,
+.subMenuHolder a,
+#leftMenu a,
+.seeMore,
+.tile .showTile,
+.filtersHead > span,
+.productsList figure img,
+.bx-wrapper img,
+#stepsList > li > div,
+.productsList.tile .quantity-container label,
+.productsList.tile .favorite,
+#faqsList > li,
+#faqsList h2 span,
+#pricesContainer li,
+.readDetail
+{
+  display: inline-block;
+}
+
+.displayInline
+{
+  display: inline;
+}
+
+.displayBlock,
+li:hover .subMenuHolder,
+.subMenuHolder ul,
+#filtersForm > fieldset > div > label,
+#variantsContainer label,
+#tabsContainer > div.active,
+#createCartUser > div > span,
+li.myCart:hover > div,
+li.login:hover > form,
+li.login.active > form,
+li.login > form #dontHaveAnAccount a,
+.productsList,
+#AddressForm .Select.mandatory .col-md-4.col-sm-12,
+.DMForms .Radio .input-group label, .DMForms .CheckBoxList .input-group label
+{
+  display: block;
+}
+
+.displaytable
+{
+  display: table;
+}
+
+.tableCell
+{
+  display: table-cell;
+}
+
+.hidden,
+.calendar tr.time,
+.radioBoxContainer input[type=radio],
+.checkBoxContainer input[type=checkbox],
+.Hidden,
+.File input.doneAlready,
+.subMenuHolder,
+.glyphicon,
+.tile .tileHide,
+.showTile,
+.shareIcons ul > li > a span,
+#tabsContainer > div,
+#tabsContainer > ul > li > div,
+li.myCart > div,
+.productsList .quantity-container label,
+#topMenu > li > ul,
+li.login > form,
+li.login > form label,
+.printOrPdf #footer,
+.printOrPdf .continueButton,
+.printOrPdf #createCartUser,
+.printOrPdf #topMenuContainer,
+.printOrPdf #menuMainContainer,
+.printOrPdf .h1,
+.printOrPdf div.h2,
+.printOrPdf #subMenuNav,
+.tileStyle #compareProducts,
+.jobsForm_False form,
+.jobsForm_True .paragraphText,
+#AddressForm .Select .col-md-4.col-sm-12,
+.Reset label,
+.ui-datepicker-trigger,
+.step_1 .taxesAlert,
+.step_2 .taxesAlert
+{
+  display: none;
+}
+
+/* Clear */
+
+
+.clearBoth
+{
+  clear: both;
+}
+
+.clearLeft,
+#variantsContainer label,
+.accountInfoList dt,
+#promoCodeContainer form,
+#productsList.tile  .quantity-container,
+.productsList
+{
+  clear: left;
+}
+
+.clearRight,
+#productsList .addToCart
+{
+  clear: right;
+}
+
+
+/* ------------
+        MEDIA QUERIES
+        --------------- */
+
+
+@media (max-width: @screen-xs-max)
+{
+  .listMode,
+  .productsList .priceContainer > form > *,
+  .priceContainer .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn),
+  .socialContainer,
+   #bottomMenuContainer a {
+    float: left;
+  }
+  .accountInfoList > dd,
+  .accountInfoList > dt,
+  #forgotPassword {
+    float: none;
+  }
+  #customerInfo input[type=submit] {
+    float: none !important;
+  }
+  #orderProdList .bootstrap-select,
+  .productsList .addToCart {
+    clear: left;
+  }
+  .showTile,
+  #tabsContainer > ul > li > a,
+  .accountInfoList > *,
+  #customerInfo input[type=submit] {
+    display: inline-block;
+  }
+  .tileHide,
+  .showTile,
+  li.login:hover > form,
+  #miniCart,
+  #stepsList > li:not(.active) {
+    display: none;
+  }
+
+}
+
+@media (max-width: @screen-sm-max) {
+  #socialMedia,
+  #topMenu,
+  #topHeaderContainer figure img,
+  #stepsList > li {
+    display: inline-block;
+  }
+  #topMenuContainer > ul,
+  #stepsList > li {
+    float: none;
+  }
+  #topMenuContainer a,
+  #mainNavContainer .dropdown-menu {
+    position: relative;
+  }
+  #topMenuContainer a,
+  #menuMain > li a,
+  #menuMain .pageLevel2 li,
+  #subMenuNav li a {
+    float: left;
+  }
+  #menuMain > li a.dropdown-toggle,
+  .priceContainer > form > .favorite,
+  #productsList .addToCart {
+    float: right;
+  }
+  #tabsContainer > ul > li.active > div,
+  .navbar-nav .open .dropdown-menu,
+  .removeFiltersContainer .removeAll {
+    display: block !important;
+  }
+  #tabsContainer > div,
+  .dropdown-menu .dropdown-toggle {
+    display: none !important;
+  }
+  #mainNavContainer button,
+  #searchForm,
+  .productCount {
+    position: absolute;
+  }
+  #menuMain > li a {
+    clear: none;
+  }
+
+}
+
+@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max)
+{
+
+}
+
+@media (min-width: @screen-md-min) {
+  #subMenu > li,
+  #subMenuNav li a,
+  #forgotPassword {
+    float: left;
+  }
+  #menuMain > li > ul > li:hover > ul,
+  .navbar-nav > li:hover > ul {
+    display: block;
+  }
+}
+
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max)
+{
+
+}
+
+@media (min-width: @screen-lg-min)
+{
+
+}

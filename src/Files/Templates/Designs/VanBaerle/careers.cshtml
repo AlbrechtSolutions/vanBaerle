@@ -1,0 +1,211 @@
+﻿
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@MasterPageFile("Master.cshtml")
+@Title("Home page")
+@Description("Model for the homepage")
+
+<main class="page--careers">
+        <section class="banner banner--short">
+            <div class="banner__half banner__half--image" style="background-image:url(assets/images/people.jpg);"></div>
+            <div class="banner__half banner__half--content">
+                <div class="banner__text">
+                    <h1 class="banner__heading">
+                        <strong>Wir fordern und fördern die Innovation und Kreativität</strong> unserer Mitarbeitenden.
+                    </h1>
+                </div>
+                <div class="banner__line"></div>
+            </div>
+        </section>
+        <section class="section section--employees invert-color">
+            <div class="container">
+                <div class="section__inner">
+                    <div class="section__description">
+                        <div class="section-desc__line"></div>
+                        <div class="section-desc__text">
+                            <h2 class="section-desc__title">Mitarbeiterstimmen</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="employees section__slider">
+                <div class="card-image">
+                    <div class="card__img" style="background-image:url(assets/images/person-5.jpg);"></div>
+                    <div class="card__text">
+                        <div class="card__heading">Van Baerle</div>
+                        <div class="card__description">Max Muster, Mitarbeiter Produktion Seit 1986 Teil des vanBaerle Teams</div>
+                    </div>
+                </div>
+                <div class="card-image">
+                    <div class="card__img" style="background-image:url(assets/images/person-6.jpg);"></div>
+                    <div class="card__text">
+                        <div class="card__heading">Curabitur cursus</div>
+                        <div class="card__description">Tortor quis auctor lobortis.</div>
+                    </div>
+                </div>
+                <div class="card-image">
+                    <div class="card__img" style="background-image:url(assets/images/person-7.jpg);"></div>
+                    <div class="card__text">
+                        <div class="card__heading">Cras accumsan</div>
+                        <div class="card__description">Vel orci nec aliquet.</div>
+                    </div>
+                </div>
+                <div class="card-image">
+                    <div class="card__img" style="background-image:url(assets/images/person-8.jpg);"></div>
+                    <div class="card__text">
+                        <div class="card__heading">Van Baerle</div>
+                        <div class="card__description">Max Muster, Mitarbeiter Produktion Seit 1986 Teil des vanBaerle Teams</div>
+                    </div>
+                </div>
+                <div class="card-image">
+                    <div class="card__img" style="background-image:url(assets/images/person-9.jpg);"></div>
+                    <div class="card__text">
+                        <div class="card__heading">Curabitur cursus</div>
+                        <div class="card__description">Tortor quis auctor lobortis.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section section--divided section--video">
+            <section class="bg-1 section__division">
+                <div class="section__description">
+                    <div class="section-desc__line"></div>
+                    <div class="section-desc__text">
+                        <div>
+                            <h2 class="section-desc__title">Firmenkultur</h2>
+                            <p class="section-desc__para">Wir fordern und fördern eine innovative Unternehmenskultur. Unsere Mitarbeitenden bringen für die Ausübung ihrer Tätigkeit unternehmerisches Denken und Handeln in allen Arbeitsbereichen mit. Ein hoher Selbstbestimmungsgrad auf allen Funktionsstufen motiviert unsere Mitarbeitenden und fördert Eigenverantwortung und Leistungsbereitschaft. Fest verankerte Werte geben Orientierung in der täglichen Zusammenarbeit. Führen heisst bei vanBaerle gemeinsam mit Menschen Ziele erreichen. Dabei ist Vertrauen die Grundlage für die Beziehung zwischen Führungskräften und Mitarbeitenden.</p>
+                        </div>
+                        <a class="section-desc__link" href="#" target="_blank">In Youtube öffnen <i class="icon vb-arrow-right"></i></a>
+                    </div>
+                </div>
+            </section>
+            <section class="section__division section__division--full">
+                <div id="js-video-overlay" class="section-video__overlay" style="background-image:url(https://unsplash.it/720);">
+                    <div class="section-video__overlay-color">
+                        <span id="js-video-play" class="section-video__play-button" data-video="ytVideo">
+                            <i class="section-video__play-button-img vb-triangle-play"></i>
+                        </span>
+                    </div>
+                </div>
+                <div id="ytVideo" class="video"></div>
+            </section>
+        </section>
+        <section class="summarise">
+            <div class="sum__half sum__half--files">
+                <div class="file">
+                    <div>
+                        <h5 class="file__type">Berufsbildung</h5>
+                        <h3 class="file__name">Ausbildung zum <strong>Kaufmann</strong></h3>
+                    </div>
+                    <a class="file__down" href="#" target="_blank">
+                        Download PDF
+                        <i class="vb-download file__down-icon"></i>
+                    </a>
+                </div>
+                <div class="file">
+                    <div>
+                        <h5 class="file__type">Berufsbildung</h5>
+                        <h3 class="file__name">Ausbildung zum <strong>Chemielaborant</strong></h3>
+                    </div>
+                    <a class="file__down" href="#" target="_blank">
+                        Download PDF
+                        <i class="vb-download file__down-icon"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="sum__half sum__half--text">
+                <div>
+                    <h5 class="file__type">Politik</h5>
+                    <h4 class="file__name file__name--sm">Artbeitgeber</h4>
+                    <p class="sum__text">
+                        Als Arbeitgeber zeigen wir gesellschaftliches Engagement. Wir fordern und fördern. Wir schaffen für unsere Mitarbeiter und Mitarbeiterinnen eine möglichst sichere Existenzgrundlage und eine optimale Umgebung.
+                        vanBaerle bietet ein funktionierendes, multikulturelles Arbeitsumfeld: Kollegen aus  unterschiedlichen Nationen arbeiten in guter, familiärer Stimmung zusammen und prägen gemeinsam unsere offene Unternehmenskultur.
+                    </p>
+                </div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <section class="section invert-color">
+            <div class="container">
+                <div class="section__inner">
+                    <div class="section__description">
+                        <div class="section-desc__line"></div>
+                        <div class="section-desc__text">
+                            <h2 class="section-desc__title">Offene Stellen</h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <div class="file-list">
+                                <div class="file file--thumb">
+                                    <div class="file__img" style="background-image:url(assets/images/person-4.jpg)"></div>
+                                    <div class="file__text">
+                                        <div>
+                                            <h5 class="file__type">Posted 23 June 2017</h5>
+                                            <h3 class="file__name">Wartungsarbeiter</h3>
+                                        </div>
+                                        <a class="file__down" href="#" target="_blank">
+                                            Stellenbeschrieb
+                                            <i class="vb-download file__down-icon"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="file file--thumb">
+                                    <div class="file__img" style="background-image:url(assets/images/person-10.jpg)"></div>
+                                    <div class="file__text">
+                                        <div>
+                                            <h5 class="file__type">Posted 12 June 2017</h5>
+                                            <h3 class="file__name">Verkaufsmanager</h3>
+                                        </div>
+                                        <a class="file__down" href="#" target="_blank">
+                                            Stellenbeschrieb
+                                            <i class="vb-download file__down-icon"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-offset-1">
+                            <div class="team-list">
+                                <div class="info-simple">
+                                    <div class="info__heading">Silke Schröder</div>
+                                    <div class="info__subheading">HR team</div>
+                                    <ul>
+                                        <li class="info__item">
+                                            <div class="icon">
+                                                <img class="icon__img" src="assets/images/phone-2.svg" alt="">
+                                            </div>
+                                            +65 68 96 01 44
+                                        </li>
+                                        <li class="info__item">
+                                            <div class="icon">
+                                                <img class="icon__img" src="assets/images/envelope.svg" alt="">
+                                            </div>
+                                            hr.team@vanbaerle.com.sg 
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="info-simple">
+                                    <div class="info__heading">Manuela Berger</div>
+                                    <div class="info__subheading">HR team</div>
+                                    <ul>
+                                        <li class="info__item">
+                                            <div class="icon">
+                                                <img class="icon__img" src="assets/images/phone-2.svg" alt="">
+                                            </div>
+                                            +65 68 96 01 44
+                                        </li>
+                                        <li class="info__item">
+                                            <div class="icon">
+                                                <img class="icon__img" src="assets/images/envelope.svg" alt="">
+                                            </div>
+                                            hr.team@vanbaerle.com.sg 
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>

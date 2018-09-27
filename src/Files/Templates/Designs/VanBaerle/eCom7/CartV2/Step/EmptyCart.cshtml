@@ -1,0 +1,50 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+
+<div class="container">
+  
+  <div id="cartFormContainer" class="col-xs-12">
+    <div class="col-sm-9 noPaddingLeft">
+      <div class="col-xs-12 noPadding">
+         <h2 class="checkout-heading">@Translate("shippingInformation", "Shipping Information")</h2>
+      </div>
+      <div class="col-xs-12 noPadding">
+
+        
+      </div>
+     
+    </div>
+    <div class="col-sm-3 noPaddingRight">
+       <div class="col-xs-12 totalValues">
+        <div class="col-xs-12 noPadding">
+           <p class="checkout-heading">@Translate("Summary", "Summary")</p>
+        </div>      
+       
+        <div class="summary-list">
+        	<div class="item orderline-list clearfix">
+        		
+
+        	</div>
+          <div class="item summary-subtotal clearfix">
+            <div class="col-xs-6">@Translate("subTotal", "Subtotal")</div>
+            <div class="col-xs-6 pull-right text-right"><b></b></div>
+          </div>
+          <div class="item summary-total clearfix">
+            <div class="col-xs-6 total"><b>@Translate("Total", "Total")</b></div>
+            <div class="col-xs-6 price total text-right"><b></b></div>
+          </div>
+        </div>
+        <div class="cart-summary-buttons">
+          <div class="col-xs-12">
+            <a class="btn btn-primary" href="/Default.aspx?ID=175">@Translate("checkout", "Checkout")</a>
+            <a class="btn btn-border" href="/Default.aspx?ID=171">@Translate("Continue Shopping", "Continue Shopping")</a>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+ 
+    
+    
+  </div>
+ 
+</div>

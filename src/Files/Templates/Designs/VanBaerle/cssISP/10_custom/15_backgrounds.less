@@ -1,0 +1,143 @@
+/**
+ * Description: styles related to backgrounds.
+ * User: ShareIT
+ * Date: 12/Jan/2016
+**/
+
+
+@import url(configs.less);
+
+/* Background image */
+#overLoading {
+  background-image: url("/files/templates/designs/RizzoDesignFolder/images/black70.png");
+}
+
+/* Background color */
+
+// Header & Footer
+
+#mainNavContainer {
+    background-color: @headerNavigationBg;
+}
+
+footer {
+    #footerLargeMenuContainer {
+        background-color: @footerMenuBg;
+    }
+
+    .copyright {
+        background-color: @footerCreditsBg;
+    }
+}
+
+// Buttons
+.btn-warning {
+    background-color: @btn-warning;
+}
+.btn-black {
+  background-color: @btn-black;
+}
+.btn.btn-bg {
+    background-color: @btn-bg;
+}
+.btn-outline {
+    background-color: @btn-outline;
+}
+.btn-default {
+    background-color: @btn-default;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+
+.slideText,
+.headerBox,
+.footerBox,
+.grayBox,
+#imgThumbs li,
+#tabsContainer > div,
+.evenTable tr:nth-child(even),
+#stepsList > li > div,
+.continueButton,
+#cartRightContent h2,
+.bgColor,
+.btn-bg2 {
+  background-color: @thirdtier-light;
+}
+
+#menuMain > li.inpath > a,
+#menuMain li.activeItem > a,
+.paragraphButton a.btn,
+.listMode > li.active,
+#tabsContainer > ul > li > a,
+{
+  background: @thirdtier;
+}
+
+// .shareIcons ul > li > a,
+#tabsContainer > ul > li.active > a,
+#imgThumbs li.active,
+#subMenuNav li.activeItem a,
+#subMenuNav li.inpath a,
+#subMenuNav li a:hover,
+#stepsList > li.active > div,
+#shareToTwitter.active,
+#shareToFacebook.active {
+  background-color: @secondary;
+}
+
+#shareContainer,
+#miniCart,
+#compareProducts > div > div,
+li.login > form,
+.subMenuHolder > div {
+  background-color: @primary;
+}
+
+a.addToCart.highlighted,
+#favoriteAllList button[type=submit].highlighted,
+a#addToCartSubmit.highlighted,
+.greenB,
+#reviewWithSuccess {
+  background-color: green;
+}
+
+#searchForm button,
+#searchFormList button,
+.noStyle input {
+  background: transparent;
+}
+
+/* ------------
+        MEDIA QUERIES
+        --------------- */
+
+
+@media (max-width: @screen-xs-max)
+{
+
+}
+
+@media (max-width: @screen-sm-max)
+{
+  
+}
+@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max)
+{
+
+}
+
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max)
+{
+
+}
+
+@media (min-width: @screen-sm-max)
+{
+  #menuMain > li:hover > a
+  {
+    background: @thirdtier;
+  }
+}

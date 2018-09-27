@@ -1,0 +1,107 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@{
+  string mandatory = "",
+         numCols = "",
+         numRows = "";
+  int radioLoopIndex = 0;
+}
+
+<form id="formSave@(GetString("Form.ID"))" class="DMForms row" action="/Default.aspx?ID=@Pageview.Page.ID" method="post"  enctype="multipart/form-data" data-pageID="@Pageview.Page.ID">
+  @if(@GetString("Form.Hidden") != ""){
+    @GetString("Form.Hidden")
+  }
+  @if(GetBoolean("Form.Checkbox.SubscribeToNewsletter")){
+    <input id="NewsletterSubscriptionCheckBox" type="checkbox" name="NewsletterSubscriptionCheckBox" class="hidden" checked="checked" />
+  }
+  <div class="formFields">
+    @foreach(LoopItem field in GetLoop("Form.Fields")){
+        mandatory = field.GetBoolean("Field.Required") ? "mandatory" : "";
+        numCols = GetInteger("Field.Width") != 0 && GetInteger("Field.Width") < 12 ? "col-xs-" + GetInteger("Field.Width") : "col-xs-12";
+
+        if(field.GetString("Field.Type") != "CheckBox")
+        {
+            <fieldset class="@(field.GetString("Field.Type")) @mandatory @(field.GetString("Field.ValidationValue")) @numCols" name="tag_@(field.GetString("Field.Systemname"))">
+
+              @if(field.GetString("Field.Type") == "TextInput")
+              {
+                <label for="@(field.GetString("Field.Systemname"))">@field.GetString("Field.Label")</label>
+                <input name="@(field.GetString("Field.Systemname"))" id="@(field.GetString("Field.Systemname"))" title="@(field.GetString("Field.Label"))" type="text" />
+              }
+
+              @if(field.GetString("Field.Type") == "Textarea")
+              {
+                  numCols = GetInteger("Field.Width") != 0 ? GetString("Field.Width") : "";
+                  numRows = GetInteger("Field.Height") != 0 ? GetString("Field.Height") : "";
+                <label for="@(field.GetString("Field.Systemname"))">@field.GetString("Field.Label")</label>
+                <textarea name="@(field.GetString("Field.Systemname"))" id="@(field.GetString("Field.Systemname"))" title="@(field.GetString("Field.Label"))" cols="@numCols" rows="numRows"></textarea>
+              }
+
+              @if(field.GetString("Field.Type") == "Select")
+              {
+                <label for="@(field.GetString("Field.Systemname"))">@field.GetString("Field.Label")</label>
+                <select name="@(field.GetString("Field.Systemname"))" id="@(field.GetString("Field.Systemname"))" title="@(field.GetString("Field.Label"))">
+                  @foreach(LoopItem o in field.GetLoop("FieldOptions")){
+                    <option value="@(o.GetString("Field.Option.Value"))">@o.GetString("Field.Option.Text")</option>
+                  }
+                </select>
+              }
+
+              @if(field.GetString("Field.Type") == "Radio")
+              {
+                <label>@field.GetString("Field.Label")</label>
+                foreach(LoopItem o in field.GetLoop("FieldOptions")){
+                  <label class="radioBoxContainer" for="@(field.GetString("Field.Systemname"))@radioLoopIndex">
+                      <input name="@(field.GetString("Field.Systemname"))" id="@(field.GetString("Field.Systemname"))@radioLoopIndex" title="@(field.GetString("Field.Label"))" value="@(o.GetString("Field.Option.Value"))" type="radio" />
+                      <span>@o.GetString("Field.Option.Text")</span>
+                  </label>
+                  radioLoopIndex++;
+                }
+              }
+
+              @if(field.GetString("Field.Type") == "File")
+              {
+                <label for="@(field.GetString("Field.Systemname"))">@field.GetString("Field.Label")</label>
+                <div class="fileinputs">
+                  <input name="@(field.GetString("Field.Systemname"))" id="@(field.GetString("Field.Systemname"))" title="@(field.GetString("Field.Label"))" type="file" />
+                </div>
+              }
+
+              @if(field.GetString("Field.Type") == "Date" || field.GetString("Field.Type") == "DateTime")
+              {
+                <label for="@(field.GetString("Field.Systemname"))_day">@field.GetString("Field.Label")</label>
+                @field.GetString("Field.Control")
+              }
+
+              @if(field.GetString("Field.Description") != "")
+              {
+                <span class="smallText">@field.GetString("Field.Description")</span>
+              }
+
+            </fieldset>
+        }
+        else
+        {
+            <fieldset class="checkboxes @mandatory @field.GetString("Field.ValidationValue") @numCols">
+              <label class="checkBoxContainer" for="@(field.GetString("Field.Systemname"))">
+                <input name="@(field.GetString("Field.Systemname"))" id="@(field.GetString("Field.Systemname"))" title="@(field.GetString("Field.Label"))" type="checkbox" />
+                <span>@field.GetString("Field.Label")</span>
+              </label>
+            </fieldset>
+        }
+    }
+  </div>
+
+  <div class="formButtons col-xs-12">
+    @GetString("Form.Button.Submit").Replace("<input", "<input class='btn btn-bg' ")
+  </div>
+</form>
+
+@SnippetStart("jsOnLoadVariables")
+  obj_dataManagementForms.findText = '@Translate("FindFileText", "Find")';
+  obj_dataManagementForms.arr_formIds.push('formSave@(GetString("Form.ID"))');
+@SnippetEnd("jsOnLoadVariables")
+
+@SnippetStart("jsOnLoad")
+  onLoadValidatePageForms($('#formSave@(GetString("Form.ID"))'), true);
+@SnippetEnd("jsOnLoad")

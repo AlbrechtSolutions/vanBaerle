@@ -1,0 +1,59 @@
+﻿deliveryAddress = GetString("Ecom:Order.Delivery.Address") + GetString("Ecom:Order.Delivery.Address2") + GetString("Ecom:Order.Delivery.City") + GetString("Ecom:Order.Delivery.Region") + GetString("Ecom:Order.Delivery.Zip") + GetString("Ecom:Order.Delivery.Country");
+customerAddress = GetString("Ecom:Order.Customer.Address") + GetString("Ecom:Order.Customer.Address2") + GetString("Ecom:Order.Customer.City") + GetString("Ecom:Order.Customer.Region") + GetString("Ecom:Order.Customer.Zip") + GetString("Ecom:Order.Customer.Country");
+bool addressesAreDifferent = deliveryAddress != customerAddress;
+List<LoopItem> addressValidators = GetLoop("AddressValidators");
+
+if(addressValidators.Any()) {
+  string fieldType = "";
+  bool firstTime = true;
+
+  <div id="addressValidatorsContainer" class="hidden">
+    <div id="addressValidators">
+
+
+      @RenderSnippet("TitleChange")
+      @foreach(LoopItem av in addressValidators)
+      {
+        string errorMessage = av.GetString("Ecom:Order.AddressValidator.ErrorMessage");
+
+        if(!string.IsNullOrWhiteSpace(errorMessage)){
+          <span class="addressValidationError">@errorMessage</span>
+          @SnippetStart("TitleChange")
+          <h2>@Translate("error", "Error")</h2>
+          @SnippetEnd("TitleChange")
+          break;
+        }
+        else if(firstTime) {
+          firstTime = false;
+          @SnippetStart("TitleChange")
+            <h2>@Translate("pleaseSelectTheChanges", "Please select the changes")</h2>
+            <label for="changeAll"><input id="changeAll" name="changeAll" type="checkbox">@Translate("all", "All")</label>
+          @SnippetEnd("TitleChange")
+        }
+
+        foreach(LoopItem af in av.GetLoop("AddressFields"))
+        {
+          string oldValue = af.GetString("Ecom:Order.AddressValidator.Field.OldValue"),
+                 newValue = af.GetString("Ecom:Order.AddressValidator.Field.NewValue"),
+                 type = af.GetString("Ecom:Order.AddressValidator.AddressType"),
+                 field = af.GetString("Ecom:Order.AddressValidator.Field.Type"),
+                 id = field + type;
+
+          if(fieldType != type) {
+            fieldType = type;
+            string title = fieldType == "Billing" ? Translate("billingAddress","Billing Address") : Translate("shippingAddress","Shipping Address") ;
+
+            <h3 class="col-xs-12 noPadding">@title</h3>
+          }
+
+          <div class="col-xs-12 noPadding addressChange" data-type="@type">
+            <span class="col-xs-12 noPadding">@field</span>
+            <label data-type='@type' data-field='@field' class="col-xs-12 noPadding" for="@id"><input id="@id" name="@id" type="checkbox"><strike class="weightNormal">@oldValue</strike><span> - </span><span class="newValue">@newValue</span></label>
+          </div>
+        }
+    
+    	if (!addressesAreDifferent) { break; }
+      }
+    </div>
+  </div>
+}

@@ -1,0 +1,90 @@
+@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@using System.Web;
+@{
+  string str_coin = GetString("Ecom:Order.Currency.Symbol"),
+         savedCardName = GetString("Ecom:Order.SavedCardName"),
+         voucherValue = GetString("discountVoucher.Clean"),
+         deliveryAddress = GetString("Ecom:Order.Delivery.Address") + GetString("Ecom:Order.Delivery.Address2") + GetString("Ecom:Order.Delivery.City") + GetString("Ecom:Order.Delivery.Region") + GetString("Ecom:Order.Delivery.Zip") + GetString("Ecom:Order.Delivery.Country"),
+         customerAddress = GetString("Ecom:Order.Customer.Address") + GetString("Ecom:Order.Customer.Address2") + GetString("Ecom:Order.Customer.City") + GetString("Ecom:Order.Customer.Region") + GetString("Ecom:Order.Customer.Zip") + GetString("Ecom:Order.Customer.Country");
+  double num_subTotal = GetDouble("Ecom:Order.PriceWithoutFees.Price") - GetDouble("Ecom:Order.Taxes.Total.Price");
+  List<LoopItem> orderLines = GetLoop("OrderLines");
+  Dynamicweb.Content.Items.Item itemArea = Pageview.Area.Item;
+  bool loadedVoucher = false;
+
+}
+<div id="cartFormContainer" class="col-xs-12 noPadding">
+  <div class="col-xs-12 col-sm-8 col-md-9 noPaddingLeft">
+    <form action="" method="POST" id="payment-form" class="DMForms">
+      <fieldset id="validation">
+        <ul class="stepFourTemplate">
+          @foreach(LoopItem ve in GetLoop("ValidationErrors")){
+            <li>@Translate("errorInField", "Error in the input field") '@GetString("Ecom:Cart.ValidationError.FieldName")': <a href="javascript:document.getElementById('@GetString("Ecom:Cart.ValidationError.FieldSystemName")').focus()">@GetString("Ecom:Cart.ValidationError.ErrorMessage")</a></li>
+          }
+        </ul>
+      </fieldset>
+      <fieldset id="payment" class="stepHolder opened">
+        <fieldset class="text-left">
+          <h2>@Translate("duplicateChargesOrErrors","To avoid duplicate charges or errors in processing, please do not hit back in your browser window after clicking on Pay Now.")</h2>
+          <div class="col-xs-12">
+            @if(Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn())
+            {
+              <fieldset class="TextInput mandatory row">
+                <label for="savedCardName">Card Name</label>
+                <div class="col-xs-12 col-sm-7">
+                  <input type="text" id="savedCardName" value="@savedCardName" required />
+                </div>
+              </fieldset>
+            }
+            <fieldset class="TextInput mandatory row">
+              <label for="stripeNumber">Card Number</label>
+              <div class="col-xs-12 col-sm-7">
+                <input type="text" size="20" id="stripeNumber" required data-stripe="number"/>
+              </div>
+            </fieldset>
+            <fieldset class="TextInput mandatory row">
+              <label for="stripeCvc">CVC</label>
+              <div class="col-xs-12 col-sm-7">
+                <input type="text" size="20" id="stripeCvc" required data-stripe="cvc"/>
+              </div>
+            </fieldset>
+            <fieldset class="TextInput mandatory small row">
+              <label for="stripeMonth">Expiration</label>
+              <div class="col-xs-12 col-sm-7">
+                <input type="text" id="stripeMonth" pattern=".{2}" required maxlength="2" data-stripe="exp-month" placeholder="MM"/>
+                <span> / </span>
+                <input type="text" pattern=".{4}" required maxlength="4" data-stripe="exp-year" placeholder="YYYY" />
+              </div>
+            </fieldset>
+            <fieldset class="formButtons row">
+              <div class="continueButton col-xs-12">
+                <input type="submit" class="btn btn-bg pull-right" value="@Translate("payNow","Pay Now")"/>
+              </div>
+            </fieldset>
+          </div>
+        </fieldset>
+      </fieldset>
+    </form>
+    <form name="purchaseForm" id="purchaseForm" method="post" action="/Default.aspx?ID=@Pageview.Page.ID">
+      <input type="hidden" name="Action" id="Action" value="Approve" />
+      <input type="hidden" name="CheckoutHandlerOrderID" id="CheckoutHandlerOrderID" value='@GetString("Ecom:Order.ID")' />
+      @if(Dynamicweb.Security.UserManagement.User.IsExtranetUserLoggedIn())
+      {
+        <input type="hidden" name="CardTokenName" value="" />
+      }
+      <input type="hidden" name="stripeTokenType" value="" />
+      <input type="hidden" name="stripeToken" value="" />
+      <input type="hidden" name="stripeEmail" value="@GetString("Ecom:Order.Customer.Email")" />
+    </form>
+
+  </div>
+  @Include("../../../CartV2/Step/Includes/OrdersList.cshtml")
+</div>
+
+
+@SnippetStart("outScripts")
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+@SnippetEnd("outScripts")
+@SnippetStart("jsOnLoad")
+onLoadPaymentStripe('@GetString("Stripe.publishablekey")');
+@SnippetEnd("jsOnLoad")

@@ -1,0 +1,48 @@
+﻿<table name="" class="col-xs-12 noPadding text-left evenTable">
+  <thead>
+    <tr>
+      <th>
+        @Translate("Wishlists","Wish lists")
+      </th>
+      <th>
+        @Translate("Contents","Contents")
+      </th>
+      <th>
+        @Translate("Default","Default")
+      </th>
+      <th>
+        @Translate("Actions","Actions")
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (LoopItem list in lists){
+      string removeUrl = list.GetString("Ecom:CustomerCenter.List.RemoveURL") + "&showLists=true",
+             editUrl = list.GetString("Ecom:CustomerCenter.List.EditURL") + "&showLists=true",
+             name = !string.IsNullOrEmpty(list.GetString("Ecom:CustomerCenter.List.Name")) ? list.GetString("Ecom:CustomerCenter.List.Name") : Translate("Default");
+
+      <tr>
+        <td><a href="@list.GetString("Ecom:CustomerCenter.List.Link.Clean")">@name</a></td>
+        <td>@list.GetString("Ecom:CustomerCenter.List.ProductCount") @Translate(list.GetInteger("Ecom:CustomerCenter.List.ProductCount") != 1 ? "Items" : "Item")</td>
+        <td>
+          @if(list.GetBoolean("Ecom:CustomerCenter.List.IsDefault")) {
+            <i class="fa fa-check"></i>
+          }
+          else {
+            <i class="fa fa-close"></i>
+          }
+        </td>
+        <td class="actions">
+          <a href="@editUrl"><i class="fa fa-file-text-o"></i>&nbsp;@Translate("editList","Edit list")</a>
+           @if(!list.GetBoolean("Ecom:CustomerCenter.List.IsDefault")) {
+            <a class="btnBlueYellow leftPadding" href="@removeUrl"><i class="fa fa-close"></i>&nbsp;@Translate("delete", "Delete")</a>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+<div class="marginTop30 col-xs-12 noPadding">
+    <a class="btn btn-border" href="javascript:history.back();">« @Translate("back", "Back")</a>
+</div>
+

@@ -1,0 +1,23 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@MasterPageFile("Master.cshtml")
+@Title("ProductCatalog")
+@Description("Product Catalog")
+
+@Include("Includes/PageTemplates/NavAndSlider.cshtml")
+
+@if (!string.IsNullOrEmpty(GetString("DwContent(centralContent)")))
+{
+  <div class="centralContainer">
+    
+     
+        
+    
+    <div id="centralContent" class="dwcontent col-md-12" title="Centrals contents" settings="unwrap:true;sort:1;template:StandardParagraph.cshtml;id:centralContent"></div>
+  </div>
+}
+
+
+ @SnippetStart("Navigation")
+  <h4 class="cat-title">@Translate("filterCategories", "Categories")</h4>
+    <ul class="dw-categories dwnavigation" id="leftnavigation" data-settings="startlevel:1;endlevel:2;template:LeftNavigationEcom.xslt;sitemapmode:true"></ul>
+ @SnippetEnd("Navigation")  

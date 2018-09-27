@@ -1,0 +1,33 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+<table class="formtable">
+	@foreach (LoopItem field in GetLoop("FieldValues"))
+	{
+		int fieldId = field.GetInteger("Field.ID");
+		bool fieldIsButton = field.GetBoolean("Field.IsButton");
+		string fieldHtmlId = field.GetString("Field.HtmlId"),
+		       fieldName = field.GetString("Field.Name"),
+		       fieldControl = field.GetString("Field.Control"),
+		       fieldDescription = field.GetString("Field.Description"),
+		       submitValue = field.GetString("SubmitData.Value"),
+		       submitOptionText = field.GetString("SubmitData.Value.OptionText");
+		       @field.GetString("Field.Type")
+		if (!fieldIsButton)
+		{
+			<tr class="fieldRow">
+				<td class="labelCell">@fieldName</td>
+				<td class="columnCell">
+					@if (!string.IsNullOrEmpty(submitOptionText))
+					{
+						@submitOptionText
+					}
+					else
+					{
+						@submitValue.Replace(Environment.NewLine, "<br>")
+					}
+				</td>
+		</tr>
+		}
+	}
+</table>

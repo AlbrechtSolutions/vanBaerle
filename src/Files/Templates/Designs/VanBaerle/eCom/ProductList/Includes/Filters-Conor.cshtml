@@ -1,0 +1,219 @@
+﻿@{
+  var parametersList = GetLoop("Query.Parameters");
+  string groupId = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["GroupID"]) ? System.Web.HttpContext.Current.Request.Params["GroupID"].ToString() : "";
+  string price = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["Price"]) ? System.Web.HttpContext.Current.Request.Params["Price"] : "";
+  string pageSizeNum = !string.IsNullOrEmpty(System.Web.HttpContext.Current.Request.Params["PageSize"]) ? System.Web.HttpContext.Current.Request.Params["PageSize"] : "";
+}
+<div class="filtersHead col-xs-12">
+  <h4>@Translate("filterCategories", "Categories")</h4>
+</div>
+<form id="filtersForm" class="col-xs-12">
+  <input type="hidden" name="ID" value="@Pageview.Page.ID" />
+  @if(sortBy != "") {
+    <input type="hidden" name="sortby" value="@sortBy" />
+  }
+  @if(sortOrder != "") {
+    <input type="hidden" name="SortOrder" value="@sortOrder" />
+  }
+  @if(pageSizeNum != "") {
+    <input type="hidden" name="PageSize" value="@pageSizeNum" />
+  }
+  @if(qString != "") {
+    <input type="hidden" name="q" value="@qString" />
+  }
+
+  @* Price range *@
+  @if(!noResults) {
+    <fieldset class="hide">
+      <legend class="filterTitle notClick">@Translate("price", "Price")</legend>
+        <input id="amount" type="text" name="Price" value="" />
+        <div id="slider-range"></div>
+    </fieldset>
+  }
+
+  @foreach (LoopItem facetGroup in GetLoop("FacetGroups")) {
+    foreach (LoopItem facet in facetGroup.GetLoop("Facets")) {
+  string parameterType = ""; //parametersList.First(x => x.GetString("Parameter.Name") == facet.GetString("Facet.QueryParameter")).GetString("Parameter.Type");
+      string templateOutput = "string";
+
+      if(parameterType.Contains("[]")){
+        switch (facet.GetString("Facet.Name"))
+        {
+        case "Category":
+            templateOutput = "multiselect";
+            break;
+        case "Price":
+            templateOutput = "range";
+            break;
+        default:
+            templateOutput = "checkboxes";
+            break;
+        }
+      }
+      else if(parameterType.Contains("Boolean")){
+        switch (facet.GetString("Facet.Name"))
+        {
+        case "fieldName":
+            templateOutput = "select";
+            break;
+        case "fieldName2":
+            templateOutput = "radio";
+            break;
+        default:
+            templateOutput = "checkbox";
+            break;
+        }
+      }
+      else if(!string.IsNullOrWhiteSpace(facet.GetString("Facet.OptionCount"))) {
+        switch (facet.GetString("Facet.Name"))
+        {
+        case "fieldName":
+            templateOutput = "select";
+            break;
+        case "fieldName2":
+          templateOutput = "radios";
+          break;
+        case "fieldName3":
+            templateOutput = "multiselect";
+            break;
+        case "fieldName4":
+            templateOutput = "text";
+            break;
+        case "Price":
+            templateOutput = "range";
+            break;
+        default:
+            templateOutput = "checkboxes";
+            break;
+        }
+
+      }
+      else {
+        switch (facet.GetString("Facet.Name"))
+        {
+        case "fieldName":
+            templateOutput = "autocomplete";
+            break;
+        case "Price":
+            templateOutput = "range";
+            break;
+        default:
+            templateOutput = "text";
+            break;
+        }
+
+      }
+      @RenderField(facet, parameterType, templateOutput, noResults)
+
+    }
+  }
+</form>
+
+@helper RenderField(LoopItem loopItem , string parameterType, string templateOutput, bool noResults ) {
+  string parameter = loopItem.GetString("Facet.QueryParameter");
+  string name = loopItem.GetString("Facet.Name");
+  List<LoopItem> facetOptionsList = loopItem.GetLoop("FacetOptions");
+  var facetOptions = noResults ? facetOptionsList.OrderByDescending(o => o.GetInteger("FacetOption.Count")).ThenBy(or => or.GetString("FacetOption.Label")) : loopItem.GetLoop("FacetOptions").Where(f => f.GetInteger("FacetOption.Count") != 0).OrderByDescending(o => o.GetInteger("FacetOption.Count")).ThenBy(or => or.GetString("FacetOption.Label"));
+
+  switch (templateOutput)
+  {
+  case "multiselect":
+    if(loopItem.GetLoop("FacetOptions").Any()) {
+      <fieldset>
+        <legend>@name</legend>
+        <select data-selected-text-format="count" data-live-search="true" data-size="8" name="@parameter" multiple>
+          @foreach(LoopItem option in facetOptionsList.OrderByDescending(o => o.GetInteger("FacetOption.Label")))
+          {
+            bool facetOptionChecked = option.GetBoolean("FacetOption.Selected");
+            string value = option.GetString("FacetOption.Value");
+            string nameOption = option.GetString("FacetOption.Name");
+
+            <option selected="@facetOptionChecked" value="@value">@option.GetString("FacetOption.Label")</option>
+          }
+        </select>
+      </fieldset>
+    }
+
+      break;
+  case "checkboxes":
+
+      if(loopItem.GetLoop("FacetOptions").Any()) {
+        int count = 0;
+
+        <fieldset data-type="@parameterType">
+          <legend class="filterTitle">@name</legend>
+          <div class="filtersContainer hide">
+            @foreach(LoopItem option in facetOptions)
+            {
+              bool facetOptionChecked = option.GetBoolean("FacetOption.Selected");
+              string value = option.GetString("FacetOption.Value");
+              string nameOption = option.GetString("FacetOption.Name");
+              count++;
+              string classString = count > 5 ? "hide" : "";
+
+              <label class="checkBoxContainer @classString"><input checked="@facetOptionChecked" type="checkbox" value="@value" name="@parameter">
+              <span>
+                @option.GetString("FacetOption.Label")
+                @if(option.GetInteger("FacetOption.Count") > 0) {
+                  string.Format("({0})", option.GetString("FacetOption.Count"));
+                }
+              </span>
+              </label>
+            }
+
+            @if(loopItem.GetLoop("FacetOptions").Where(f => f.GetInteger("FacetOption.Count") != 0).Count() > 5) {
+              <span class="seeMore" data-more='@Translate("seeMore", "See more")' data-hide='@Translate("only5", "Show only 5")' >@Translate("seeMore", "See more")</span>
+            }
+          </div>
+        </fieldset>
+      }
+
+      break;
+  case "select":
+
+      break;
+  case "checkbox":
+
+      if(loopItem.GetLoop("FacetOptions").Any()) {
+        <fieldset data-type="@parameterType">
+          @foreach(LoopItem option in facetOptionsList.Where(f => f.GetInteger("FacetOption.Count") != 0).OrderByDescending(o => o.GetInteger("FacetOption.Count")).ThenBy(or => or.GetString("FacetOption.Label")))
+          {
+            bool facetOptionChecked = option.GetBoolean("FacetOption.Selected");
+            string value = option.GetString("FacetOption.Value") == "True" ? "True" : "";
+            string nameOption = option.GetString("FacetOption.Name");
+
+            if(value == "True") {
+              <legend class="filterTitle">@name</legend>
+              <div class="filtersContainer hide">
+                <label class="checkBoxContainer"><input checked="@facetOptionChecked" type="checkbox" value="@value" name="@parameter"> <span>@name (@option.GetString("FacetOption.Count"))</span></label>
+              </div>
+            }
+          }
+        </fieldset>
+      }
+
+      break;
+  case "radio":
+
+      break;
+  case "radios":
+
+      break;
+  case "autocomplete":
+
+      break;
+  case "range":
+       break;
+  default:
+      <fieldset data-type="@parameterType">
+        <legend class="filterTitle">@name</legend>
+        <div class="filtersContainer">
+          <input type="text" name="@parameter" value="" />
+        </div>
+      </fieldset>
+      break;
+  }
+
+
+
+}

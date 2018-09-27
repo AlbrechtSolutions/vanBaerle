@@ -1,0 +1,686 @@
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.min.css" media="screen">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
+
+<script>
+	function updateCart() {
+  		/*$('#EcomOrderDeliveryName').val('');
+        $('#EcomOrderDeliveryAddress').val('');
+        $('#EcomOrderDeliveryZip').val('');
+        $('#EcomOrderDeliveryCity').val('');
+  		$('#EcomOrderDeliveryCountry').val('');*/
+
+		var form = document.getElementById('ordersubmit');
+		form.submit();
+
+		//Spinner
+		var opts = {
+		  lines: 9, // The number of lines to draw
+		  length: 0, // The length of each line
+		  width: 10, // The line thickness
+		  radius: 18, // The radius of the inner circle
+		  corners: 1, // Corner roundness (0..1)
+		  rotate: 0, // The rotation offset
+		  direction: 1, // 1: clockwise, -1: counterclockwise
+		  color: '#000', // #rgb or #rrggbb or array of colors
+		  speed: 1, // Rounds per second
+		  trail: 35, // Afterglow percentage
+		  shadow: false, // Whether to render a shadow
+		  hwaccel: false, // Whether to use hardware acceleration
+		  className: 'spinner', // The CSS class to assign to the spinner
+		  zIndex: 2e9, // The z-index (defaults to 2000000000)
+		  top: '50%', // Top position relative to parent
+		  left: '50%' // Left position relative to parent
+		};
+
+		var target = document.getElementById('orderlist');
+		var spinner = new Spinner(opts).spin(target);
+
+		document.getElementById('orderlistcontent').style.visibility = "hidden";
+	}
+  
+  	function bil2del($bil, $del) {
+  		if (!$del.val()) {
+			$del.val($bil.val());
+  		}
+  	}
+	
+	function showHideDelivery() {
+		var div = document.getElementById("deliveryInformation");
+  
+		bil2del($('#EcomOrderCustomerCell'), $('#EcomOrderDeliveryCell'));
+		bil2del($('#EcomOrderCustomerPhone'), $('#EcomOrderDeliveryPhone'));
+		bil2del($('#EcomOrderCustomerEmail'), $('#EcomOrderDeliveryEmail'));
+  
+		if (document.getElementById("enableDelivery").checked) {
+			div.className = "show";
+  			
+		} else {
+			div.className = "hidden";
+		}
+	}
+
+	function showHideRecurring() {
+		var div = document.getElementById("RecurringSettings");
+
+		if (document.getElementById("EcomRecurringOrderCreate").checked) {
+			div.className = "show";
+		} else {
+			div.className = "hidden";
+		}
+	}
+
+	$(document).ready(function() {
+		if ($('#EcomOrderDeliveryAddress').val() != ""){
+			$('#deliveryInformation').addClass('show');
+			$('#enableDelivery').prop('checked', true);
+		} else {
+			$('#deliveryInformation').addClass('hidden');
+			$('#enableDelivery').prop('checked', false);
+		}
+	});
+</script>
+
+@{
+	string columnwidth = "col-lg-3 col-md-3";
+
+	if (!string.IsNullOrWhiteSpace(GetGlobalValue("Global:Extranet.UserName"))) {
+		columnwidth = "col-lg-4 col-md-4";
+	}
+}
+
+<section>
+	<form name="ordersubmit" id="ordersubmit" method="post" class="form-light form-horizontal">
+		<div class="w-section inverse shop">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<h3 class="dw-section-title dw-section-title-small"><span>@Translate("Checkout", "Checkout")</span></h3>			
+					</div>
+				</div>
+				
+				@foreach (LoopItem errors in GetLoop("ValidationErrors")){
+				    @errors.GetValue("HeaderStart")
+				    <div class="row">
+					    <div class="col-md-12">
+					       	<h4>@Translate("Ooops!", "Ooops!")</h4>
+					    </div>
+				    </div>
+				    @errors.GetValue("HeaderEnd")
+				    
+				    <div class="row">
+				      	<div class="col-md-12">
+				       		<div class="alert alert-warning" role="alert"><a href="javascript:document.getElementById('@errors.GetString("Ecom:Cart.ValidationError.FieldSystemName")').focus();"><b>@errors.GetString("Ecom:Cart.ValidationError.ErrorMessage")</b></a></div>
+				      	</div>
+				    </div>
+			    }
+				<div class="row">&nbsp;</div>
+
+				<div class="row">
+					<div class="@columnwidth col-sm-6 col-xs-12">
+						<div class="wp-block default user-form">	
+							<div class="form-header">
+								<h2><span class="circle"><i class="fa fa-file-text"></i></span> @Translate("Billing address", "Billing address")</h2>
+							</div>
+							
+							<div class="form-body"> 
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label class="control-label" for="EcomOrderCustomerCompany">@Translate("Company", "Company")</label>
+										<input type="text" class="form-control" name="EcomOrderCustomerCompany" id="EcomOrderCustomerCompany" value="@GetString("Ecom:Order.Customer.Company")" />
+									</div>
+								</div>
+								
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label class="control-label" for="EcomOrderCustomerName">@Translate("Name", "Name")</label>
+										<input type="text" class="form-control" name="EcomOrderCustomerName" id="EcomOrderCustomerName" value="@GetString("Ecom:Order.Customer.Name")" />
+									</div>
+								</div>
+								
+								<div class="col-md-12 col-sm-12 col-xs-12 p-0">
+										<div class="col-md-6 p-0">
+											<label class="control-label" for="EcomOrderCustomerPhone">@Translate("CellPhone", "CellPhone")</label>
+											<input type="text" style="width: 90%" class="form-control short-control" name="EcomOrderCustomerCell" id="EcomOrderCustomerCell" value="@GetString("Ecom:Order.Customer.Cell")" />
+										</div>
+										
+										<div class="col-md-6 p-0">
+											<label class="control-label" for="EcomOrderCustomerPhone">@Translate("Phone", "Phone")</label>
+											<input type="text" style="width: 90%" class="form-control short-control" name="EcomOrderCustomerPhone" id="EcomOrderCustomerPhone" value="@GetString("Ecom:Order.Customer.Phone")" />
+										</div>
+									</div>
+										
+									<div class="col-md-12 col-sm-12 col-xs-12">
+                                      <div class="form-group">
+											<label class="control-label" for="EcomOrderCustomerEmail">@Translate("Email", "Email")</label>
+											<input type="email" class="form-control" name="EcomOrderCustomerEmail" id="EcomOrderCustomerEmail" value="@GetString("Ecom:Order.Customer.Email")" />
+										</div>
+									</div>
+								
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label class="control-label" for="EcomOrderCustomerAddress">@Translate("Address", "Address")</label>
+										<input type="text" class="form-control" name="EcomOrderCustomerAddress" id="EcomOrderCustomerAddress" value="@GetString("Ecom:Order.Customer.Address")" />
+									</div>
+								</div>
+								
+								<!--
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label class="control-label" for="EcomOrderCustomerAddress2">@Translate("Address", "Address") 2</label>
+										<input type="text" class="form-control" name="EcomOrderCustomerAddress2" id="EcomOrderCustomerAddress2" value="@GetString("Ecom:Order.Customer.Address2")" />
+									</div>
+								</div>
+								-->
+								
+								<div class="col-md-12 col-sm-12 col-xs-12 p-0">
+									<div class="col-md-6 p-0">
+										<label class="control-label" for="EcomOrderCustomerZip">@Translate("Zip code", "Zip code")</label>
+										<input type="text" style="width: 90%" class="form-control short-control" name="EcomOrderCustomerZip" id="EcomOrderCustomerZip" value="@GetString("Ecom:Order.Customer.Zip")" />
+									</div>
+								
+									<div class="col-md-6 p-0">
+										<label class="control-label" for="EcomOrderCustomerCity">@Translate("City", "City")</label>
+										<input type="text" class="form-control" name="EcomOrderCustomerCity" id="EcomOrderCustomerCity" value="@GetString("Ecom:Order.Customer.City")" />
+									</div>
+								</div>
+								
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label class="control-label" for="EcomOrderCustomerCountry">@Translate("Country", "Country")</label>
+										<select name="EcomOrderCustomerCountry" id="EcomOrderCustomerCountry" class="form-control" onchange="updateCart();">
+											@foreach (LoopItem country in GetLoop("Countries")){
+												if (!string.IsNullOrWhiteSpace(country.GetString("Ecom:Country.IsCustomerCountryOrDefault"))) {  
+												<option value="@country.GetString("Ecom:Country.Code2")" selected="selected">
+													@country.GetString("Ecom:Country.Name")
+												</option>
+												}
+												if (string.IsNullOrWhiteSpace(country.GetString("Ecom:Country.IsCustomerCountryOrDefault"))) {
+												<option value="@country.GetString("Ecom:Country.Code2")">
+													@country.GetString("Ecom:Country.Name")
+												</option>
+												}
+											}
+										</select>
+									</div>
+								</div>
+								
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									<div class="form-group">
+										@{
+											var checkstring = "checked";
+											
+											if (string.IsNullOrWhiteSpace(GetString("Ecom:Order.Delivery.Address2"))) { 
+												checkstring = "";
+											} else {
+												checkstring = "checked";
+											}
+										}
+										
+										<label for="enableDelivery" class="checkbox-field">
+											<input type="checkbox" id="enableDelivery" onclick="showHideDelivery();" @checkstring /><i></i> @Translate("Alternative delivering address", "Alternative delivering address")</input>
+										</label>
+									</div>
+								</div>
+
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									&nbsp;
+								</div>
+							</div>
+						</div>
+									
+						<div class="" id="deliveryInformation">
+							<div class="wp-block default user-form">
+								<div class="form-header">
+									<h2><span class="circle"><i class="fa fa-map-marker fa-3"></i></span> @Translate("Delivery address", "Delivery address")</h2>
+								</div>
+								<div class="form-body">
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<div class="form-group">
+											<label class="control-label" for="EcomOrderDeliveryCompany">@Translate("Company", "Company")</label>
+											<input type="text" class="form-control" name="EcomOrderDeliveryCompany" id="EcomOrderDeliveryCompany" value="@GetString("Ecom:Order.Delivery.Company")" />
+										</div>
+									</div>
+
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<div class="form-group">
+											<label class="control-label" for="EcomOrderDeliveryName">@Translate("Name", "Name")</label>
+											<input type="text" class="form-control" name="EcomOrderDeliveryName" id="EcomOrderDeliveryName" value="@GetString("Ecom:Order.Delivery.Name")" />
+										</div>
+									</div>
+
+									<div class="col-md-12 col-sm-12 col-xs-12 p-0">
+										<div class="col-md-6 p-0">
+											<label class="control-label" for="EcomOrderDeliveryPhone">@Translate("CellPhone", "CellPhone")</label>
+											<input type="text" style="width: 90%" class="form-control short-control" name="EcomOrderDeliveryCell" id="EcomOrderDeliveryCell" value="@GetString("Ecom:Order.Delivery.Cell")" />
+										</div>
+										
+										<div class="col-md-6 p-0">
+											<label class="control-label" for="EcomOrderDeliveryPhone">@Translate("Phone", "Phone")</label>
+											<input type="text" style="width: 90%" class="form-control short-control" name="EcomOrderDeliveryPhone" id="EcomOrderDeliveryPhone" value="@GetString("Ecom:Order.Delivery.Phone")" />
+										</div>
+									</div>
+										
+									<div class="col-md-12 col-sm-12 col-xs-12">
+                                      <div class="form-group">
+											<label class="control-label" for="EcomOrderDeliveryEmail">@Translate("Email", "Email")</label>
+											<input type="email" class="form-control" name="EcomOrderDeliveryEmail" id="EcomOrderDeliveryEmail" value="@GetString("Ecom:Order.Delivery.Email")" />
+										</div>
+									</div>
+
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<div class="form-group">
+											<label class="control-label" for="EcomOrderDeliveryAddress">@Translate("Address", "Address")</label>
+											<input type="text" class="form-control" name="EcomOrderDeliveryAddress" id="EcomOrderDeliveryAddress" value="@GetString("Ecom:Order.Delivery.Address")" />
+										</div>
+									</div>
+									<!--
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<div class="form-group">
+											<label class="control-label" for="EcomOrderDeliveryAddress2">@Translate("Address", "Address") 2</label>
+											<input type="text" class="form-control" name="EcomOrderDeliveryAddress2" id="EcomOrderDeliveryAddress2" value="@GetString("Ecom:Order.Delivery.Address2")" />
+										</div>
+									</div>
+									-->
+
+									<div class="col-md-12 col-sm-12 col-xs-12 p-0">
+										<div class="col-md-6 p-0">
+											<label class="control-label" for="EcomOrderDeliveryZip">@Translate("Zip code", "Zip code")</label>
+											<input type="text" style="width: 90%"  class="form-control short-control" name="EcomOrderDeliveryZip" id="EcomOrderDeliveryZip" value="@GetString("Ecom:Order.Delivery.Zip")" />
+										</div>
+										<div class="col-md-6 p-0">
+											<label class="control-label" for="EcomOrderDeliveryCity">@Translate("City", "City")</label>
+											<input type="text"  class="form-control" name="EcomOrderDeliveryCity" id="EcomOrderDeliveryCity" value="@GetString("Ecom:Order.Delivery.City")" />
+										</div>
+									</div>
+									
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<div class="form-group">
+											<label class="control-label" for="EcomOrderDeliveryCountry">@Translate("Country", "Country")</label>
+											<select name="EcomOrderDeliveryCountry" id="EcomOrderDeliveryCountry" class="form-control" onchange="updateCart();">
+												@foreach (LoopItem country2 in GetLoop("Countries")){
+													if (!string.IsNullOrWhiteSpace(country2.GetString("Ecom:Country.IsDeliveryCountryOrDefault"))) {  
+													<option value="@country2.GetString("Ecom:Country.Code2")" selected="selected">
+														@country2.GetString("Ecom:Country.Name")
+													</option>
+													}
+													if (string.IsNullOrWhiteSpace(country2.GetString("Ecom:Country.IsDeliveryCountryOrDefault"))) {
+													<option value="@country2.GetString("Ecom:Country.Code2")">
+														@country2.GetString("Ecom:Country.Name")
+													</option>
+													}
+												}
+											</select>
+										</div>
+									</div>
+		
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										&nbsp;
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				
+					
+					@if (GetBoolean("Ecom:Cart.CreateUserInCheckout") && string.IsNullOrWhiteSpace(GetGlobalValue("Global:Extranet.UserName")))
+		            {
+					<div class="@columnwidth col-sm-6 col-xs-12">
+						<div class="wp-block default user-form">
+	                    	<div class="col-md-12 col-sm-12 col-xs-12 form-header">
+	                        	<div class="form-group">
+									<h2><span class="circle"><i class="fa fa-user"></i></span> @Translate("Returning customer", "Returning customer")</h2>
+								</div>
+							</div>
+							<div class="col-md-12 col-sm-12 col-xs-12">
+		                        <div class="form-group">
+		                            <label for="EcomUserCreateUserName" class="control-label">@Translate("Username", "Username")</label>
+		                            <input class="form-control" type="text" name="EcomUserCreateUserName" id="EcomUserCreateUserName" />
+		                        </div>
+		                    </div>
+		                    <div class="col-md-12 col-sm-12 col-xs-12">
+		                        <div class="form-group">
+		                            <label for="EcomUserCreatePassword" class="control-label">@Translate("New password", "New password")</label>
+		                            <input class="form-control" type="password" name="EcomUserCreatePassword" id="EcomUserCreatePassword" />
+		                        </div>
+		                    </div>
+		                    <div class="col-md-12 col-sm-12 col-xs-12">
+		                        <div class="form-group">
+		                            <label for="EcomUserCreateConfirmPassword" class="control-label">@Translate("Confirm password", "Confirm password")</label>
+		                            <input class="form-control" type="password" name="EcomUserCreateConfirmPassword" id="EcomUserCreateConfirmPassword" />
+		                        </div>
+		                    </div>
+		                    <div class="col-md-12 col-sm-12 col-xs-12">
+		                        <div class="checkbox-field pull-left" style="padding-left: 5px">
+	                                <label class="checkbox persistent"><input type="checkbox" name="EcomUserCreateNew" id="EcomUserCreateNew" checked='@GetBoolean("Ecom:User.CreateNew")' />
+	                                @Translate("Save me as customer", "Save me as customer")
+	                            	</label>
+		                        </div>
+		                    </div>
+
+		                    <div class="col-md-12 col-sm-12 col-xs-12">
+								&nbsp;
+							</div>
+
+	                        <div class="col-md-12 col-sm-12 col-xs-12">
+	                        	<div class="form-group">
+	                        		<div class="pull-left">
+		                        		<h3>@Translate("Already a user?", "Already a user?")</h3>
+		                        	</div>
+
+			                        <a class="btn btn-two pull-right" href='Default.aspx?ID=@Pageview.Area.Item["SignInPageId"]'>
+		                                @Translate("Sign in", "Sign in")
+		                            </a>
+		                        </div>
+	                        </div>
+
+	                    	<div class="col-md-12 col-sm-12 col-xs-12">
+								&nbsp;
+							</div>
+							<div class="col-md-12 col-sm-12 col-xs-12">
+								&nbsp;
+							</div>
+						</div>
+					</div>
+					}
+
+					<div class="@columnwidth col-sm-6 col-xs-12">
+
+						<div class="wp-block default user-form">
+							<div class="form-header">
+								<h2><span class="circle"><i class="fa fa-truck fa-3"></i></span>  @Translate("Shipping", "Shipping")</h2>
+							</div>
+							<div class="form-body radio-group">
+								@foreach (LoopItem shipping in GetLoop("Shippingmethods")){
+								    <label for="EcomCartShippingmethodID_@shipping.GetString("Ecom:Cart.Shippingmethod.ID")">
+									    @if (!string.IsNullOrWhiteSpace(shipping.GetString("Ecom:Cart.Shippingmethod.IsSelected"))){
+										    <input onclick="updateCart();" type="radio" name="EcomCartShippingmethodID" id="EcomCartShippingmethodID_@shipping.GetString("Ecom:Cart.Shippingmethod.ID")" value="@shipping.GetString("Ecom:Cart.Shippingmethod.ID")" checked="checked" /><text>&nbsp;</text>
+									    }
+									    @if (string.IsNullOrWhiteSpace(shipping.GetString("Ecom:Cart.Shippingmethod.IsSelected"))){
+									    <input onclick="updateCart();" type="radio" name="EcomCartShippingmethodID" id="EcomCartShippingmethodID_@shipping.GetString("Ecom:Cart.Shippingmethod.ID")" value="@shipping.GetString("Ecom:Cart.Shippingmethod.ID")" /><text>&nbsp;</text>
+									    }
+									    @shipping.GetString("Ecom:Cart.Shippingmethod.Icon")
+									    @shipping.GetString("Ecom:Cart.Shippingmethod.Name")
+									    @if (string.IsNullOrWhiteSpace(shipping.GetString("Ecom:Cart.ShippingMethod.Price.IsZero"))){
+										    shipping.GetString("Ecom:Cart.ShippingMethod.Price");
+									    }
+								    </label><br />
+                                    if (!string.IsNullOrWhiteSpace(shipping.GetString("Ecom:Cart.Shippingmethod.IsSelected")) && 
+                                        !string.IsNullOrWhiteSpace(shipping.GetString("Ecom:ShippingProvider.Content"))){
+                                            @shipping.GetString("Ecom:ShippingProvider.Content");
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                        <div class="wp-block default user-form">
+							<div class="form-header">
+								<h2><span class="circle"><i class="fa fa-credit-card fa-3"></i></span>  @Translate("Payment", "Payment")</h2>
+							</div>
+							<div class="form-body radio-group">
+                                @foreach (LoopItem payment in GetLoop("Paymethods")){
+								<label for="EcomCartPaymethodID_@payment.GetString("Ecom:Cart.Paymethod.ID")">
+                                    @if (!string.IsNullOrWhiteSpace(payment.GetString("Ecom:Cart.Paymethod.IsSelected"))) {
+										<input onclick="updateCart();" type="radio" name="EcomCartPaymethodID" id="EcomCartPaymethodID_@payment.GetString("Ecom:Cart.Paymethod.ID")" value="@payment.GetString("Ecom:Cart.Paymethod.ID")" checked="checked" /><text>&nbsp;</text>
+									}
+                                    @if (string.IsNullOrWhiteSpace(payment.GetString("Ecom:Cart.Paymethod.IsSelected"))) {
+										<input onclick="updateCart();" type="radio" name="EcomCartPaymethodID" id="EcomCartPaymethodID_@payment.GetString("Ecom:Cart.Paymethod.ID")" value="@payment.GetString("Ecom:Cart.Paymethod.ID")" /><text>&nbsp;</text>
+									}
+                                @payment.GetString("Ecom:Cart.Paymethod.Icon")
+									@payment.GetString("Ecom:Cart.Paymethod.Name")
+                                    @if (string.IsNullOrWhiteSpace(payment.GetString("Ecom:Cart.Paymethod.Price.IsZero"))) {
+										payment.GetString("Ecom:Cart.Paymethod.Price");
+									}
+								</label><br />
+								}
+							</div>
+						</div>
+
+                        @if (!string.IsNullOrWhiteSpace(GetString("Ecom:Order.PaymentMethod.RecurringSupport"))) {
+							<div class="wp-block default user-form">
+								<div class="form-header">
+									<h2><span class="circle"><i class="fa fa-calendar fa-3"></i></span>  @Translate("Recurring order", "Recurring order")</h2>
+								</div>
+
+								@{
+									string RecurringEnabled = "";
+                                string Interval = "";
+                                string recurringShow = "hidden";
+
+									if (!string.IsNullOrWhiteSpace(GetString("Ecom:Order.Recurring.Enabled"))) { 
+										RecurringEnabled = "checked=\"checked\""; 
+										recurringShow = "show";
+									}
+
+									if (!string.IsNullOrWhiteSpace(GetString("Ecom:Order.Recurring.Interval"))) { 
+										Interval = "value=\"" + @GetString("Ecom:Order.Recurring.Interval") + "\"";
+									}
+
+			                    	string seldays = "";
+                                string selweeks = "";
+                                string selmonths = "";
+
+				                    if (GetInteger("Ecom:Order.Recurring.IntervalUnit") == 0) { 
+				                    	seldays = "selected=\"selected\""; 
+				                    }
+
+				                    if (GetInteger("Ecom:Order.Recurring.IntervalUnit") == 1) { 
+				                    	selweeks = "selected=\"selected\""; 
+				                    }
+
+				                    if (GetInteger("Ecom:Order.Recurring.IntervalUnit") == 2) { 
+				                    	selmonths = "selected=\"selected\""; 
+				                    }
+				                }
+
+				                <div class="form-body">
+				                	<div class="input-group">
+										<div class="pull-left">
+											<label class="checkbox-field"><input type="hidden" name="EcomRecurringOrderCreate" /><input type="checkbox" onclick="showHideRecurring();" name="EcomRecurringOrderCreate" id="EcomRecurringOrderCreate" @RecurringEnabled /> @Translate("Create Recurring Order", "Create Recurring Order")</label>
+										</div>
+									</div>
+								</div>
+
+								<div id="RecurringSettings" class="@recurringShow">
+					               	<div class="form-body">
+					               		<div class="form-input">
+				                            <label for="EcomOrderRecurringInterval" class="control-label" style="display: block; text-align: left;">@Translate("I want my order every", "I want my order every")</label>
+				                            <select class="form-control form-control-inline" name="EcomOrderRecurringInterval" id="EcomOrderRecurringInterval" @Interval>
+				                                <option value="1" selected="selected">1</option>
+				                                <option value="2">2</option>
+                                                <option value="3">3</option>
+				                                <option value="4">4</option>
+                                                <option value="5">5</option>
+				                                <option value="6">6</option>
+                                                <option value="7">7</option>
+				                                <option value="8">8</option>
+                                                <option value="9">9</option>
+				                                <option value="10">10</option>
+                                                <option value="11">11</option>
+				                                <option value="12">12</option>
+                                            </select>
+
+                                            <select class="form-control form-control-inline" name="EcomOrderRecurringIntervalUnit" id="EcomOrderRecurringIntervalUnit" value="0">
+				                                <option value="0" @seldays>
+                                                    @Translate("Days", "Days")
+				                                </option>
+				                                <option value="1" @selweeks>
+                                                    @Translate("Weeks", "Weeks")
+				                                </option>
+				                                <option value="2" @selmonths>
+                                                    @Translate("Months", "Months")
+				                                </option>
+				                            </select>
+				                        </div>
+					                </div>
+
+					                <div id="enddateselector" class="form-input">
+					                	<label class="control-label" style="display: block; text-align: left;">@Translate("And it should end on", "And it should end on")</label>
+					                	<div class="input-group date">
+											<input type="hidden" id="EcomOrderRecurringEndDate_day" name="EcomOrderRecurringEndDate_day" value="31">
+					                    	<input type="hidden" id="EcomOrderRecurringEndDate_month" name="EcomOrderRecurringEndDate_month" value="12">
+					                    	<input type="hidden" id="EcomOrderRecurringEndDate_year" name="EcomOrderRecurringEndDate_year" value="2999">
+											
+											<input type="text" type="text" class="form-control" id="enddateinput" placeholder="@Translate("Never", "Never")">
+											<div class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></div>
+				                    	</div>
+				                    </div>
+
+				                    @*
+			                        <div class="form-body">
+					                    <div class="form-input">
+					                    	<label class="control-label" style="display: block; text-align: left;">@Translate("And it should end on", "And it should end on")</label>
+					                    	@GetString("Ecom:Order.Recurring.EndDate").Replace("<select ", "<select class=\"form-control form-control-inline\" ").Replace("<img ", "<img style=\"display: none\"")
+					                    </div>
+					                </div>
+					                *@
+				                </div>
+					        </div>
+				    	}
+						
+						<div class="wp-block default user-form">
+							<div class="form-header">
+								<h2><span class="circle"><i class="fa fa-money fa-3"></i></span> @Translate("Voucher", "Voucher")</h2>
+							</div>
+							<div class="form-body">
+								<div class="input-group">
+									<input type="text" class="form-control" placeholder="@Translate("Enter voucher code", "Enter voucher code")" name="EcomOrderVoucherCode" id="EcomOrderVoucherCode" value="@GetString("Ecom:Order.Customer.VoucherCode")">
+									<span class="input-group-btn">
+										<button class="btn btn-two" type="submit" onclick="updateCart();">@Translate("Apply", "Apply")</button>
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="wp-block default user-form">
+							<div class="form-header">
+								<h2><span class="circle"><i class="fa fa-gift fa-3"></i></span> @Translate("Giftcard", "Giftcard")</h2>
+							</div>
+							<div class="form-body">
+								<div>
+				                    <label for="EcomOrderGiftCardCode" class="control-label">@Translate("Giftcard code", "Giftcard code")</label>
+				                </div>
+				                <div class="input-group">
+				                    <input type="text" class="form-control" name="EcomOrderGiftCardCode" id="EcomOrderGiftCardCode" value="@GetString("Ecom:Order.GifTCardCode")" placeholder="@Translate("Enter giftcard code", "Enter giftcard code")"/>
+				                	<span class="input-group-btn">
+										<button class="btn btn-two" type="submit" onclick="updateCart();">@Translate("Apply", "Apply")</button>
+									</span>
+				                </div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="@columnwidth col-sm-6 col-xs-12">
+						<div class="">
+							<div class="w-box sign-in-wr bg-5">
+								<div class="form-header">
+									<h2><span class="circle"><i class="fa fa-check fa-3"></i></span> @Translate("Review Order", "Review Order")</h2>
+								</div>
+								<table class="table table-cart table-responsive" id="orderlist">
+									<tbody id="orderlistcontent">
+										@foreach (LoopItem orderline in GetLoop("OrderLines")){
+											string image = "";
+											string productlink = orderline.GetString("Ecom:Order:OrderLine.ProductLink");
+
+											if (orderline.GetString("Ecom:Product.ImageLarge.Clean") != ""){
+												image = "/Admin/Public/Getimage.ashx?width=200&amp;height=200&amp;compression=85&amp;Crop=7&amp;image=" + orderline.GetString("Ecom:Product.ImageLarge.Clean");
+											}
+
+											<tr>
+												<td colspan="4" class="dw-table-title">
+													<strong>
+														@if (@productlink != "") {
+															<a href="@productlink">
+																@if (image != "") { <img src="@image" class="col-md-3 p-0" /> }
+	                                                            <span class="col-md-9">@orderline.GetString("Ecom:Order:OrderLine.ProductName")</span>
+															</a>
+														} else {
+															@orderline.GetString("Ecom:Order:OrderLine.ProductName")
+														}
+													</strong>
+													<br />
+													<small>@orderline.GetString("Ecom:Order:OrderLine.ProductVariantText")</small>
+												</td>
+											</tr>
+											<tr>
+												<td class="text-center" colspan="2" style="border-right: 0">
+													@orderline.GetString("Ecom:Order:OrderLine.Quantity") 
+													<!--
+													<input type="number" name="cant" value="Ecom:Order:OrderLine.Quantity" style="width:60px; text-align:center; margin-right:5px; height:34px;">
+													-->
+												</td>
+												<td class="text-left">
+													@if (!string.IsNullOrWhiteSpace(orderline.GetString("Ecom:Order:OrderLine.IsProduct"))) {
+														<a href="@orderline.GetString("Ecom:Order:OrderLine.IncrementLink")" onclick="updateCart();" title=""><i class="fa fa-plus"></i></a><text>&nbsp;</text>
+														<a href="@orderline.GetString("Ecom:Order:OrderLine.DecrementLink")" onclick="updateCart();" title=""><i class="fa fa-minus"></i></a><text>&nbsp;</text>
+														<a href="@orderline.GetString("Ecom:Order:OrderLine.DeleteLink")" onclick="updateCart();" title=""><i class="fa fa-trash-o"></i></a>
+													}
+												</td>
+												<td class="text-right">
+													@if(orderline.GetInteger("Ecom:Order:OrderLine.Points") > 0){
+                                                  		@orderline.GetDouble("Ecom:Order:OrderLine.Points"); 
+                                                  		<text> </text>@Translate("orderline_points","points")
+                                                  	} else{
+                                                  		@orderline.GetString("Ecom:Order:OrderLine.TotalPrice")
+                          						  	}
+                      						  	</td>
+											</tr>
+
+											foreach (LoopItem bomitem in orderline.GetLoop("BOMItems")){
+												<tr>
+													<td class="text-center"><small>@bomitem.GetString("Ecom:Order:OrderLine.Quantity")</small></td>
+													<td colspan="2"><small><a href="@bomitem.GetString("Ecom:Order:OrderLine.ProductLink")">@bomitem.GetString("Ecom:Order:OrderLine.ProductName")</a></small></td>
+													<td class="text-right"><small>@bomitem.GetString("Ecom:Order:OrderLine.TotalPrice")</small></td>
+												</tr>
+											}
+										}
+										<tr>
+											<td class="text-center">
+												<i class="fa fa-credit-card"></i>
+											</td>
+											<td colspan="2">
+												@GetString("Ecom:Order.PaymentMethod")
+											</td>
+											<td class="text-right">@GetString("Ecom:Order.PaymentFee")</td>
+										</tr>
+										<tr>
+											<td class="text-center">
+												<i class="fa fa-truck"></i>
+											</td>
+											<td colspan="2">
+												@GetString("Ecom:Order.ShippingMethod")
+											</td>
+											<td class="text-right">@GetString("Ecom:Order.ShippingFee")</td>
+										</tr>
+										<tr>
+											<td colspan="3" style="border-right: 0"><strong>@Translate("Total", "Total")</strong></td>
+											<td class="text-right"><strong>@GetString("Ecom:Order.OrderLines.Total.PriceWithVAT")</strong></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="wp-block default">
+							<div class="pull-left">
+								<label class="checkbox-field"><input type="checkbox" id="EcomOrderCustomerAccepted" name="EcomOrderCustomerAccepted" value="1" /> @Translate("I accept the terms and conditions of this website.", "I accept the terms and conditions of this website.")</label>
+							</div>
+						</div>
+						<div class="wp-block default">
+							<p>
+								<button class="btn btn-dw-primary" type="submit" name="@GetString("CartV2.NextStepButtonName")" id="@GetString("CartV2.NextStepButtonName")">@Translate("Place order", "Place order")</button>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</section>
+
+<script>
+	$('#enddateselector .form-control').datepicker().on("changeDate", function(e){
+        $('#EcomOrderRecurringEndDate_day').val(e.date.getDate());
+        $('#EcomOrderRecurringEndDate_month').val((parseInt(e.date.getMonth())+1));
+        $('#EcomOrderRecurringEndDate_year').val(e.date.getFullYear());
+    });
+</script>

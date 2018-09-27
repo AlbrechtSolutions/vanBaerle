@@ -1,0 +1,13 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+@* version 1.3 *@
+@Include("/Files/Templates/Designs/LayoutFunctions.cshtml")
+
+  @RenderModule()
+
+@helper RenderModule()
+{
+  if(!string.IsNullOrEmpty(GetString("ParagraphModule"))){
+    @GetString("ParagraphModule")
+  }
+}

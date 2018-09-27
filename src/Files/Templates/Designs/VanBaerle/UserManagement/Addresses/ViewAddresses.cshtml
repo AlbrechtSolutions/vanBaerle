@@ -1,0 +1,90 @@
+﻿@inherits RazorTemplateBase<RazorTemplateModel<Template>>
+@using Dynamicweb.Rendering;
+
+@{
+  Dynamicweb.Content.Items.Item itemArea = Pageview.Area.Item;
+  List<LoopItem> addresses = GetLoop("UserManagement:User.UserAddresses");
+
+  
+}
+
+@GetValue("UserManagement:User.ManageAddresses.FormStart")
+<div class="container col-xs-12 noPadding viewAddresses evenTable" data-cannotdelete='@Translate("mainAddressCanNotBeDeleted","Main address can not be deleted.")' data-cantdelete='@Translate("youCantDeleteDefaultAddress","You can’t delete a default address. Set another address as default before delete this address.")' data-deleteAddress='@Translate("deleteAddress","Delete Address?")' >
+	<div class="addressList">
+      @if(addresses.Any()){
+      foreach(LoopItem address in addresses){
+      string userAddressId = address.GetString("UserManagement:User.UserAddress.ID");
+      string countryCode = address.GetString("UserManagement:User.UserAddress.CountryCode");
+		  var countryName = Dynamicweb.Ecommerce.Services.Countries.GetCountry(countryCode).Name;
+      var defaultAddress = address.GetBoolean("UserManagement:User.UserAddress.Default") ? "defaultAddress" : "";
+
+        string uDescription = address.GetString("UserManagement:User.UserAddress.Description"),
+               uAddress = address.GetString("UserManagement:User.UserAddress.Address"),
+               uAddress2 = address.GetString("UserManagement:User.UserAddress.Address2"),
+               uCity = address.GetString("UserManagement:User.UserAddress.City"),
+               uState = address.GetString("UserManagement:User.UserAddress.State"),
+               uZip = address.GetString("UserManagement:User.UserAddress.Zip");
+
+      	<div class="box-address @defaultAddress">
+          <div class="highlight">
+
+            @if(!string.IsNullOrEmpty(@uDescription)) {
+              <h3>@uDescription</h3>
+            }
+            <div> 
+              @if(!string.IsNullOrWhiteSpace("@uAddress")) {
+                <div>@uAddress</div>
+              }
+              @if(!string.IsNullOrWhiteSpace("@uAddress2")) {
+                <div>@uAddress2</div>
+              }
+              @if(!string.IsNullOrWhiteSpace("@uCity")) {
+                <div>@uCity</div>
+              }
+              @if(!string.IsNullOrWhiteSpace("@uState")) {
+                <div>@uState</div>
+              }
+              @if(!string.IsNullOrWhiteSpace("@uZip")) {
+                <div>@uZip</div>
+              }
+              @countryName
+              
+            </div>
+            <div class="default-address">
+              @if(!string.IsNullOrEmpty(address.GetString("UserManagement:User.UserAddress.Default"))){
+                <i class="fa fa-check"></i>
+              }
+              else {
+                <a class="default" data-id="@userAddressId" href="#"><i class="fa fa-remove"></i></a>
+              }
+            </div>
+            <div class="actions">
+              <a class="edit" data-id="@userAddressId" href="#">@* <i class="fa fa-edit"></i> *@ @Translate("edit","Edit")</a>
+              @if(string.IsNullOrEmpty(address.GetString("UserManagement:User.UserAddress.Default"))){
+                <a class="delete leftPadding" data-id="@userAddressId" href="#"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+              }
+            </div>
+        	</div>
+        </div>
+
+       	}
+      }
+	</div>
+</div>
+@GetValue("UserManagement:User.ManageAddresses.FormEnd")
+
+  @*<a class="btn btn-bg2" href="@itemArea["Login"]">@Translate("backMyProfile","Back to My Profile")</a>*@
+  <a class="btn btn-primary" href="javascript:addAddress()">@Translate("addAddress","Add Address")</a>
+<style>
+  .highlight{
+    padding: 9px 14px;
+    margin-bottom: 14px;
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    border-radius: 4px;
+  }
+</style>
+
+@SnippetStart("jsOnLoad")
+onLoadListAddresses();
+@SnippetEnd("jsOnLoad")
